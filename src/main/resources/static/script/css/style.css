@@ -1,0 +1,150 @@
+body{
+    color: #0f1923;
+    font-family: Tungsten-Bold,arial,georgia, sans-serif;
+    font-size: 30px;
+    font-weight: 700;
+    background-color: #ECE8E1;
+}
+
+/*###############--INDEX--################*/
+
+#nag{
+    font-size: 60px;
+}
+
+/*############--KONIEC INDEX--############*/
+
+/*nagłówek menu*/
+#h_menu{
+    background-color: #111823;
+    padding: 15px;
+    position: -webkit-sticky;
+    position: sticky;
+    z-index: 100;
+    top: 0;
+}
+
+/*nagłówek strony, np. Valorant - Główna*/
+#h_strony{
+    color: #FF4655;
+    padding-right: 40px;
+    border-right: 5px dotted grey;
+    float: left;
+}
+
+/*blok nagłówka, np Valorant - Główna, linki do podstron itd*/
+.b_strony{
+    display: inline-flex;
+    position: relative;
+    vertical-align: middle; 
+    line-height: 41px;
+}
+
+main{
+    float: left;
+    font-size: 30px;
+    width: calc(65% - 60px);
+    padding-right: 20px;
+    color: #111823;
+}
+
+aside{
+    background-color: #D9C7A7;
+    /*height: 100%;*/
+}
+
+main ul{
+    padding-top: 20px;
+    padding-left: 30px;
+}
+
+main img{
+    margin-top: 30px;
+    border-radius: 10px;
+}
+
+main p{
+    text-align: justify;
+    font-size: 22px;
+}
+
+aside h1{
+    text-align: center;
+}
+
+/*############################ Początek bloków treningowych z opisem treningu #######################################*/
+
+/*.training_block{
+    color: #1D3557;
+    background-color: #A8DADC;
+    padding: 15px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+*/
+
+/* Kolor zakończonej partii treningu #06D6A0*/
+/* Kolor obecnej partii treningu #FFD166*/
+
+
+
+.opt:hover{
+    background-color: #06D6A0;
+    font-size: 25px;
+    font-weight: 700;
+}
+
+
+/*############################ Koniec bloków treningowych z opisem treningu #######################################*/
+
+#weaponAside{
+    padding-top: 60px;
+    text-align: center;
+}
+
+p{
+    padding-top: 70px;
+}
+
+h1{
+    padding-top: 70px;
+    color: #FF4655;
+}
+
+iframe{
+    margin-top: 30px;
+    margin-left: 15px;
+}
+
+footer{
+    font-size: 20px;
+    margin-top: 200px;
+}
+
+/*############################ Go train panel #######################################*/
+
+#go-train-panel{
+    text-align: center;
+    color: white;
+    background-color: rgba(40, 75, 99, 0.6);
+    border-radius: 25px;
+}
+
+/*############################ Koniec Go train panel #######################################*/
+
+
+
+
+/*############################ Ciało listy #######################################*/
+
+.cialo-listy{
+    background-color: rgba(0, 0, 0, 0);
+    font-size: 15px;
+}
+
+.naglowek-listy{
+    font-weight: 600;
+    font-size: 20px;
+
+
+/*############################ Koniec Ciało listy #######################################*/
