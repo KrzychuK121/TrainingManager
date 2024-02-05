@@ -3,7 +3,8 @@ body{
     font-family: Tungsten-Bold,arial,georgia, sans-serif;
     font-size: 30px;
     font-weight: 700;
-    background-color: #ECE8E1;
+    background-image: url("../../img/index/background.jpg");
+    background-attachment: fixed;
 }
 
 /*###############--INDEX--################*/
@@ -14,17 +15,21 @@ body{
 
 /*############--KONIEC INDEX--############*/
 
+#menu, .nav-link{
+    color: white;
+}
+
+.nav-link:hover, .nav-link:focus{
+    color: #FF4655;
+}
+
 /*nagłówek menu*/
 #h_menu{
     background-color: #111823;
     padding: 15px;
-    position: -webkit-sticky;
-    position: sticky;
-    z-index: 100;
-    top: 0;
 }
 
-/*nagłówek strony, np. Valorant - Główna*/
+/*nagłówek strony*/
 #h_strony{
     color: #FF4655;
     padding-right: 40px;
@@ -32,7 +37,7 @@ body{
     float: left;
 }
 
-/*blok nagłówka, np Valorant - Główna, linki do podstron itd*/
+/*blok nagłówka*/
 .b_strony{
     display: inline-flex;
     position: relative;
@@ -41,11 +46,14 @@ body{
 }
 
 main{
-    float: left;
-    font-size: 30px;
-    width: calc(65% - 60px);
-    padding-right: 20px;
-    color: #111823;
+    font-size: 13px;
+    padding: 30px;
+    color: wheat;
+    background-color: rgba(51,51,51,0.50);
+}
+
+.option-link{
+    color: #fff530;
 }
 
 aside{
@@ -73,15 +81,6 @@ aside h1{
 }
 
 /*############################ Początek bloków treningowych z opisem treningu #######################################*/
-
-/*.training_block{
-    color: #1D3557;
-    background-color: #A8DADC;
-    padding: 15px;
-    margin-top: 20px;
-    margin-bottom: 20px;
-}
-*/
 
 /* Kolor zakończonej partii treningu #06D6A0*/
 /* Kolor obecnej partii treningu #FFD166*/
@@ -142,9 +141,20 @@ footer{
     font-size: 15px;
 }
 
-.naglowek-listy{
+.naglowek-listy {
     font-weight: 600;
     font-size: 20px;
+}
 
 
 /*############################ Koniec Ciało listy #######################################*/
+
+/*############################ Formularz #######################################*/
+
+.form-text{
+    color: #989898;
+    background-color: black;
+    padding: 15px;
+}
+
+/*############################ Koniec Formularz #################################*/

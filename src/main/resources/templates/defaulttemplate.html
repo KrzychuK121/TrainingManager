@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="pl" xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="head">
+    <meta charset="UTF-8">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+    <!--<link rel="icon" type="image/png" href="../../static/img/fav/favicon2.png">
+    <link rel="stylesheet" type="text/css" href="../../static/script/css/lib/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="../../static/script/css/style.css">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Sansita+Swashed:wght@700&display=swap" rel="stylesheet">
+    <script src="../../static/script/js/trening.js">
+    </script>-->
+    <link rel="icon" type="image/png" href="/img/fav/favicon2.png">
+    <link rel="stylesheet" type="text/css" href="/script/css/lib/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="/script/css/style.css">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Sansita+Swashed:wght@700&display=swap" rel="stylesheet">
+    <script src="/static/script/js/trening.js">
+    </script>
+    <!--/*@thymesVar id="title" type="java.lang.String"*/-->
+    <title th:text="${title}"></title>
+</head>
+<body>
+    <header th:fragment="header" id="h_menu" class="container-fluid">
+        <nav id="menu">
+            <article id="h_strony" class="b_strony"><img src="/img/icon.png" alt="icon.png" style="padding-right: 10px;">Trening</article>
+            <ul class="nav justify-content-center">
+                <li class="nav-item">
+                    <a
+                        class="nav-link active"
+                        aria-current="page"
+                        th:href="@{/training}"
+                    >
+                        Zacznij trening!
+                    </a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a
+                        class="nav-link dropdown-toggle"
+                        data-bs-toggle="dropdown"
+                        href="#"
+                        role="button"
+                        aria-expanded="false"
+                    >
+                        Zarządzaj zestawami
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDarkDropdownMenuLink">
+                        <li><a class="dropdown-item disabled">Treningi</a></li>
+                        <li><a class="dropdown-item" th:href="@{/training}">Wyświetl</a></li>
+                        <li><a class="dropdown-item" th:href="@{/training/create}">Stwórz</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item disabled">Ćwiczenia</a></li>
+                        <li><a class="dropdown-item" th:href="@{/exercise}">Wyświetl</a></li>
+                        <li><a class="dropdown-item" th:href="@{/exercise/create}">Stwórz</a></li>
+                    </ul>
+                </li>
+                <!--<li class="nav-item">
+                    <a class="nav-link" href="#">Link</a>
+                </li>-->
+            </ul>
+        </nav>
+        <div style="clear: both;"></div>
+    </header>
+    <div class="container">
+        <main class="col-md-6 col-lg-8">
+
+        </main>
+    </div>
+    <script>
+        var myElement = document.getElementById("opt0");
+        myElement.onclick = DoTraining;
+    </script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js" integrity="sha384-7+zCNj/IqJ95wo16oMtfsKbZ9ccEh31eOz1HGyDuCQ6wgnyJNSYdrPa03rtR1zdB" crossorigin="anonymous"></script>
+    <script src="script/js/lib/bootstrap.min.js"></script>
+</body>
+</html>

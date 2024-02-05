@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="pl" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{defaulttemplate :: head}"></head>
+<body>
+    <header th:replace="~{defaulttemplate :: header}" id="h_menu" class="container-fluid"></header>
+    <div class="container">
+        <main>
+            <h1>Lista wszystkich ćwiczeń</h1>
+            <table class="table table-bordered table-success table-striped">
+                <thead>
+                    <tr>
+                        <th>Nazwa</th>
+                        <th>Opis</th>
+                        <th>Serie</th>
+                        <th>Potwórzenia</th>
+                        <th>Czas (do wykonania/przewidywany)</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="exercise: ${exercises}">
+                        <td th:text="${exercise.name}"></td>
+                        <td th:text="${exercise.description}"></td>
+                        <td th:text="${exercise.rounds}"></td>
+                        <td th:text="${exercise.repetition}"></td>
+                        <td th:text="${exercise.time}"></td>
+                        <td>
+                            <a href="#">Edytuj</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </main>
+    </div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js" integrity="sha384-7+zCNj/IqJ95wo16oMtfsKbZ9ccEh31eOz1HGyDuCQ6wgnyJNSYdrPa03rtR1zdB" crossorigin="anonymous"></script>
+<script src="script/js/lib/bootstrap.min.js"></script>
+</body>
+</html>

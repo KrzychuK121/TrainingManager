@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="pl" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{defaulttemplate :: head}"></head>
+<body>
+<header th:replace="~{defaulttemplate :: header}"></header>
+<div class="container">
+    <main>
+        <div th:if="${message != null}" class="alert alert-success alert-dismissible" role="alert">
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            <span th:if="${message != null}" th:text="${message}"></span>
+        </div>
+        <form
+                action=""
+                method="post"
+                th:action="@{/training/create}"
+                th:object="${training}"
+        >
+            <fieldset>
+                <legend>Stwórz nowy trening</legend>
+                <label class="form-label" for="title">Tytuł</label>
+                <input th:field="*{title}" id="title" class="form-control" />
+                <div
+                    class="text-danger"
+                    th:if="${#fields.hasErrors('title')}"
+                    th:text="${#fields.errors('title')}"
+                ></div>
+
+                <label class="form-label" for="description">Opis</label>
+                <input th:field="*{description}" id="description" class="form-control" />
+                <div
+                    class="text-danger"
+                    th:if="${#fields.hasErrors('description')}"
+                    th:text="${#fields.errors('description')}"
+                ></div>
+                <button type="submit" name="addExercise">+</button>
+                <fieldset th:each="exercise, i : *{exercises}">
+                    <legend th:text="|Ćwiczenie ${i.index + 1}|"></legend>
+                    <label class="form-label" th:for="|name${i.index + 1}|">Nazwa</label>
+                    <input
+                        th:field="*{exercises[__${i.index}__].name}"
+                        th:id="|name${i.index + 1}|"
+                        class="form-control"
+                    />
+                    <!--<div
+                        class="text-danger"
+                        th:if="${#fields.hasErrors('name')}"
+                        th:text="${#fields.errors('name')}"
+                    ></div>-->
+
+                    <label
+                        class="form-label"
+                        th:for="|description${i.index + 1}|"
+                    >
+                        Opis
+                    </label>
+                    <input
+                        th:field="*{exercises[__${i.index}__].description}"
+                        th:id="|description${i.index + 1}|"
+                        class="form-control"
+                    />
+                   <!-- <div
+                        class="text-danger"
+                        th:if="${#fields.hasErrors('description')}"
+                        th:text="${#fields.errors('description')}"
+                    ></div>-->
+
+                    <label class="form-label" th:for="|rounds${i.index + 1}|">Serie</label>
+                    <input
+                        th:field="*{exercises[__${i.index}__].rounds}"
+                        type="number"
+                        th:id="|rounds${i.index + 1}|"
+                        class="form-control"
+                    />
+                    <!--<div
+                        class="text-danger"
+                        th:if="${#fields.hasErrors('rounds')}"
+                        th:text="${#fields.errors('rounds')}"
+                    ></div>-->
+
+                    <label
+                        class="form-label"
+                        th:for="|repetition${i.index + 1}|"
+                    >
+                        Powtórzenia
+                    </label>
+                    <input
+                        th:field="*{exercises[__${i.index}__].repetition}"
+                        type="number"
+                        th:id="|repetition${i.index + 1}|"
+                        class="form-control"
+                        th:aria-describedby="|repetitionHelp${i.index + 1}|"
+                    />
+                    <!--<div
+                        class="text-danger"
+                        th:if="${#fields.hasErrors('repetition')}"
+                        th:text="${#fields.errors('repetition')}"
+                    ></div>-->
+                    <div th:id="|repetitionHelp${i.index + 1}|" class="form-text">
+                        Jeśli ćwiczenie polegają długości wykonywania, zostaw puste pole
+                        lub wpisz 0
+                    </div>
+
+                    <label>Czas wykonania</label>
+                    <input
+                        th:field="*{exercises[__${i.index}__].time}"
+                        name="time"
+                        th:aria-describedby="|timeHelp${i.index + 1}|"
+                        pattern="[0-9]{2}:[0-9]{2}"
+                    />
+                    <div th:id="|timeHelp${i.index + 1}|" class="form-text">
+                        Jeśli ćwiczenia polegają na ilości powtórzeń, możesz zostawić
+                        to pole puste (lub wpisz przewidywaną długość treningu)
+                    </div>
+                </fieldset>
+                <div class="py-5">
+                    <button type="submit" class="btn btn-success">Zapisz</button>
+                </div>
+            </fieldset>
+        </form>
+    </main>
+</div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js" integrity="sha384-7+zCNj/IqJ95wo16oMtfsKbZ9ccEh31eOz1HGyDuCQ6wgnyJNSYdrPa03rtR1zdB" crossorigin="anonymous"></script>
+<script src="/script/js/lib/bootstrap.min.js"></script>
+</body>
+</html>
