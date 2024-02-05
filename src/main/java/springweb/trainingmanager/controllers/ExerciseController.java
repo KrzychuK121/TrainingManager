@@ -78,14 +78,16 @@ public class ExerciseController {
         if(result.hasErrors())
             return "exercise/save";
 
-        String[] times = time.split(":");
-        LocalTime timeToSave = LocalTime.of(
-            0,
-            Integer.parseInt(times[0]),
-            Integer.parseInt(times[1])
-        );
+        if(time != null && !time.isEmpty()){
+            String[] times = time.split(":");
+            LocalTime timeToSave = LocalTime.of(
+                    0,
+                    Integer.parseInt(times[0]),
+                    Integer.parseInt(times[1])
+            );
 
-        toSave.setTime(timeToSave);
+            toSave.setTime(timeToSave);
+        }
 
         service.create(toSave.toExercise());
         model.addAttribute("exercise", new ExerciseWrite());
