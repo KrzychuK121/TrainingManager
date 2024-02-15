@@ -46,6 +46,7 @@ public class ExerciseController {
     }
 
     @PostMapping(
+        value = "/api",
         produces = MediaType.APPLICATION_JSON_VALUE,
         consumes = MediaType.APPLICATION_JSON_VALUE
     )
@@ -106,7 +107,10 @@ public class ExerciseController {
         return "exercise/index";
     }
 
-    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(
+        value = "/api",
+        produces = MediaType.APPLICATION_JSON_VALUE
+    )
     @ResponseBody
     public ResponseEntity<List<ExerciseRead>> getAll(){
         return ResponseEntity.ok(
@@ -117,7 +121,7 @@ public class ExerciseController {
     }
 
     @GetMapping(
-        value = "/{id}",
+        value = "/api/{id}",
         produces = MediaType.APPLICATION_JSON_VALUE
     )
     @ResponseBody
@@ -134,7 +138,7 @@ public class ExerciseController {
     }
 
     @PutMapping(
-        value = "/{id}",
+        value = "/api/{id}",
         produces = MediaType.APPLICATION_JSON_VALUE,
         consumes = MediaType.APPLICATION_JSON_VALUE
     )
