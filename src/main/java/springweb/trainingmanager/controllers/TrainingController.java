@@ -43,6 +43,7 @@ public class TrainingController {
     }
 
     @PostMapping(
+        value = "/api",
         produces = MediaType.APPLICATION_JSON_VALUE,
         consumes = MediaType.APPLICATION_JSON_VALUE
     )
@@ -98,6 +99,7 @@ public class TrainingController {
     }
 
     @GetMapping(
+        value = "/api",
         produces = MediaType.APPLICATION_JSON_VALUE
     )
     @ResponseBody
@@ -114,7 +116,7 @@ public class TrainingController {
     }
 
     @GetMapping(
-        value = "/{id}",
+        value = "/api/{id}",
         produces = MediaType.APPLICATION_JSON_VALUE
     )
     @ResponseBody
@@ -153,13 +155,12 @@ public class TrainingController {
             return "training/index";
         }
 
-
         model.addAttribute("training", new TrainingRead(found, id));
         return "training/train";
     }
 
     @PutMapping(
-        value = "/{id}",
+        value = "/api/{id}",
         produces = MediaType.APPLICATION_JSON_VALUE,
         consumes = MediaType.APPLICATION_JSON_VALUE
     )
