@@ -2,6 +2,7 @@ package springweb.trainingmanager.repositories.forcontrollers;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.repository.query.Param;
 import springweb.trainingmanager.models.entities.Exercise;
 
 import java.util.List;
@@ -17,4 +18,6 @@ public interface ExerciseRepository {
     boolean existsById(Integer integer);
 
     Page<Exercise> findAll(Pageable pageable);
+
+    Optional<Exercise> findByExercise(Exercise exercise);
 }

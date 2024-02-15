@@ -3,6 +3,7 @@ package springweb.trainingmanager.repositories.forcontrollers;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.repository.query.Param;
 import springweb.trainingmanager.models.entities.Training;
 
 import java.util.List;
@@ -19,4 +20,6 @@ public interface TrainingRepository {
     boolean existsById(Integer integer);
 
     Page<Training> findAll(Pageable pageable);
+
+    Optional<Training> findByTraining(Training training);
 }
