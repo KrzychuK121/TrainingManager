@@ -10,28 +10,30 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import springweb.trainingmanager.models.entities.Exercise;
+import springweb.trainingmanager.models.entities.Training;
 import springweb.trainingmanager.models.viewmodels.exercise.ExerciseRead;
 import springweb.trainingmanager.models.viewmodels.exercise.ExerciseWrite;
+import springweb.trainingmanager.models.viewmodels.training.TrainingExercise;
 import springweb.trainingmanager.repositories.forcontrollers.ExerciseRepository;
+import springweb.trainingmanager.repositories.forcontrollers.TrainingRepository;
 import springweb.trainingmanager.services.ExerciseService;
+import springweb.trainingmanager.services.TrainingService;
 
 import java.net.URI;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
 @RequestMapping("/exercise")
 public class ExerciseController {
     private final ExerciseService service;
-    private final ExerciseRepository repository;
     private static final Logger logger = LoggerFactory.getLogger(ExerciseController.class);
 
     public ExerciseController(
-        final ExerciseService service,
-        final ExerciseRepository repository
+        final ExerciseService service
     ) {
         this.service = service;
-        this.repository = repository;
     }
 
     @ModelAttribute("title")
@@ -48,11 +50,13 @@ public class ExerciseController {
         consumes = MediaType.APPLICATION_JSON_VALUE
     )
     @ResponseBody
-    public ResponseEntity<Exercise> create(@RequestBody @Valid Exercise toSave){
+    public ResponseEntity<ExerciseRead> create(@RequestBody @Valid ExerciseWrite toSave){
         Exercise created = service.create(toSave);
+
+        var exerciseRead = new ExerciseRead(created);
         return ResponseEntity.created(
             URI.create("/exercise/" + created.getId())
-        ).body(created);
+        ).body(exerciseRead);
     }
 
     @GetMapping(
@@ -89,7 +93,7 @@ public class ExerciseController {
             toSave.setTime(timeToSave);
         }
 
-        service.create(toSave.toExercise());
+        service.create(toSave);
         model.addAttribute("exercise", new ExerciseWrite());
         model.addAttribute("message", "Utworzono nowe ćwiczenie!");
 
@@ -104,8 +108,12 @@ public class ExerciseController {
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public ResponseEntity<List<Exercise>> getAll(){
-        return ResponseEntity.ok(service.getAll());
+    public ResponseEntity<List<ExerciseRead>> getAll(){
+        return ResponseEntity.ok(
+            ExerciseRead.toExerciseReadList(
+                service.getAll()
+            )
+        );
     }
 
     @GetMapping(
@@ -144,5 +152,7 @@ public class ExerciseController {
 
         return ResponseEntity.noContent().build();
     }
+
+
 
 }

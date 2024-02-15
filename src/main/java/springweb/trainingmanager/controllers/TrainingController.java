@@ -10,6 +10,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import springweb.trainingmanager.models.entities.Training;
+import springweb.trainingmanager.models.viewmodels.exercise.ExerciseTraining;
 import springweb.trainingmanager.models.viewmodels.exercise.ExerciseWrite;
 import springweb.trainingmanager.models.viewmodels.training.TrainingRead;
 import springweb.trainingmanager.models.viewmodels.training.TrainingWrite;
@@ -46,11 +47,13 @@ public class TrainingController {
         consumes = MediaType.APPLICATION_JSON_VALUE
     )
     @ResponseBody
-    ResponseEntity<TrainingRead> create(@RequestBody @Valid Training toCreate){
-        Training result = service.save(toCreate);
+    ResponseEntity<TrainingRead> create(@RequestBody @Valid TrainingWrite toCreate){
+        Training created = service.create(toCreate);
+
+        var trainingRead = new TrainingRead(created, created.getId());
         return ResponseEntity.created(
-            URI.create("/training/" + result.getId())
-        ).body(new TrainingRead(result, result.getId()));
+            URI.create("/training/" + created.getId())
+        ).body(trainingRead);
     }
 
     @GetMapping(
@@ -65,11 +68,12 @@ public class TrainingController {
 
     @PostMapping(
         value = "/create",
-        params = "addExercise"
+        params = "addExercise",
+        produces = MediaType.TEXT_HTML_VALUE
     )
     String addExercise(@ModelAttribute("training") TrainingWrite current){
         logger.info("Training create addExercise");
-        current.getExercises().add(new ExerciseWrite());
+        current.getExercises().add(new ExerciseTraining());
         return "training/save";
     }
 
@@ -86,7 +90,7 @@ public class TrainingController {
         if(result.hasErrors())
             return "training/save";
 
-        service.save(toSave.toTraining());
+        service.create(toSave);
         model.addAttribute("training", new TrainingWrite());
         model.addAttribute("message", "Utworzono nowy trening!");
 
