@@ -67,6 +67,8 @@ public class Training {
     public void copy(Training toCopy){
         this.title = toCopy.title;
         this.description = toCopy.description;
-        this.exercises = toCopy.exercises;
+        this.exercises = toCopy.exercises == null || toCopy.exercises.isEmpty() ?
+            null :
+            toCopy.exercises;
     }
 }
