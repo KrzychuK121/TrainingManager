@@ -103,6 +103,8 @@ public class Exercise {
         rounds = toEdit.rounds;
         repetition = toEdit.repetition;
         time = toEdit.time;
-        trainings = toEdit.trainings;
+        trainings = toEdit.trainings == null || toEdit.trainings.isEmpty() ?
+            null :
+            toEdit.trainings;
     }
 }
