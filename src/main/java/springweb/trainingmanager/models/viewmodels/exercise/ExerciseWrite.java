@@ -109,7 +109,8 @@ public class ExerciseWrite {
         toReturn.setRounds(rounds);
         toReturn.setRepetition(repetition);
         toReturn.setTime(time);
-        toReturn.setTrainings(TrainingExercise.toTrainingList(trainings));
+        if(trainings != null)
+            toReturn.setTrainings(TrainingExercise.toTrainingList(trainings));
 
         return toReturn;
     }

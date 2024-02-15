@@ -53,7 +53,8 @@ public class TrainingWrite {
 
         toReturn.setTitle(title);
         toReturn.setDescription(description);
-        toReturn.setExercises(ExerciseTraining.toExerciseList(exercises));
+        if(exercises != null)
+            toReturn.setExercises(ExerciseTraining.toExerciseList(exercises));
 
         return toReturn;
     }
