@@ -5,6 +5,7 @@ import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.Range;
 import org.springframework.format.annotation.DateTimeFormat;
 import springweb.trainingmanager.models.entities.Exercise;
+import springweb.trainingmanager.models.viewmodels.training.TrainingExercise;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -25,6 +26,7 @@ public class ExerciseWrite {
     private int repetition;
     @DateTimeFormat(pattern = "mm:ss")
     private LocalTime time;
+    private List<TrainingExercise> trainings = new ArrayList<>();
 
     public ExerciseWrite() {
     }
@@ -39,6 +41,11 @@ public class ExerciseWrite {
             toSave.setRounds(exerciseWrite.rounds);
             toSave.setRepetition(exerciseWrite.repetition);
             toSave.setTime(exerciseWrite.time);
+            toSave.setTrainings(
+                TrainingExercise.toTrainingList(
+                    exerciseWrite.trainings
+                )
+            );
 
             result.add(toSave);
         });
@@ -86,6 +93,14 @@ public class ExerciseWrite {
         this.time = time;
     }
 
+    public List<TrainingExercise> getTrainings() {
+        return trainings;
+    }
+
+    public void setTrainings(List<TrainingExercise> trainings) {
+        this.trainings = trainings;
+    }
+
     public Exercise toExercise(){
         var toReturn = new Exercise();
 
@@ -94,6 +109,7 @@ public class ExerciseWrite {
         toReturn.setRounds(rounds);
         toReturn.setRepetition(repetition);
         toReturn.setTime(time);
+        toReturn.setTrainings(TrainingExercise.toTrainingList(trainings));
 
         return toReturn;
     }
