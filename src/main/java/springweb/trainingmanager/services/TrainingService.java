@@ -19,7 +19,6 @@ import java.util.List;
 public class TrainingService {
     private final ExerciseRepository exerciseRepository;
     private final TrainingRepository repository;
-    private static final Logger logger = LoggerFactory.getLogger(TrainingService.class);
 
     public TrainingService(
             final ExerciseRepository exerciseRepository,
@@ -50,14 +49,10 @@ public class TrainingService {
                     .orElse(exerciseTraining.toExercise());
 
                 if(found.getId() == 0){
-                    logger.info("Nie znaleziono");
                     var savedExercise = exerciseRepository.save(found);
-                    logger.info("Nowy id: " + savedExercise.getId());
                     exerciseToSave.add(new ExerciseTraining(savedExercise));
-                }else{
-                    logger.info("Znaleziono");
+                }else
                     exerciseToSave.add(new ExerciseTraining(found));
-                }
 
             }
         );
