@@ -4,6 +4,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.stereotype.Repository;
 import springweb.trainingmanager.models.entities.Training;
@@ -18,4 +19,14 @@ interface SqlTrainingRepository extends TrainingRepository, JpaRepository<Traini
     @Override
     @Query("SELECT t FROM Training t LEFT JOIN FETCH t.exercises")
     List<Training> findAll();
+
+    @Override
+    @Query(
+        """
+        SELECT t FROM Training t LEFT JOIN FETCH t.exercises 
+        WHERE t.title = :#{#training.title} AND 
+        t.description = :#{#training.description}
+        """
+    )
+    Optional<Training> findByTraining(@Param("training") Training training);
 }
