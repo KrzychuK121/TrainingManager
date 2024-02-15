@@ -1,9 +1,9 @@
 package springweb.trainingmanager.models.entities;
 
-import jakarta.annotation.Nullable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
-import org.hibernate.annotations.ColumnTransformer;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.Range;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -33,9 +33,10 @@ public class Exercise {
     private int repetition;
     @DateTimeFormat(pattern = "mm:ss")
     private LocalTime time;
-    @ManyToOne
-    @JoinColumn(name = "training_id")
-    private Training training;
+    @ManyToMany(mappedBy = "exercises")
+    @Valid
+    @JsonIgnore
+    private List<Training> trainings = new ArrayList<>();
 
     public Exercise(){ }
 
@@ -43,7 +44,7 @@ public class Exercise {
         return id;
     }
 
-    void setId(int id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -87,12 +88,12 @@ public class Exercise {
         this.time = time;
     }
 
-    public Training getTraining() {
-        return training;
+    public List<Training> getTrainings() {
+        return trainings;
     }
 
-    public void setTraining(Training training) {
-        this.training = training;
+    public void setTrainings(List<Training> training) {
+        this.trainings = training;
     }
 
     // Might be used in PUT but NOT PATCH!!
@@ -102,6 +103,6 @@ public class Exercise {
         rounds = toEdit.rounds;
         repetition = toEdit.repetition;
         time = toEdit.time;
-        training = toEdit.training;
+        trainings = toEdit.trainings;
     }
 }
