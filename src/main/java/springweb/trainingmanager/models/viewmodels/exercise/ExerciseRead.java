@@ -5,6 +5,7 @@ import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.Range;
 import org.springframework.format.annotation.DateTimeFormat;
 import springweb.trainingmanager.models.entities.Exercise;
+import springweb.trainingmanager.models.viewmodels.training.TrainingExercise;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -25,6 +26,7 @@ public class ExerciseRead {
     private int repetition;
     @DateTimeFormat(pattern = "HH:mm:ss")
     private LocalTime time;
+    private List<TrainingExercise> trainings = new ArrayList<>();
 
     public ExerciseRead(Exercise exercise) {
         this.name = exercise.getName();
@@ -32,6 +34,7 @@ public class ExerciseRead {
         this.rounds = exercise.getRounds();
         this.repetition = exercise.getRepetition();
         this.time = exercise.getTime();
+        this.trainings = TrainingExercise.toTrainingExerciseList(exercise.getTrainings());
     }
 
     public static List<ExerciseRead> toExerciseReadList(final List<Exercise> list){
@@ -58,5 +61,13 @@ public class ExerciseRead {
 
     public LocalTime getTime() {
         return time;
+    }
+
+    public List<TrainingExercise> getTrainings() {
+        return trainings;
+    }
+
+    public void setTrainings(List<TrainingExercise> trainings) {
+        this.trainings = trainings;
     }
 }
