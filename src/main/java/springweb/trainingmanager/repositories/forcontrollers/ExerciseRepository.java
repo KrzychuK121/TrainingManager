@@ -20,4 +20,8 @@ public interface ExerciseRepository {
     Page<Exercise> findAll(Pageable pageable);
 
     Optional<Exercise> findByExercise(Exercise exercise);
+
+    void deleteById(Integer integer);
+
+    void delete(Exercise entity);
 }
