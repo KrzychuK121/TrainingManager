@@ -157,10 +157,13 @@ public class ExerciseController {
         return ResponseEntity.noContent().build();
     }
 
-    @DeleteMapping("/api/{id}")
+    @DeleteMapping(
+        value = "/api/{id}",
+        produces = MediaType.APPLICATION_JSON_VALUE
+    )
     @ResponseBody
     public ResponseEntity<?> delete(@PathVariable int id){
-        try{
+        try {
             service.delete(id);
         } catch(IllegalArgumentException e) {
             logger.error("Wystąpił wyjątek: " + e.getMessage());
@@ -169,7 +172,5 @@ public class ExerciseController {
 
         return ResponseEntity.noContent().build();
     }
-
-
 
 }
