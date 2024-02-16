@@ -22,4 +22,7 @@ public interface TrainingRepository {
     Page<Training> findAll(Pageable pageable);
 
     Optional<Training> findByTraining(Training training);
+
+    void deleteById(Integer integer);
+    void delete(Training entity);
 }
