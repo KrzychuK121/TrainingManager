@@ -144,11 +144,24 @@ public class ExerciseController {
     )
     @ResponseBody
     public ResponseEntity<?> edit(
-        @RequestBody @Valid Exercise toEdit,
+        @RequestBody @Valid ExerciseWrite toEdit,
         @PathVariable int id
     ){
         try {
             service.edit(toEdit, id);
+        } catch(IllegalArgumentException e) {
+            logger.error("Wystąpił wyjątek: " + e.getMessage());
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/api/{id}")
+    @ResponseBody
+    public ResponseEntity<?> delete(@PathVariable int id){
+        try{
+            service.delete(id);
         } catch(IllegalArgumentException e) {
             logger.error("Wystąpił wyjątek: " + e.getMessage());
             return ResponseEntity.notFound().build();
