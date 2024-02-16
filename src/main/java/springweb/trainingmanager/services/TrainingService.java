@@ -1,13 +1,9 @@
 package springweb.trainingmanager.services;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import springweb.trainingmanager.models.entities.Exercise;
 import springweb.trainingmanager.models.entities.Training;
 import springweb.trainingmanager.models.viewmodels.exercise.ExerciseTraining;
-import springweb.trainingmanager.models.viewmodels.exercise.ExerciseWrite;
-import springweb.trainingmanager.models.viewmodels.training.TrainingExercise;
 import springweb.trainingmanager.models.viewmodels.training.TrainingWrite;
 import springweb.trainingmanager.repositories.forcontrollers.ExerciseRepository;
 import springweb.trainingmanager.repositories.forcontrollers.TrainingRepository;
@@ -38,11 +34,11 @@ public class TrainingService {
      *
      * @return prepared list with <code>ExerciseTraining</code> (founded in database or just created)
      */
-    private List<ExerciseTraining> prepExercises(List<ExerciseTraining> exercises) {
+    private List<Exercise> prepExercises(List<ExerciseTraining> exercises) {
         if(exercises == null || exercises.isEmpty())
             return null;
 
-        List<ExerciseTraining> exerciseToSave = new ArrayList<>(exercises.size());
+        List<Exercise> exerciseToSave = new ArrayList<>(exercises.size());
         exercises.forEach(
             exerciseTraining -> {
                 Exercise found = exerciseRepository.findByExercise(exerciseTraining.toExercise())
@@ -50,9 +46,9 @@ public class TrainingService {
 
                 if(found.getId() == 0){
                     var savedExercise = exerciseRepository.save(found);
-                    exerciseToSave.add(new ExerciseTraining(savedExercise));
+                    exerciseToSave.add(savedExercise);
                 }else
-                    exerciseToSave.add(new ExerciseTraining(found));
+                    exerciseToSave.add(found);
 
             }
         );
@@ -60,29 +56,35 @@ public class TrainingService {
     }
 
     public Training create(TrainingWrite toSave){
-        List<ExerciseTraining> preparedExerciseList = prepExercises(toSave.getExercises());
+        List<Exercise> preparedExerciseList = prepExercises(toSave.getExercises());
         if(preparedExerciseList != null)
-            toSave.setExercises(preparedExerciseList);
+            toSave.setExercises(ExerciseTraining.toExerciseTrainingList(preparedExerciseList));
 
         var created = repository.save(toSave.toTraining());
-        addTrainingToExercises(created, created.getExercises());
+        if(preparedExerciseList != null)
+            editTrainingInExercises(created, preparedExerciseList, true);
 
         return created;
     }
 
     /**
-     * This method <b>SHOULD</b> be used after <code>create(TrainingWrite toSave)</code>.
-     * It is responsible for adding <code>toAdd</code> to every <code>toEdit</code> element
+     * This method <b>SHOULD</b> be used after creating/editing <code>Training</code>.
+     * It is responsible for adding <code>toAddOrRemove</code> to every <code>toEdit</code> element
      * and then saving the changes in the database. This operation is required to create proper
      * many to many row between <code>Exercise</code> and <code>Training</code>
      *
-     * @param toAdd <code>Training</code> with id which should be connected with <code>Exercise</code>
+     * @param toAddOrRemove <code>Training</code> with id which should be connected with <code>Exercise</code>
      * @param toEdit list of <code>Exercise</code> objects which should be connected with <code>Training</code>
+     * @param ifAdd when true, it will add <code>toAddOrRemove</code> to <code>toEdit</code>, otherwise it will
+     *              remove <code>toAddOrRemove</code> from <code>toEdit</code>.
      */
-    private void addTrainingToExercises(Training toAdd, List<Exercise> toEdit){
+    private void editTrainingInExercises(Training toAddOrRemove, List<Exercise> toEdit, boolean ifAdd){
         toEdit.forEach(
             exercise -> {
-                exercise.getTrainings().add(toAdd);
+                if(ifAdd)
+                    exercise.getTrainings().add(toAddOrRemove);
+                else
+                    exercise.getTrainings().remove(toAddOrRemove);
                 exerciseRepository.save(exercise);
             }
         );
@@ -99,9 +101,22 @@ public class TrainingService {
             );
     }
 
-    public void edit(Training toEdit, int id){
+    public void edit(TrainingWrite toEdit, int id){
+        List<Exercise> preparedExerciseList = prepExercises(toEdit.getExercises());
+        toEdit.setExercises(ExerciseTraining.toExerciseTrainingList(preparedExerciseList));
+
         Training toSave = getById(id);
-        toSave.copy(toEdit);
-        repository.save(toSave);
+        editTrainingInExercises(toSave, toSave.getExercises(), false);
+
+        toSave.copy(toEdit.toTraining());
+        var saved = repository.save(toSave);
+        editTrainingInExercises(saved, saved.getExercises(), true);
     }
+
+    public void delete(int id){
+        var toDelete = getById(id);
+        editTrainingInExercises(toDelete, toDelete.getExercises(), false);
+        repository.deleteById(id);
+    }
+
 }
