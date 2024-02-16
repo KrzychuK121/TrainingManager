@@ -23,15 +23,12 @@ import java.util.List;
 @Controller
 @RequestMapping("/training")
 public class TrainingController {
-    private final ExerciseService exerciseService;
     private final TrainingService service;
     private static final Logger logger = LoggerFactory.getLogger(TrainingController.class);
 
     public TrainingController(
-        final ExerciseService exerciseService,
         final TrainingService service
     ) {
-        this.exerciseService = exerciseService;
         this.service = service;
     }
 
@@ -166,7 +163,7 @@ public class TrainingController {
     )
     @ResponseBody
     ResponseEntity<?> edit(
-        @RequestBody @Valid Training toEdit,
+        @RequestBody @Valid TrainingWrite toEdit,
         @PathVariable int id
     ){
         try {
@@ -178,5 +175,21 @@ public class TrainingController {
         return ResponseEntity.noContent().build();
     }
 
+
+    @DeleteMapping(
+        value = "/api/{id}",
+        produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    @ResponseBody
+    public ResponseEntity<?> delete(@PathVariable int id){
+        try {
+            service.delete(id);
+        } catch(IllegalArgumentException e) {
+            logger.error("Wystąpił wyjątek: " + e.getMessage());
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.noContent().build();
+    }
 
 }
