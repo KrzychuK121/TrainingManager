@@ -6,6 +6,7 @@ import springweb.trainingmanager.models.entities.Training;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class TrainingExercise {
     private final int id;
@@ -75,5 +76,13 @@ public class TrainingExercise {
         toReturn.setDescription(description);
 
         return toReturn;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        TrainingExercise that = (TrainingExercise) o;
+        return id == that.id && Objects.equals(title, that.title) && Objects.equals(description, that.description);
     }
 }

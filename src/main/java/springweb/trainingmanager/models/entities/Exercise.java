@@ -11,6 +11,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 
 @Entity
@@ -106,5 +107,18 @@ public class Exercise {
         trainings = toEdit.trainings == null || toEdit.trainings.isEmpty() ?
             null :
             toEdit.trainings;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Exercise exercise = (Exercise) o;
+        return id == exercise.id &&
+        rounds == exercise.rounds &&
+        repetition == exercise.repetition &&
+        Objects.equals(name, exercise.name) &&
+        Objects.equals(description, exercise.description) &&
+        Objects.equals(time, exercise.time);
     }
 }

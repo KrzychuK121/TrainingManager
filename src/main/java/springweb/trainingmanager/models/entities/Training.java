@@ -7,6 +7,7 @@ import org.hibernate.validator.constraints.Length;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(name = "training")
@@ -70,5 +71,13 @@ public class Training {
         this.exercises = toCopy.exercises == null || toCopy.exercises.isEmpty() ?
             null :
             toCopy.exercises;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Training training = (Training) o;
+        return id == training.id && Objects.equals(title, training.title) && Objects.equals(description, training.description);
     }
 }
