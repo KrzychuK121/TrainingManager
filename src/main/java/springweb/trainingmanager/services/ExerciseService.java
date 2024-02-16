@@ -37,21 +37,21 @@ public class ExerciseService {
      *
      * @return prepared list with <code>TrainingExercise</code> (founded in database or just created)
      */
-    private List<TrainingExercise> prepTrainings(List<TrainingExercise> trainings){
+    private List<Training> prepTrainings(List<TrainingExercise> trainings){
         if(trainings == null || trainings.isEmpty())
             return null;
 
-        List<TrainingExercise> trainingToSave = new ArrayList<>(trainings.size());
+        List<Training> trainingToSave = new ArrayList<>(trainings.size());
         trainings.forEach(
             trainingExercise -> {
                 Training found = trainingRepository.findByTraining(trainingExercise.toTraining())
-                .orElse(trainingExercise.toTraining());
+                    .orElse(trainingExercise.toTraining());
 
                 if(found.getId() == 0){
                     var savedTraining = trainingRepository.save(found);
-                    trainingToSave.add(new TrainingExercise(savedTraining, savedTraining.getId()));
+                    trainingToSave.add(savedTraining);
                 }else
-                    trainingToSave.add(new TrainingExercise(found, found.getId()));
+                    trainingToSave.add(found);
 
             }
         );
@@ -59,12 +59,13 @@ public class ExerciseService {
     }
 
     public Exercise create(ExerciseWrite toSave){
-        List<TrainingExercise> preparedTrainingList = prepTrainings(toSave.getTrainings());
+        List<Training> preparedTrainingList = prepTrainings(toSave.getTrainings());
         if(preparedTrainingList != null)
-            toSave.setTrainings(preparedTrainingList);
+            toSave.setTrainings(TrainingExercise.toTrainingExerciseList(preparedTrainingList));
 
         var created = repository.save(toSave.toExercise());
-        editExerciseInTrainings(created, created.getTrainings(), true);
+        if(preparedTrainingList != null)
+            editExerciseInTrainings(created, preparedTrainingList, true);
 
         return created;
     }
@@ -105,8 +106,8 @@ public class ExerciseService {
     }
 
     public void edit(ExerciseWrite toEdit, int id){
-        List<TrainingExercise> preparedTrainingList = prepTrainings(toEdit.getTrainings());
-        toEdit.setTrainings(preparedTrainingList);
+        List<Training> preparedTrainingList = prepTrainings(toEdit.getTrainings());
+        toEdit.setTrainings(TrainingExercise.toTrainingExerciseList(preparedTrainingList));
 
         Exercise toSave = getById(id);
         editExerciseInTrainings(toSave, toSave.getTrainings(), false);
