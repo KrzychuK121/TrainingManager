@@ -24,7 +24,7 @@ interface SqlExerciseRepository extends ExerciseRepository, JpaRepository<Exerci
     @Query(
         """
         SELECT e FROM Exercise e LEFT JOIN FETCH e.trainings 
-        WHERE e.name = :#{#exercise.description} AND 
+        WHERE e.name = :#{#exercise.name} AND 
         e.description = :#{#exercise.description} AND 
         e.rounds = :#{#exercise.rounds} AND
         e.repetition = :#{#exercise.repetition} AND 
