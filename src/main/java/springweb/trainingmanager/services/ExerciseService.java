@@ -1,5 +1,7 @@
 package springweb.trainingmanager.services;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import springweb.trainingmanager.models.entities.Exercise;
 import springweb.trainingmanager.models.entities.Training;
@@ -15,6 +17,7 @@ import java.util.List;
 public class ExerciseService {
     private final ExerciseRepository repository;
     private final TrainingRepository trainingRepository;
+    private static final Logger logger = LoggerFactory.getLogger(ExerciseService.class);
 
     public ExerciseService(
         final ExerciseRepository repository,
@@ -61,28 +64,34 @@ public class ExerciseService {
             toSave.setTrainings(preparedTrainingList);
 
         var created = repository.save(toSave.toExercise());
-        addExerciseToTrainings(created, created.getTrainings());
+        editExerciseInTrainings(created, created.getTrainings(), true);
 
         return created;
     }
 
     /**
-     * This method <b>SHOULD</b> be used after <code>create(ExerciseWrite toSave)</code>.
-     * It is responsible for adding <code>toAdd</code> to every <code>toEdit</code> element
+     * This method <b>SHOULD</b> be used after creating/editing <code>Exercise</code>.
+     * It is responsible for adding <code>toAddOrRemove</code> to every <code>toEdit</code> element
      * and then saving the changes in the database. This operation is required to create proper
      * many to many row between <code>Exercise</code> and <code>Training</code>
      *
-     * @param toAdd <code>Exercise</code> with id which should be connected with <code>Training</code>
+     * @param toAddOrRemove <code>Exercise</code> with id which should be connected with <code>Training</code>
      * @param toEdit list of <code>Training</code> objects which should be connected with <code>Exercise</code>
+     * @param ifAdd when true, it will add <code>toAddOrRemove</code> to <code>toEdit</code>, otherwise it will
+     *              remove <code>toAddOrRemove</code> from <code>toEdit</code>.
      */
-    private void addExerciseToTrainings(Exercise toAdd, List<Training> toEdit){
+    private void editExerciseInTrainings(Exercise toAddOrRemove, List<Training> toEdit, boolean ifAdd){
         toEdit.forEach(
             training -> {
-                training.getExercises().add(toAdd);
+                if(ifAdd)
+                    training.getExercises().add(toAddOrRemove);
+                else
+                    training.getExercises().remove(toAddOrRemove);
                 trainingRepository.save(training);
             }
         );
     }
+
 
     public List<Exercise> getAll(){
         return repository.findAll();
@@ -91,14 +100,25 @@ public class ExerciseService {
     public Exercise getById(int id){
         return repository.findById(id)
             .orElseThrow(
-                () -> new IllegalArgumentException("Nie znaleziono treningu o podanym numerze id")
+                () -> new IllegalArgumentException("Nie znaleziono ćwiczenia o podanym numerze id")
             );
     }
 
-    public void edit(Exercise toEdit, int id){
+    public void edit(ExerciseWrite toEdit, int id){
+        List<TrainingExercise> preparedTrainingList = prepTrainings(toEdit.getTrainings());
+        toEdit.setTrainings(preparedTrainingList);
+
         Exercise toSave = getById(id);
-        toSave.copy(toEdit);
-        repository.save(toSave);
+        editExerciseInTrainings(toSave, toSave.getTrainings(), false);
+
+        toSave.copy(toEdit.toExercise());
+        var saved = repository.save(toSave);
+        editExerciseInTrainings(saved, saved.getTrainings(), true);
     }
 
+    public void delete(int id){
+        var toDelete = getById(id);
+        editExerciseInTrainings(toDelete, toDelete.getTrainings(), false);
+        repository.deleteById(id);
+    }
 }
