@@ -4,4 +4,4 @@ spring:
     path: '/console'
 
   datasource.url: 'jdbc:h2:file:F:\5 sem - projekty\Jakarta EE\trainingmanager\local-db'
-  jpa.hibernate.ddl-auto: create-drop
+  jpa.hibernate.ddl-auto: update
