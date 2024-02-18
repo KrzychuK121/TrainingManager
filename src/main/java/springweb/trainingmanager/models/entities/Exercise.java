@@ -36,7 +36,7 @@ public class Exercise {
     private LocalTime time;
     @ManyToMany(mappedBy = "exercises")
     @Valid
-    @JsonIgnore
+    //@JsonIgnore
     private List<Training> trainings = new ArrayList<>();
 
     public Exercise(){ }
