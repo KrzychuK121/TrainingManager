@@ -28,6 +28,8 @@ public class TrainingExercise {
     }
 
     public static List<TrainingExercise> toTrainingExerciseList(final List<Training> list){
+        if(list == null)
+            return null;
         List<TrainingExercise> result = new ArrayList<>(list.size());
         list.forEach(training -> result.add(new TrainingExercise(training, training.getId())));
         return result;

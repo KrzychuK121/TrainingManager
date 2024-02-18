@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ExerciseRead {
+    private int id;
     @NotBlank(message = "Nazwa ćwiczenia jest wymagana")
     @Length(min = 3, max = 100, message = "Nazwa ćwiczenia musi mieścić się między 3 a 100 znaków")
     private String name;
@@ -29,6 +30,7 @@ public class ExerciseRead {
     private List<TrainingExercise> trainings = new ArrayList<>();
 
     public ExerciseRead(Exercise exercise) {
+        this.id = exercise.getId();
         this.name = exercise.getName();
         this.description = exercise.getDescription();
         this.rounds = exercise.getRounds();
@@ -41,6 +43,14 @@ public class ExerciseRead {
         List<ExerciseRead> result = new ArrayList<>(list.size());
         list.forEach(exercise -> result.add(new ExerciseRead(exercise)));
         return result;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getName() {

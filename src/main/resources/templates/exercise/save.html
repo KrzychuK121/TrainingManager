@@ -12,7 +12,7 @@
             <form
                 action=""
                 method="post"
-                th:action="@{/exercise/create}"
+                th:action="@{/exercise/create/{id}(id=${id})}"
                 th:object="${exercise}"
             >
                 <fieldset>
@@ -59,8 +59,9 @@
                         lub wpisz 0
                     </div>
 
-                    <label>Czas wykonania</label>
+                    <label class="form-label" for="time">Czas wykonania</label>
                     <input
+                        id="time"
                         th:field="*{time}"
                         name="time"
                         aria-describedby="timeHelp"
@@ -71,6 +72,24 @@
                         Jeśli ćwiczenia polegają na ilości powtórzeń, możesz zostawić
                         to pole puste (lub wpisz przewidywaną długość treningu)
                     </div>
+                    <label class="form-label" for="trainings">Lista treningów do przypisania</label>
+                    <select
+                        class="form-select form-select-lg"
+                        aria-label="label"
+                        id="trainings"
+                        th:if="${allTrainings != null and !allTrainings.isEmpty()}"
+                        name="trainingIds"
+                        multiple
+                    >
+                        <option value="" selected>---Wybierz treningi---</option>
+                        <option
+                            th:each="training, i : ${allTrainings}"
+                            th:value="${training.id}"
+                            th:text="${training.title}"
+                            th:selected="${selected != null and selected[__${i.index}__] == training.id}"
+                        >
+                        </option>
+                    </select>
                     <div class="py-5">
                         <button type="submit" class="btn btn-success">Zapisz</button>
                     </div>

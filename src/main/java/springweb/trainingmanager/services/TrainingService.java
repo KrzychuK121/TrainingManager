@@ -79,6 +79,8 @@ public class TrainingService {
      *              remove <code>toAddOrRemove</code> from <code>toEdit</code>.
      */
     private void editTrainingInExercises(Training toAddOrRemove, List<Exercise> toEdit, boolean ifAdd){
+        if(toEdit == null)
+            return;
         toEdit.forEach(
             exercise -> {
                 if(ifAdd)

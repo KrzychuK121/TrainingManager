@@ -40,6 +40,8 @@ public class ExerciseTraining {
     }
 
     public static List<ExerciseTraining> toExerciseTrainingList(final List<Exercise> list){
+        if(list == null)
+            return null;
         List<ExerciseTraining> result = new ArrayList<>(list.size());
         list.forEach(exercise -> result.add(new ExerciseTraining(exercise)));
         return result;

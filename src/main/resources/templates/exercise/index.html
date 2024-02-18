@@ -1,10 +1,14 @@
 <!doctype html>
-<html lang="pl" xmlns:th="http://www.thymeleaf.org">
+<html lang="pl" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org">
 <head th:replace="~{defaulttemplate :: head}"></head>
 <body>
     <header th:replace="~{defaulttemplate :: header}" id="h_menu" class="container-fluid"></header>
     <div class="container">
         <main>
+            <div th:if="${mess != null}" th:class="|alert alert-${messType} alert-dismissible|" role="alert">
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                <span th:if="${mess != null}" th:text="${mess}"></span>
+            </div>
             <h1>Lista wszystkich ćwiczeń</h1>
             <table class="table table-bordered table-success table-striped">
                 <thead>
@@ -25,7 +29,8 @@
                         <td th:text="${exercise.repetition}"></td>
                         <td th:text="${exercise.time}"></td>
                         <td>
-                            <a href="#">Edytuj</a>
+                            <a th:href="@{/exercise/edit/{id}(id=${exercise.id})}">Edytuj</a> |
+                            <a sec:authorize="hasRole('ROLE_ADMIN')" th:href="@{/exercise/delete/{id}(id=${exercise.id})}">Usuń</a>
                         </td>
                     </tr>
                 </tbody>
@@ -34,6 +39,6 @@
     </div>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js" integrity="sha384-7+zCNj/IqJ95wo16oMtfsKbZ9ccEh31eOz1HGyDuCQ6wgnyJNSYdrPa03rtR1zdB" crossorigin="anonymous"></script>
-<script src="script/js/lib/bootstrap.min.js"></script>
+<script src="/script/js/lib/bootstrap.min.js"></script>
 </body>
 </html>

@@ -58,6 +58,14 @@
                     </ul>
                 </li>
                 <li class="nav-item">
+                    <span
+                        class="nav-link disabled"
+                        sec:authorize="isAuthenticated()"
+                        th:if="${session.welcomeInfo != null}"
+                        th:text="|Witaj ${session.welcomeInfo[0]} ${session.welcomeInfo[1]}!|"
+                    ></span>
+                </li>
+                <li class="nav-item">
                     <a
                         class="nav-link active"
                         aria-current="page"

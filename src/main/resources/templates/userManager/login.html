@@ -6,20 +6,16 @@
     <div class="container">
         <main>
             <h1>Login</h1>
-            <fieldset>
-                <legend>Logowanie</legend>
                 <form th:action="@{/login}" method='POST'>
-                    <label class="form-label">
-                        Login:
-                        <input type='text' name='username' value='' class="form-control"/>
-                    </label><br />
-                    <label class="form-label">
-                        Hasło:
-                        <input type='password' name='password' class="form-control" />
-                    </label>
-                        <input name="submit" type="submit" value="Zaloguj" />
+                    <fieldset>
+                    <legend>Logowanie</legend>
+                        <label class="form-label" for="username">Login:</label>
+                            <input type='text' name='username' value='' class="form-control" id="username"/>
+                        <label class="form-label" for="password">Hasło:</label>
+                            <input type='password' name='password' class="form-control" id="password" />
+                            <input name="submit" type="submit" value="Zaloguj" />
+                    </fieldset>
                 </form>
-            </fieldset>
         </main>
     </div>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>

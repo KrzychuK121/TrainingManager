@@ -2,6 +2,7 @@ package springweb.trainingmanager.controllers;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -48,12 +49,19 @@ public class UserManagerController {
     }
 
     @GetMapping("/logout")
-    String logout(HttpServletRequest request) throws ServletException {
+    String logout(
+        HttpServletRequest request,
+        HttpSession session
+    ) throws ServletException {
+        if(session.getAttribute("welcomeInfo") != null){
+            session.removeAttribute("welcomeInfo");
+        }
+
         request.logout();
         return "userManager/logout";
     }
 
-    @GetMapping("/seed")
+    /*@GetMapping("/seed")
     String seed(){
         String pass = "admin1234";
         User admin = new User();
@@ -69,6 +77,6 @@ public class UserManagerController {
         roleRepo.save(role);
         userRepo.save(admin);
         return "index2";
-    }
+    }*/
 
 }
