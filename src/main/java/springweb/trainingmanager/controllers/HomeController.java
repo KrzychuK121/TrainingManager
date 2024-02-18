@@ -12,7 +12,7 @@ public class HomeController {
     }
 
     @GetMapping("/glowna")
-    String main(Model model){
+    String mainView(Model model){
         model.addAttribute("title", "TrainingM - Strona główna");
         return "index2";
     }
