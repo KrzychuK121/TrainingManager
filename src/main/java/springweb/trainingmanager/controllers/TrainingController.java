@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -18,6 +19,7 @@ import springweb.trainingmanager.services.ExerciseService;
 import springweb.trainingmanager.services.TrainingService;
 
 import java.net.URI;
+import java.security.Principal;
 import java.util.List;
 
 @Controller
@@ -47,13 +49,13 @@ public class TrainingController {
     @ResponseBody
     ResponseEntity<TrainingRead> create(@RequestBody @Valid TrainingWrite toCreate){
         Training created = service.create(toCreate);
-
         var trainingRead = new TrainingRead(created, created.getId());
         return ResponseEntity.created(
             URI.create("/training/" + created.getId())
         ).body(trainingRead);
     }
 
+    @Secured({"ROLE_USER", "ROLE_ADMIN"})
     @GetMapping(
         value = "/create",
         produces = MediaType.TEXT_HTML_VALUE
@@ -64,6 +66,7 @@ public class TrainingController {
         return "training/save";
     }
 
+    @Secured({"ROLE_USER", "ROLE_ADMIN"})
     @PostMapping(
         value = "/create",
         params = "addExercise",
@@ -75,6 +78,7 @@ public class TrainingController {
         return "training/save";
     }
 
+    @Secured({"ROLE_USER", "ROLE_ADMIN"})
     @PostMapping(
         value = "/create",
         produces = MediaType.TEXT_HTML_VALUE,
@@ -104,6 +108,7 @@ public class TrainingController {
         return ResponseEntity.ok(service.getAll());
     }
 
+    @Secured({"ROLE_USER", "ROLE_ADMIN"})
     @GetMapping(
         produces = MediaType.TEXT_HTML_VALUE
     )
@@ -128,6 +133,7 @@ public class TrainingController {
         return ResponseEntity.ok(found);
     }
 
+    @Secured({"ROLE_USER", "ROLE_ADMIN"})
     @GetMapping(
         value = "/train/{id}",
         produces = MediaType.TEXT_HTML_VALUE
