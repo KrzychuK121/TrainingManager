@@ -104,8 +104,10 @@ public class TrainingController {
         produces = MediaType.APPLICATION_JSON_VALUE
     )
     @ResponseBody
-    ResponseEntity<List<Training>> getAll(){
-        return ResponseEntity.ok(service.getAll());
+    ResponseEntity<List<TrainingRead>> getAll(){
+        return ResponseEntity.ok(
+            TrainingRead.toTrainingReadList(service.getAll())
+        );
     }
 
     @Secured({"ROLE_USER", "ROLE_ADMIN"})
