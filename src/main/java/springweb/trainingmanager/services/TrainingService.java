@@ -32,7 +32,7 @@ public class TrainingService {
      * returned as a new list.
      *
      * @param exercises list of <code>ExerciseTraining</code> from <code>TrainingWrite</code> object.
-     *                      Can be used e.g. in <code>create(TrainingWrite toSave)</code> method.
+     *                  Can be used e.g. in <code>create(TrainingWrite toSave)</code> method.
      *
      * @return prepared list with <code>ExerciseTraining</code> (founded in database or just created)
      */
@@ -45,14 +45,6 @@ public class TrainingService {
             exerciseTraining -> {
                 Exercise found = exerciseRepository.findByExercise(exerciseTraining.toExercise())
                     .orElse(exerciseTraining.toExercise());
-
-                Logger logger = LoggerFactory.getLogger(TrainingService.class);
-                logger.info(
-                    "id: " + + found.getId() + "\n" +
-                    "name: " + found.getName() + "\n" +
-                    "repetition: " + found.getRepetition() + "\n" +
-                    "round: " + found.getRounds() + "\n"
-                );
 
                 if(found.getId() == 0){
                     var savedExercise = exerciseRepository.save(found);
