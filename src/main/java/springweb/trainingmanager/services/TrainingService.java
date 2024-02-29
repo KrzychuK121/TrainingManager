@@ -1,5 +1,7 @@
 package springweb.trainingmanager.services;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import springweb.trainingmanager.models.entities.Exercise;
 import springweb.trainingmanager.models.entities.Training;
@@ -43,6 +45,14 @@ public class TrainingService {
             exerciseTraining -> {
                 Exercise found = exerciseRepository.findByExercise(exerciseTraining.toExercise())
                     .orElse(exerciseTraining.toExercise());
+
+                Logger logger = LoggerFactory.getLogger(TrainingService.class);
+                logger.info(
+                    "id: " + + found.getId() + "\n" +
+                    "name: " + found.getName() + "\n" +
+                    "repetition: " + found.getRepetition() + "\n" +
+                    "round: " + found.getRounds() + "\n"
+                );
 
                 if(found.getId() == 0){
                     var savedExercise = exerciseRepository.save(found);

@@ -10,28 +10,33 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import springweb.trainingmanager.models.entities.Exercise;
 import springweb.trainingmanager.models.entities.Training;
 import springweb.trainingmanager.models.viewmodels.exercise.ExerciseTraining;
 import springweb.trainingmanager.models.viewmodels.exercise.ExerciseWrite;
+import springweb.trainingmanager.models.viewmodels.training.TrainingExercise;
 import springweb.trainingmanager.models.viewmodels.training.TrainingRead;
 import springweb.trainingmanager.models.viewmodels.training.TrainingWrite;
-import springweb.trainingmanager.services.ExerciseService;
+import springweb.trainingmanager.repositories.forcontrollers.ExerciseRepository;
 import springweb.trainingmanager.services.TrainingService;
 
 import java.net.URI;
-import java.security.Principal;
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
 @RequestMapping("/training")
 public class TrainingController {
     private final TrainingService service;
+    private final ExerciseRepository exerciseRepo;
     private static final Logger logger = LoggerFactory.getLogger(TrainingController.class);
 
     public TrainingController(
-        final TrainingService service
+        final TrainingService service,
+        final ExerciseRepository exerciseRepo
     ) {
         this.service = service;
+        this.exerciseRepo = exerciseRepo;
     }
 
     @ModelAttribute("title")
@@ -55,6 +60,24 @@ public class TrainingController {
         ).body(trainingRead);
     }
 
+    private void prepExerciseSelect(Model model){
+        prepExerciseSelect(model, new  String[]{});
+    }
+
+    private void prepExerciseSelect(Model model, String[] selected){
+        List<ExerciseTraining> exerciseSelectList = ExerciseTraining.toExerciseTrainingList(exerciseRepo.findAll());
+        if(selected.length != 0 && selected.length != exerciseSelectList.size())
+            throw new IllegalStateException("Lista zaznaczonych elementów nie może mieć innej wielkości jak lista wszystkich elementów.");
+        model.addAttribute("allExercises", exerciseSelectList);
+        if(selected.length != 0){
+            List<Integer> selectedInt = new ArrayList<>();
+            for(String sel : selected)
+                selectedInt.add(Integer.parseInt(sel));
+            model.addAttribute("selected", selectedInt);
+        }
+
+    }
+
     @Secured({"ROLE_USER", "ROLE_ADMIN"})
     @GetMapping(
         value = "/create",
@@ -63,6 +86,7 @@ public class TrainingController {
     String createView(Model model){
         logger.info("Training create get");
         model.addAttribute("training", new TrainingWrite());
+        prepExerciseSelect(model);
         return "training/save";
     }
 
@@ -87,16 +111,40 @@ public class TrainingController {
     String createView(
         @ModelAttribute("training") @Valid TrainingWrite toSave,
         BindingResult result,
-        Model model
+        Model model,
+        String[] exereciseIds
     ){
-        if(result.hasErrors())
+        if(result.hasErrors()){
+            prepExerciseSelect(model, exereciseIds);
             return "training/save";
+        }
+
+        setExercisesById(toSave, exereciseIds);
 
         service.create(toSave);
+        prepExerciseSelect(model);
         model.addAttribute("training", new TrainingWrite());
         model.addAttribute("message", "Utworzono nowy trening!");
 
         return "training/save";
+    }
+
+    private void setExercisesById(TrainingWrite toSave, String[] exercisesIds) {
+        if(exercisesIds != null && exercisesIds.length != 0){
+            List<ExerciseTraining> trainingsToSave = new ArrayList<>(exercisesIds.length);
+            for(String exerciseID : exercisesIds){
+                if(exerciseID.isEmpty())
+                    continue;
+                int id = Integer.parseInt(exerciseID);
+                Exercise found = exerciseRepo.findById(id).get();
+                ExerciseTraining viewmodel = new ExerciseTraining(found);
+                trainingsToSave.add(viewmodel);
+            }
+
+            List<ExerciseTraining> currExercises = toSave.getExercises();
+            currExercises.addAll(trainingsToSave);
+            toSave.setExercises(currExercises);
+        }
     }
 
     @GetMapping(
