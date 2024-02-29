@@ -10,7 +10,14 @@
                 <span th:if="${mess != null}" th:text="${mess}"></span>
             </div>
             <h1>Lista wszystkich ćwiczeń</h1>
-            <table class="table table-bordered table-success table-striped">
+            <div th:if="${exercises.isEmpty()}">
+                Brak ćwiczeń do wyświetlenia
+            </div>
+            <table
+                class="table table-bordered table-success table-striped"
+                th:if="${!exercises.isEmpty()}"
+            >
+
                 <thead>
                     <tr>
                         <th>Nazwa</th>
