@@ -32,6 +32,26 @@
                     th:if="${#fields.hasErrors('description')}"
                     th:text="${#fields.errors('description')}"
                 ></div>
+                <label class="form-label" for="exercises">Lista treningów do przypisania</label>
+                <!--/*@thymesVar id="allExercises" type="java.util.List<springweb.trainingmanager.models.viewmodels.exercise.ExerciseTraining>"*/-->
+                <select
+                    class="form-select form-select-lg"
+                    aria-label="label"
+                    id="exercises"
+                    th:if="${allExercises != null and !allExercises.isEmpty()}"
+                    name="exerciseIds"
+                    multiple
+                >
+                    <option value="" selected>---Wybierz istniejące ćwiczenie---</option>
+                    <!--/*@thymesVar id="selected" type="java.util.List<java.lang.Integer>"*/-->
+                    <option
+                        th:each="exercise, i : ${allExercises}"
+                        th:value="${exercise.id}"
+                        th:text="${exercise.name}"
+                        th:selected="${selected != null and selected[__${i.index}__] == exercise.id}"
+                    >
+                    </option>
+                </select>
                 <button type="submit" name="addExercise">+</button>
                 <fieldset th:each="exercise, i : *{exercises}">
                     <legend th:text="|Ćwiczenie ${i.index + 1}|"></legend>
@@ -106,6 +126,7 @@
                         name="time"
                         th:aria-describedby="|timeHelp${i.index + 1}|"
                         pattern="[0-9]{2}:[0-9]{2}"
+                        class="form-control"
                     />
                     <div th:id="|timeHelp${i.index + 1}|" class="form-text">
                         Jeśli ćwiczenia polegają na ilości powtórzeń, możesz zostawić
