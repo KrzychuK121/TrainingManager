@@ -112,14 +112,14 @@ public class TrainingController {
         @ModelAttribute("training") @Valid TrainingWrite toSave,
         BindingResult result,
         Model model,
-        String[] exereciseIds
+        String[] exerciseIds
     ){
         if(result.hasErrors()){
-            prepExerciseSelect(model, exereciseIds);
+            prepExerciseSelect(model, exerciseIds);
             return "training/save";
         }
 
-        setExercisesById(toSave, exereciseIds);
+        setExercisesById(toSave, exerciseIds);
 
         service.create(toSave);
         prepExerciseSelect(model);
