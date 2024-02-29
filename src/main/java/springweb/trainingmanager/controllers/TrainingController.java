@@ -66,7 +66,7 @@ public class TrainingController {
 
     private void prepExerciseSelect(Model model, String[] selected){
         List<ExerciseTraining> exerciseSelectList = ExerciseTraining.toExerciseTrainingList(exerciseRepo.findAll());
-        if(selected.length != 0 && selected.length != exerciseSelectList.size())
+        if(selected != null && selected.length != 0 && selected.length != exerciseSelectList.size())
             throw new IllegalStateException("Lista zaznaczonych elementów nie może mieć innej wielkości jak lista wszystkich elementów.");
         model.addAttribute("allExercises", exerciseSelectList);
         if(selected.length != 0){
