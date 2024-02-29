@@ -77,20 +77,40 @@ public class ExerciseTraining {
         return name;
     }
 
+    public void setName(String name){
+        this.name = name;
+    }
+
     public String getDescription() {
         return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public int getRounds() {
         return rounds;
     }
 
+    public void setRounds(int rounds) {
+        this.rounds = rounds;
+    }
+
     public int getRepetition() {
         return repetition;
     }
 
+    public void setRepetition(int repetition) {
+        this.repetition = repetition;
+    }
+
     public LocalTime getTime() {
         return time;
+    }
+
+    public void setTime(LocalTime time) {
+        this.time = time;
     }
 
     public Exercise toExercise(){
