@@ -96,8 +96,13 @@ public class TrainingController {
         params = "addExercise",
         produces = MediaType.TEXT_HTML_VALUE
     )
-    String addExercise(@ModelAttribute("training") TrainingWrite current){
+    String addExercise(
+        @ModelAttribute("training") TrainingWrite current,
+        Model model,
+        String[] exerciseIds
+    ){
         logger.info("Training create addExercise");
+        prepExerciseSelect(model, exerciseIds);
         current.getExercises().add(new ExerciseTraining());
         return "training/save";
     }
@@ -130,21 +135,21 @@ public class TrainingController {
     }
 
     private void setExercisesById(TrainingWrite toSave, String[] exercisesIds) {
-        if(exercisesIds != null && exercisesIds.length != 0){
-            List<ExerciseTraining> trainingsToSave = new ArrayList<>(exercisesIds.length);
-            for(String exerciseID : exercisesIds){
-                if(exerciseID.isEmpty())
-                    continue;
-                int id = Integer.parseInt(exerciseID);
-                Exercise found = exerciseRepo.findById(id).get();
-                ExerciseTraining viewmodel = new ExerciseTraining(found);
-                trainingsToSave.add(viewmodel);
-            }
-
-            List<ExerciseTraining> currExercises = toSave.getExercises();
-            currExercises.addAll(trainingsToSave);
-            toSave.setExercises(currExercises);
+        if(exercisesIds == null || exercisesIds.length == 0)
+            return;
+        List<ExerciseTraining> exercisesToSave = new ArrayList<>(exercisesIds.length);
+        for(String exerciseID : exercisesIds){
+            if(exerciseID.isEmpty())
+                continue;
+            int id = Integer.parseInt(exerciseID);
+            Exercise found = exerciseRepo.findById(id).get();
+            ExerciseTraining viewmodel = new ExerciseTraining(found);
+            exercisesToSave.add(viewmodel);
         }
+
+        List<ExerciseTraining> currExercises = toSave.getExercises();
+        currExercises.addAll(exercisesToSave);
+        toSave.setExercises(currExercises);
     }
 
     @GetMapping(
