@@ -28,7 +28,7 @@ interface SqlExerciseRepository extends ExerciseRepository, JpaRepository<Exerci
         e.description = :#{#exercise.description} AND 
         e.rounds = :#{#exercise.rounds} AND
         e.repetition = :#{#exercise.repetition} AND 
-        e.time = :#{#exercise.time}
+        e.time IS NULL OR e.time = :#{#exercise.time}
         """
     )
     Optional<Exercise> findByExercise(@Param("exercise") Exercise exercise);
