@@ -202,13 +202,16 @@ public class TrainingController {
             found = service.getById(id);
         } catch(IllegalArgumentException e) {
             logger.error("Wystąpił wyjątek: " + e.getMessage());
-            model.addAttribute("errorMessage", e.getMessage());
+            model.addAttribute("messType", "danger");
+            model.addAttribute("mess", e.getMessage());
+            model.addAttribute("trainings", getTrainings());
             return "training/index";
         }
 
-        if(found.getExercises().size() <= 1){
+        if(found.getExercises().isEmpty()){
             logger.warn("Wystąpił problem: brak ćwiczeń");
-            model.addAttribute("errorMessage", "Wybierz trening zawierający ćwiczenia!");
+            model.addAttribute("messType", "danger");
+            model.addAttribute("mess", "Wybierz trening zawierający ćwiczenia!");
             model.addAttribute("trainings", getTrainings());
             return "training/index";
         }
@@ -251,6 +254,30 @@ public class TrainingController {
         }
 
         return ResponseEntity.noContent().build();
+    }
+
+    @Secured("ROLE_ADMIN")
+    @GetMapping(
+            value = "/delete/{id}",
+            produces = MediaType.TEXT_HTML_VALUE
+    )
+    public String deleteView(
+            @PathVariable int id,
+            Model model
+    ){
+        try {
+            service.delete(id);
+        } catch(IllegalArgumentException e) {
+            logger.error("Wystąpił wyjątek: " + e.getMessage());
+            model.addAttribute("messType", "danger");
+            model.addAttribute("mess", "Nie można usunąć. " + e.getMessage());
+            return "training/index";
+        } finally {
+            model.addAttribute("trainings", getTrainings());
+        }
+        model.addAttribute("mess", "Pomyślnie usunięto wiersz.");
+        model.addAttribute("messType", "success");
+        return "training/index";
     }
 
 }
