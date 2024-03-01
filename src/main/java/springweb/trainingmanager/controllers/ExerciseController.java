@@ -278,7 +278,6 @@ public class ExerciseController {
         @PathVariable int id,
         Model model
     ){
-        model.addAttribute("exercises", getExercises());
         try {
             service.delete(id);
         } catch(IllegalArgumentException e) {
@@ -286,6 +285,8 @@ public class ExerciseController {
             model.addAttribute("messType", "danger");
             model.addAttribute("mess", "Nie można usunąć. " + e.getMessage());
             return "exercise/index";
+        } finally {
+            model.addAttribute("exercises", getExercises());
         }
         model.addAttribute("mess", "Pomyślnie usunięto wiersz.");
         model.addAttribute("messType", "success");
