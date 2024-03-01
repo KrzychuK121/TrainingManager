@@ -1,13 +1,13 @@
 <!doctype html>
-<html lang="pl" xmlns:th="http://www.thymeleaf.org">
+<html lang="pl" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org">
 <head th:replace="~{defaulttemplate :: head}"></head>
 <body>
 <header th:replace="~{defaulttemplate :: header}" id="h_menu" class="container-fluid"></header>
 <div class="container">
     <main>
-        <div th:if="${errorMessage != null}" class="alert alert-danger alert-dismissible" role="alert">
+        <div th:if="${mess != null}" th:class="|alert alert-${messType} alert-dismissible|" role="alert">
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            <span th:if="${errorMessage != null}" th:text="${errorMessage}"></span>
+            <span th:if="${mess != null}" th:text="${mess}"></span>
         </div>
         <h1>Lista wszystkich treningów</h1>
         <div th:if="${trainings.isEmpty()}">
@@ -21,7 +21,14 @@
             </div>
             <p>
                 <a class="option-link" href="#">Edytuj</a> |
-                <a class="option-link" th:href="@{/training/train/{id}(id=${training.id})}">Trenuj</a>
+                <a class="option-link" th:href="@{/training/train/{id}(id=${training.id})}">Trenuj</a> |
+                <a
+                    class="option-link"
+                    sec:authorize="hasRole('ROLE_ADMIN')"
+                    th:href="@{/training/delete/{id}(id=${training.id})}"
+                >
+                    Usuń
+                </a>
             </p>
             <table class="table table-bordered table-success table-striped">
                 <thead>
@@ -49,6 +56,6 @@
 </div>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js" integrity="sha384-7+zCNj/IqJ95wo16oMtfsKbZ9ccEh31eOz1HGyDuCQ6wgnyJNSYdrPa03rtR1zdB" crossorigin="anonymous"></script>
-<script src="script/js/lib/bootstrap.min.js"></script>
+<script src="/script/js/lib/bootstrap.min.js"></script>
 </body>
 </html>
