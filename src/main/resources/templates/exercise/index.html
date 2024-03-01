@@ -37,7 +37,12 @@
                         <td th:text="${exercise.time}"></td>
                         <td>
                             <a th:href="@{/exercise/edit/{id}(id=${exercise.id})}">Edytuj</a> |
-                            <a sec:authorize="hasRole('ROLE_ADMIN')" th:href="@{/exercise/delete/{id}(id=${exercise.id})}">Usuń</a>
+                            <a
+                                sec:authorize="hasRole('ROLE_ADMIN')"
+                                th:href="@{/exercise/delete/{id}(id=${exercise.id})}"
+                            >
+                                Usuń
+                            </a>
                         </td>
                     </tr>
                 </tbody>
