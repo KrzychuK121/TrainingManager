@@ -92,7 +92,15 @@
     </header>
     <div class="container">
         <main class="col-md-6 col-lg-8">
-
+            <div
+                th:fragment="alert"
+                th:if="${mess != null}"
+                th:class="|alert alert-${messType} alert-dismissible|"
+                role="alert"
+            >
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                <span th:if="${mess != null}" th:text="${mess}"></span>
+            </div>
         </main>
     </div>
     <script>
