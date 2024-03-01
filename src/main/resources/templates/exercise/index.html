@@ -5,10 +5,7 @@
     <header th:replace="~{defaulttemplate :: header}" id="h_menu" class="container-fluid"></header>
     <div class="container">
         <main>
-            <div th:if="${mess != null}" th:class="|alert alert-${messType} alert-dismissible|" role="alert">
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                <span th:if="${mess != null}" th:text="${mess}"></span>
-            </div>
+            <div th:replace="~{defaulttemplate :: alert}"></div>
             <h1>Lista wszystkich ćwiczeń</h1>
             <div th:if="${exercises.isEmpty()}">
                 Brak ćwiczeń do wyświetlenia
