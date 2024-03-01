@@ -21,7 +21,7 @@ public class TrainingWrite {
     private List<ExerciseTraining> exercises = new ArrayList<>();
 
     public TrainingWrite() {
-        exercises.add(new ExerciseTraining());
+
     }
 
     public String getTitle() {
