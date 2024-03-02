@@ -16,17 +16,68 @@
                 <h3 class="m-0">Opis</h3>
                 <p th:text="${training.description}" class="py-0"></p>
             </div>
-            <p>
-                <a class="option-link" href="#">Edytuj</a> |
-                <a class="option-link" th:href="@{/training/train/{id}(id=${training.id})}">Trenuj</a> |
-                <a
-                    class="option-link"
-                    sec:authorize="hasRole('ROLE_ADMIN')"
-                    th:href="@{/training/delete/{id}(id=${training.id})}"
-                >
-                    Usuń
-                </a>
-            </p>
+            <div>
+                <fieldset class="row align-items-start">
+                    <form
+                        class="col-sm-1"
+                        method="post"
+                        action="#"
+                    >
+                        <button
+                                class="btn btn-primary option-link"
+                                type="submit"
+                        >
+                            Edytuj
+                        </button> |
+                    </form>
+                    <form
+                        class="col-sm-1"
+                        method="get"
+                        action="#"
+                        th:action="@{/training/train/{id}(id=${training.id})}"
+                    >
+                        <button
+                            class="btn btn-primary option-link"
+                            type="submit"
+                        >
+                            Trenuj
+                        </button> |
+                    </form>
+                    <form
+                        class="col-sm-1"
+                        method="get"
+                        action="#"
+                        sec:authorize="hasRole('ROLE_ADMIN')"
+                        th:action="@{/training/delete/{id}(id=${training.id})}"
+                    >
+                        <!-- Modal -->
+                        <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="deleteModalLabel">Potwierdź usuwanie</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        Czy na pewno chcesz usunąć ten element?
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Anuluj</button>
+                                        <button type="submit" class="btn btn-danger" >Usuń</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <button
+                            type="button"
+                            class="btn btn-danger option-link"
+                            data-bs-toggle="modal" data-bs-target="#deleteModal"
+                        >
+                            Usuń
+                        </button>
+                    </form>
+                </fieldset>
+            </div>
             <table class="table table-bordered table-success table-striped">
                 <thead>
                 <tr>
