@@ -20,12 +20,13 @@
                 <fieldset class="row align-items-start">
                     <form
                         class="col-sm-1"
-                        method="post"
+                        method="get"
                         action="#"
+                        th:action="@{/training/edit/{id}(id=${training.id})}"
                     >
                         <button
-                                class="btn btn-primary option-link"
-                                type="submit"
+                            class="btn btn-primary option-link"
+                            type="submit"
                         >
                             Edytuj
                         </button> |
