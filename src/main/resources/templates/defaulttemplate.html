@@ -101,6 +101,31 @@
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 <span th:if="${mess != null}" th:text="${mess}"></span>
             </div>
+            <!--Modal to delete-->
+            <div
+                th:fragment="modal-delete(id)"
+                th:id="${id}"
+                class="modal fade"
+                tabindex="-1"
+                aria-labelledby="deleteModalLabel"
+                aria-hidden="true"
+            >
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="deleteModalLabel">Potwierdź usuwanie</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            Czy na pewno chcesz usunąć ten element?
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Anuluj</button>
+                            <button type="submit" class="btn btn-danger" >Usuń</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </main>
     </div>
     <script>
