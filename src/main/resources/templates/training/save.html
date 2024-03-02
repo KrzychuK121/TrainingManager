@@ -12,7 +12,7 @@
         <form
             action=""
             method="post"
-            th:action="@{/training/create}"
+            th:action="@{|/training/${action}|}"
             th:object="${training}"
         >
             <fieldset>
@@ -48,7 +48,7 @@
                         th:each="exercise, i : ${allExercises}"
                         th:value="${exercise.id}"
                         th:text="${exercise.name}"
-                        th:selected="${selected != null and selected[__${i.index}__] == exercise.id}"
+                        th:selected="${selected != null and selected.contains(exercise.id)}"
                     >
                     </option>
                 </select>
