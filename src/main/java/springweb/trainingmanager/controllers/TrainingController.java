@@ -12,6 +12,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import springweb.trainingmanager.models.entities.Exercise;
 import springweb.trainingmanager.models.entities.Training;
+import springweb.trainingmanager.models.viewmodels.exercise.ExerciseRead;
 import springweb.trainingmanager.models.viewmodels.exercise.ExerciseTraining;
 import springweb.trainingmanager.models.viewmodels.exercise.ExerciseWrite;
 import springweb.trainingmanager.models.viewmodels.training.TrainingExercise;
@@ -54,7 +55,7 @@ public class TrainingController {
     @ResponseBody
     ResponseEntity<TrainingRead> create(@RequestBody @Valid TrainingWrite toCreate){
         Training created = service.create(toCreate);
-        var trainingRead = new TrainingRead(created, created.getId());
+        var trainingRead = new TrainingRead(created);
         return ResponseEntity.created(
             URI.create("/training/" + created.getId())
         ).body(trainingRead);
@@ -216,7 +217,7 @@ public class TrainingController {
             return "training/index";
         }
 
-        model.addAttribute("training", new TrainingRead(found, id));
+        model.addAttribute("training", new TrainingRead(found));
         return "training/train";
     }
 
@@ -237,6 +238,56 @@ public class TrainingController {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/edit/{id}")
+    public String editView(
+        @PathVariable int id,
+        Model model
+    ){
+        TrainingRead toEdit = null;
+        try {
+            toEdit = new TrainingRead(service.getById(id));
+        } catch(IllegalArgumentException e) {
+            logger.error("Wystąpił wyjątek: " + e.getMessage());
+            model.addAttribute("messType", "danger");
+            model.addAttribute("mess", "Nie można edytować. " + e.getMessage());
+            return "exercise/index";
+        }
+
+        prepExerciseSelect(model);
+        model.addAttribute("exercise", toEdit);
+        model.addAttribute("id", id);
+        return "exercise/save";
+    }
+
+
+    @PostMapping("/create/{id}")
+    public String editView(
+        @PathVariable int id,
+        @ModelAttribute("exercise") @Valid TrainingWrite toEdit,
+        BindingResult result,
+        String[] exerciseIds,
+        Model model
+    ){
+        if(result.hasErrors()){
+            prepExerciseSelect(model, exerciseIds);
+            return "exercise/save";
+        }
+
+        setExercisesById(toEdit, exerciseIds);
+
+        try {
+            service.edit(toEdit, id);
+        } catch(IllegalArgumentException e) {
+            logger.error("Wystąpił wyjątek: " + e.getMessage());
+            model.addAttribute("message", "Wystąpił problem przy edycji. " + e.getMessage());
+        }
+
+        model.addAttribute("trainings", getTrainings());
+        model.addAttribute("messType", "success");
+        model.addAttribute("mess", "Edycja przeszła pomyślnie.");
+        return "exercise/index";
     }
 
 
