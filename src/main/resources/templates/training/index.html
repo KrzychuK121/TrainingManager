@@ -10,7 +10,7 @@
         <div th:if="${trainings.isEmpty()}">
             Brak treningów do wyświetlenia
         </div>
-        <div th:each="training : ${trainings}">
+        <div th:each="training, i : ${trainings}">
             <h2 th:text="|Tytuł: ${training.title}|"></h2>
             <div class="m-0 p-0">
                 <h3 class="m-0">Opis</h3>
@@ -51,28 +51,14 @@
                         th:action="@{/training/delete/{id}(id=${training.id})}"
                     >
                         <!-- Modal -->
-                        <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
-                            <div class="modal-dialog">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="deleteModalLabel">Potwierdź usuwanie</h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                    </div>
-                                    <div class="modal-body">
-                                        Czy na pewno chcesz usunąć ten element?
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Anuluj</button>
-                                        <button type="submit" class="btn btn-danger" >Usuń</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        <div
+                            th:replace="~{defaulttemplate :: modal-delete('delItem' + ${i.index})}"
+                        ></div>
                         <button
                             type="button"
                             class="btn btn-danger option-link"
                             data-bs-toggle="modal"
-                            data-bs-target="#deleteModal"
+                            th:data-bs-target="'#delItem' + ${i.index}"
                         >
                             Usuń
                         </button>
