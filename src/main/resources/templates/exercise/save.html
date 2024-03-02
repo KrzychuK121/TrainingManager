@@ -9,10 +9,11 @@
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 <span th:if="${message != null}" th:text="${message}"></span>
             </div>
+            <!--/*@thymesVar id="exercise" type="springweb.trainingmanager.models.viewmodels.exercise.ExerciseRead"*/-->
             <form
                 action=""
                 method="post"
-                th:action="@{/exercise/create/{id}(id=${id})}"
+                th:action="@{|/exercise/${action}|}"
                 th:object="${exercise}"
             >
                 <fieldset>
@@ -86,7 +87,7 @@
                             th:each="training, i : ${allTrainings}"
                             th:value="${training.id}"
                             th:text="${training.title}"
-                            th:selected="${selected != null and selected[__${i.index}__] == training.id}"
+                            th:selected="${selected != null and selected.contains(training.id)}"
                         >
                         </option>
                     </select>
