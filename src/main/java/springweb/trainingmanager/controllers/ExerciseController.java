@@ -253,6 +253,7 @@ public class ExerciseController {
         Model model
     ){
         if(result.hasErrors()){
+            model.addAttribute("action", "edit/" + id);
             prepTrainingSelect(model, trainingIds);
             return "exercise/save";
         }
