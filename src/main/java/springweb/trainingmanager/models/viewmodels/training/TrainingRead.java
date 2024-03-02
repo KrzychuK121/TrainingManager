@@ -23,8 +23,8 @@ public class TrainingRead {
     protected String description;
     protected List<ExerciseTraining> exercises;
 
-    public TrainingRead(Training training, int id) {
-        this.id = id;
+    public TrainingRead(Training training) {
+        this.id = training.getId();
         this.title = training.getTitle();
         this.description = training.getDescription();
         this.exercises = ExerciseTraining.toExerciseTrainingList(
@@ -34,7 +34,7 @@ public class TrainingRead {
 
     public static List<TrainingRead> toTrainingReadList(final List<Training> list){
         List<TrainingRead> result = new ArrayList<>(list.size());
-        list.forEach(training -> result.add(new TrainingRead(training, training.getId())));
+        list.forEach(training -> result.add(new TrainingRead(training)));
         return result;
     }
 
