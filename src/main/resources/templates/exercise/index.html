@@ -26,20 +26,46 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr th:each="exercise: ${exercises}">
+                    <tr th:each="exercise, i: ${exercises}">
                         <td th:text="${exercise.name}"></td>
                         <td th:text="${exercise.description}"></td>
                         <td th:text="${exercise.rounds}"></td>
                         <td th:text="${exercise.repetition}"></td>
                         <td th:text="${exercise.time}"></td>
                         <td>
-                            <a th:href="@{/exercise/edit/{id}(id=${exercise.id})}">Edytuj</a> |
-                            <a
-                                sec:authorize="hasRole('ROLE_ADMIN')"
-                                th:href="@{/exercise/delete/{id}(id=${exercise.id})}"
-                            >
-                                Usuń
-                            </a>
+                            <fieldset>
+                                <form
+                                    method="get"
+                                    action="#"
+                                    th:action="@{/exercise/edit/{id}(id=${exercise.id})}"
+                                >
+                                    <button
+                                        type="submit"
+                                        class="btn btn-primary"
+                                    >
+                                        Edytuj
+                                    </button> |
+                                </form>
+                                <form
+                                    method="get"
+                                    action="#"
+                                    sec:authorize="hasRole('ROLE_ADMIN')"
+                                    th:action="@{/exercise/delete/{id}(id=${exercise.id})}"
+                                >
+                                    <!-- Modal -->
+                                    <div
+                                        th:replace="~{defaulttemplate :: modal-delete('delItem' + ${i.index})}"
+                                    ></div>
+                                    <button
+                                        type="button"
+                                        class="btn btn-primary"
+                                        data-bs-toggle="modal"
+                                        th:data-bs-target="'#delItem' + ${i.index}"
+                                    >
+                                        Usuń
+                                    </button> |
+                                </form>
+                            </fieldset>
                         </td>
                     </tr>
                 </tbody>
