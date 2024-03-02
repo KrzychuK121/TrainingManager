@@ -258,12 +258,12 @@ public class TrainingController {
 
     @Secured("ROLE_ADMIN")
     @GetMapping(
-            value = "/delete/{id}",
-            produces = MediaType.TEXT_HTML_VALUE
+        value = "/delete/{id}",
+        produces = MediaType.TEXT_HTML_VALUE
     )
     public String deleteView(
-            @PathVariable int id,
-            Model model
+        @PathVariable int id,
+        Model model
     ){
         try {
             service.delete(id);
