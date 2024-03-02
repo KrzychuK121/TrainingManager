@@ -68,13 +68,17 @@ public class ExerciseController {
 
     private void prepTrainingSelect(Model model, String[] selected){
         List<TrainingExercise> trainingSelectList = TrainingExercise.toTrainingExerciseList(trainingRepo.findAll());
-        if(selected.length != 0 && selected.length != trainingSelectList.size())
-            throw new IllegalStateException("Lista zaznaczonych elementów nie może mieć innej wielkości jak lista wszystkich elementów.");
+
+        if(selected.length > trainingSelectList.size())
+            throw new IllegalStateException("Lista zaznaczonych elementów nie może być większa jak lista wszystkich elementów.");
         model.addAttribute("allTrainings", trainingSelectList);
         if(selected.length != 0){
             List<Integer> selectedInt = new ArrayList<>();
-            for(String sel : selected)
+            for(String sel : selected){
+                if(sel.isBlank())
+                    continue;
                 selectedInt.add(Integer.parseInt(sel));
+            }
             model.addAttribute("selected", selectedInt);
         }
 
@@ -87,13 +91,14 @@ public class ExerciseController {
     )
     public String createView(Model model){
         model.addAttribute("exercise", new ExerciseWrite());
+        model.addAttribute("action", "create");
         prepTrainingSelect(model);
         return "exercise/save";
     }
 
     @Secured({"ROLE_USER", "ROLE_ADMIN"})
     @PostMapping(
-        value = "/create/",
+        value = "/create",
         produces = MediaType.TEXT_HTML_VALUE,
         consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE
     )
@@ -106,6 +111,7 @@ public class ExerciseController {
     ){
 
         if(result.hasErrors()){
+            model.addAttribute("action", "create");
             prepTrainingSelect(model, trainingIds);
             return "exercise/save";
         }
@@ -125,6 +131,7 @@ public class ExerciseController {
 
         service.create(toSave);
         prepTrainingSelect(model);
+        model.addAttribute("action", "create");
         model.addAttribute("exercise", new ExerciseWrite());
         model.addAttribute("message", "Utworzono nowe ćwiczenie!");
 
@@ -218,14 +225,26 @@ public class ExerciseController {
             return "exercise/index";
         }
 
-        prepTrainingSelect(model);
+        String[] selected = getToEditTrainingIds(toEdit);
+
+        prepTrainingSelect(model, selected);
+        model.addAttribute("action", "edit/" + id);
         model.addAttribute("exercise", toEdit);
         model.addAttribute("id", id);
         return "exercise/save";
     }
 
+    private static String[] getToEditTrainingIds(ExerciseRead toEdit) {
+        List<TrainingExercise> toEditList = toEdit.getTrainings();
+        String[] selected = new String[toEditList.size()];
+        for(int i = 0; i < toEditList.size(); i++){
+            selected[i] = toEditList.get(i).getId() + "";
+        }
+        return selected;
+    }
 
-    @PostMapping("/create/{id}")
+
+    @PostMapping("/edit/{id}")
     public String editView(
         @PathVariable int id,
         @ModelAttribute("exercise") @Valid ExerciseWrite toEdit,
