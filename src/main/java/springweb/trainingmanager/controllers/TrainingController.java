@@ -14,7 +14,6 @@ import springweb.trainingmanager.models.entities.Exercise;
 import springweb.trainingmanager.models.entities.Training;
 import springweb.trainingmanager.models.viewmodels.exercise.ExerciseRead;
 import springweb.trainingmanager.models.viewmodels.exercise.ExerciseTraining;
-import springweb.trainingmanager.models.viewmodels.exercise.ExerciseWrite;
 import springweb.trainingmanager.models.viewmodels.training.TrainingExercise;
 import springweb.trainingmanager.models.viewmodels.training.TrainingRead;
 import springweb.trainingmanager.models.viewmodels.training.TrainingWrite;
@@ -87,6 +86,7 @@ public class TrainingController {
     String createView(Model model){
         logger.info("Training create get");
         model.addAttribute("training", new TrainingWrite());
+        model.addAttribute("action", "create");
         prepExerciseSelect(model);
         return "training/save";
     }
@@ -121,6 +121,7 @@ public class TrainingController {
         String[] exerciseIds
     ){
         if(result.hasErrors()){
+            model.addAttribute("action", "create");
             prepExerciseSelect(model, exerciseIds);
             return "training/save";
         }
@@ -129,6 +130,7 @@ public class TrainingController {
 
         service.create(toSave);
         prepExerciseSelect(model);
+        model.addAttribute("action", "create");
         model.addAttribute("training", new TrainingWrite());
         model.addAttribute("message", "Utworzono nowy trening!");
 
@@ -252,15 +254,27 @@ public class TrainingController {
             logger.error("Wystąpił wyjątek: " + e.getMessage());
             model.addAttribute("messType", "danger");
             model.addAttribute("mess", "Nie można edytować. " + e.getMessage());
-            return "exercise/index";
+            return "training/index";
         }
 
-        prepExerciseSelect(model);
-        model.addAttribute("exercise", toEdit);
+        String[] selected = getToEditExerciseIds(toEdit);
+
+        prepExerciseSelect(model, selected);
+        model.addAttribute("action", "edit/" + id);
+        model.addAttribute("training", toEdit);
         model.addAttribute("id", id);
-        return "exercise/save";
+        return "training/save";
     }
 
+
+    private static String[] getToEditExerciseIds(TrainingRead toEdit) {
+        List<ExerciseTraining> toEditList = toEdit.getExercises();
+        String[] selected = new String[toEditList.size()];
+        for(int i = 0; i < toEditList.size(); i++){
+            selected[i] = toEditList.get(i).getId() + "";
+        }
+        return selected;
+    }
 
     @PostMapping("/create/{id}")
     public String editView(
@@ -271,8 +285,9 @@ public class TrainingController {
         Model model
     ){
         if(result.hasErrors()){
+            model.addAttribute("action", "edit/" + id);
             prepExerciseSelect(model, exerciseIds);
-            return "exercise/save";
+            return "training/save";
         }
 
         setExercisesById(toEdit, exerciseIds);
@@ -287,7 +302,7 @@ public class TrainingController {
         model.addAttribute("trainings", getTrainings());
         model.addAttribute("messType", "success");
         model.addAttribute("mess", "Edycja przeszła pomyślnie.");
-        return "exercise/index";
+        return "training/index";
     }
 
 
