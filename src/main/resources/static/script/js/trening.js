@@ -43,23 +43,35 @@ function StartBlock(obj){
         //ustawiamy panel kontrolny w zależności od typu treningu, który teraz będzie się wykonywać
         document.getElementById("buttons").innerHTML = obj.secExcTab[obj.trainingNumber].AddOptions();
         
-        switch(obj.secExcTab[obj.trainingNumber].mode){
+        switch(obj.secExcTab[obj.trainingNumber].mode) {
             case 0: //timer
-                document.getElementById("opt1").onclick = obj.PauseOrResume;
-                document.getElementById("opt2").onclick = obj.Stop;
+                document.getElementById("opt1").onclick = function () {
+                    obj.PauseOrResume();
+                };
+                document.getElementById("opt2").onclick = function(){
+                    obj.Stop();
+                }
                 
                 obj.RepeatExc();
                 break;
             case 1: //amount
-                document.getElementById("opt1").onclick = obj.RepeatExc;
+                document.getElementById("opt1").onclick = function() {
+                    obj.RepeatExc();
+                }
                 break;
         }
         
-        document.getElementById("opt3").onclick = obj.Skip;
+        document.getElementById("opt3").onclick = function () {
+            obj.Skip();
+        }
     } else{
         document.getElementById("buttons").innerHTML = '<button class="col-md-6 opt" id="opt0">START</button>';
         //czyszczenie guzików
-        document.getElementById("opt0").onclick = DoTraining;
+        document.getElementById("opt0").onclick = (
+            async function(){
+                await DoTraining(obj.trainingId);
+            }
+        );
         document.getElementById("opt1").onclick = null;
         document.getElementById("opt2").onclick = null;
         document.getElementById("opt3").onclick = null;
@@ -68,213 +80,215 @@ function StartBlock(obj){
 }
 
 
-function DoTraining(){
-    var train = new Training(1);
-    console.log(train);
+async function DoTraining(trainingId){
+    const train = new Training(trainingId, 1);
+    await train.init();
+    //console.log(train);
     train.ShowList();
     StartBlock(train);
 }
 
-function Training(trainingNumber) {
-    this.trainingNumber = trainingNumber;
-    this.timer = 0;
-    var that = this;
-    
-    /*[komplet1 = [nazwa, opis, tryb, ilość], komplet2 = [...], ...]*/
-    var excTab = [ 
-    ["", "", 0, 0], 
-        
-    [
-        "Zabijanie celów w kółku",
-        "Stój pośrodku botów ustawionych na tryb treningu. Obracaj się dookoła, robiąc jak największe ruchy i zabijaj headshotem kolejne boty, trenując tym samym celność.",
-        0,
-        [10, 0]
-    ],
-    
-    [
-        "Flicki",
-        "Stój blisko botów ustawionych na tryb treningu. Chodź po mapie, skupiając uwagę na jednym bocie. Po chwili przeflickuj szybko na innego bota, którego widzisz kątem oka, trenując tym samym reakcję na nagłych przeciwników. Dla utrudnienia warto chodzić dookoła jednego celu, starając się utrzymać celownik cały czas na jego głowie (przykleić się celownikiem do jego głowy niczym magnes). Pomaga to trenować celność przy ruchliwych celach.",
-        0,
-        [10, 0]
-    ],
-    
-    [
-        "Kontrola serii", "Ustaw skończoność amunicji. Stój blisko botów ustawionych na tryb treningu. Spróbuj zabić 3 boty za pomocą jednej serii, trenując tym samym kontrolę fullauto. Zalecane nie celowanie w głowę, tak aby jak najwięcej pocisków musiało zostać wystrzelonych by pokonać cel. Dla utrudnienia można ustawić się trochę dalej od botów. Im dalej znajduje się cel tym większy rozrzut i tym ciężej go kontrolować.",
-        0,
-        [10, 0]
-    ],
-    
-    [
-        "Strzelnica - średni",
-        "Uruchom średnią trudność 30 botów, które pojawią się na ekranie jeden po 2m. Spróbuj zabić jak najwięcej z nich za pomocą strzału w głowę.",
-        1,
-        [10, 0]
-    ],
-    
-    [
-        "Strzelnica - trudny",
-        "Uruchom trudny trych 30 botów, które pojawią się na ekranie jeden po 2m. Spróbuj zabić jak najwięcej z nich za pomocą strzału w głowę.",
-        1,
-        [10, 0]
-    ],
-    
-    [
-        "Deathmatch",
-        "Rozegraj 5 deathmatchy trenując tym samym Twoje umiejętności strzeleckie w praktyce, konforntując je z realnymi przeciwnikami. Tym samym ćwiczysz pozycjonowanie celownika we właściwym miejscu, dzięki czemu będziesz automatycznie trzymał celownik na poziomie głowy przeciwnika.",
-        1,
-        [5, 0] ]
-    ];
-    
-    /*var secExcTab = [
-        new Excersise("", "", 0, 0),//panel kontrolny
-        
-        new Excersise("Zabijanie celów w kółku", "Stój pośrodku botów ustawionych na tryb treningu. Obracaj się dookoła, robiąc jak największe ruchy i zabijaj headshotem kolejne boty, trenując tym samym celność.", 0, 10),
-        
-        new Excersise("Flicki", "Stój, blisko botów ustawionych na tryb treningu. Chodź po mapie, skupiając uwagę na jednym bocie. Po chwili przeflickuj szybko na innego bota, którego widzisz kątem oka, trenując tym samym reakcję na nagłych przeciwników. Dla utrudnienia warto chodzić dookoła jednego celu, starając się utrzymać celownik cały czas na jego głowie (przykleić się celownikiem do jego głowy niczym magnes). Pomaga to trenować celność przy ruchliwych celach.", 0, 10),
-        
-        new Excersise("Kontrola serii", "Ustaw skończoność amunicji. Stój blisko botów ustawionych na tryb treningu. Spróbuj zabić 3 boty za pomocą jednej serii, trenując tym samym kontrolę fullauto. Zalecane nie celowanie w głowę, tak aby jak najwięcej pocisków musiało zostać wystrzelonych by pokonać cel. Dla utrudnienia można ustawić się trochę dalej od botów. Im dalej znajduje się cel tym większy rozrzut i tym ciężej go kontrolować.", 0, 10),
-        
-        new Excersise("Strzelnica - średni", "Uruchom średnią trudność 30 botów, które pojawią się na ekranie jeden po 2m. Spróbuj zabić jak najwięcej z nich za pomocą strzału w głowę.", 1, 10),
-        
-        new Excersise("Strzelnica - trudny", "Uruchom trudny trych 30 botów, które pojawią się na ekranie jeden po 2m. Spróbuj zabić jak najwięcej z nich za pomocą strzału w głowę.", 1, 10),
-        
-        new Excersise("Deathmatch", "Rozegraj 5 deathmatchy trenując tym samym Twoje umiejętności strzeleckie w praktyce, konforntując je z realnymi przeciwnikami. Tym samym ćwiczysz pozycjonowanie celownika we właściwym miejscu, dzięki czemu będziesz automatycznie trzymał celownik na poziomie głowy przeciwnika.", 1, 5)]*/
-    
-    secExcTab = new Array();
-    
-    for(let i = 0; i < excTab.length; i++){
-        secExcTab.push(new Excersise(excTab[i][0], excTab[i][1], excTab[i][2], excTab[i][3], i));
+class Training {
+    trainingNumber = null;
+    trainingId = null;
+    secExcTab = null;
+
+    timer = 0;
+
+    constructor(trainingId, trainingNumber){
+        this.trainingNumber = trainingNumber;
+        this.trainingId = trainingId;
     }
-    
-    this.secExcTab = secExcTab;
-    
-    
-    this.SetTrainingNumber = function(trainingNumber){
+
+    async init(){
+        this.secExcTab = await this.getSecExcTab(this.trainingId);
+    }
+
+    async getSecExcTab(trainingId){
+        const secExcTab = [
+            new Excersise("", "", 0, 0, 0)
+        ]
+
+        const response = await fetch(`/training/api/${trainingId}`);
+        if(!response.ok)
+            throw new Error("Coś poszło nie tak!");
+
+        const training = await response.json();
+        let counter = 0;
+
+        training.exercises.forEach(
+            exercise => {
+                let howManyReps = [0, 0];
+                if(exercise.repetition === 0){
+                    const date = new Date('1970-01-01T' + exercise.time);
+                    howManyReps[0] = date.getHours();
+                    howManyReps[1] = date.getMinutes();
+                }else
+                    howManyReps[0] = exercise.repetition;
+
+                secExcTab.push(
+                    new Excersise(
+                        exercise.name,
+                        exercise.description,
+                        exercise.repetition === 0  ? 0 : 1,
+                        howManyReps,
+                        ++counter
+                    )
+                );
+            }
+        );
+
+        return secExcTab;
+    }
+
+    SetTrainingNumber(trainingNumber){
         console.log(this);
         this.trainingNumber = trainingNumber;
     }
-    
-    Training.prototype.Skip = function(){
+
+    Skip(){
         //console.log(that);
         //ustawianie niewykonania ćwiczenia
         //console.log(that.trainingNumber);
-        document.getElementById("b" + that.trainingNumber).style.backgroundColor = "#FF4655";
-        document.getElementById("b" + that.trainingNumber).setAttribute("class", "accordion-button naglowek-listy collapsed");
-        document.getElementById("b" + that.trainingNumber).setAttribute("aria-expanded", "false");
-        document.getElementById("id" + that.trainingNumber).setAttribute("class", "accordion-collapse collapse");
-        if(that.timer != 0)
-            clearTimeout(that.timer);
+        document.getElementById("b" + this.trainingNumber).style.backgroundColor = "#FF4655";
+        document.getElementById("b" + this.trainingNumber).setAttribute("class", "accordion-button naglowek-listy collapsed");
+        document.getElementById("b" + this.trainingNumber).setAttribute("aria-expanded", "false");
+        document.getElementById("id" + this.trainingNumber).setAttribute("class", "accordion-collapse collapse");
+        if(this.timer != 0)
+            clearTimeout(this.timer);
         //startowanie kolejnego treningu na liście
-        that.trainingNumber++;
-        //console.log(that.trainingNumber);
-        StartBlock(that);
+        this.trainingNumber++;
+        //console.log(this.trainingNumber);
+        StartBlock(this);
     }
     
-    Training.prototype.PauseOrResume = function(){
+    PauseOrResume(){
         switch(document.getElementById("opt1").innerText){
             case 'WSTRZYMAJ':
                 document.getElementById("opt1").innerHTML = 'START';
-                clearTimeout(that.timer);
+                clearTimeout(this.timer);
                 break;
             case 'START':
                 document.getElementById("opt1").innerHTML = 'WSTRZYMAJ';
-                that.timer = setTimeout(that.RepeatExc, 1000);
+                this.timer = setTimeout(this.RepeatExc, 1000);
                 break;
         }
     }
     
-    Training.prototype.Stop = function(){
-        clearTimeout(that.timer);
-        that.secExcTab[that.trainingNumber].tempAmount[0] = that.secExcTab[that.trainingNumber].amount[0];
-        that.secExcTab[that.trainingNumber].tempAmount[1] = that.secExcTab[that.trainingNumber].amount[1];
-        StartBlock(that);
+    Stop(){
+        clearTimeout(this.timer);
+        this.secExcTab[this.trainingNumber].tempAmount[0] = this.secExcTab[this.trainingNumber].amount[0];
+        this.secExcTab[this.trainingNumber].tempAmount[1] = this.secExcTab[this.trainingNumber].amount[1];
+        StartBlock(this);
     }
     
-    Training.prototype.ShowList = function(){
-        var panel = secExcTab[0].AddControlPanel();
-        for(let i = 1; i < secExcTab.length; i++){
-            panel += secExcTab[i].AddList();
+    ShowList(){
+        let panel = this.secExcTab[0].AddControlPanel();
+        for(let i = 1; i < this.secExcTab.length; i++){
+            panel += this.secExcTab[i].AddList();
         }
         document.getElementById("listaCwiczen").innerHTML =  panel;
     }
     
     //funkcja, która w pętli powtarza ćwiczenia na czas i/lub sprawdza
-    Training.prototype.RepeatExc = function(){
-        switch(that.secExcTab[that.trainingNumber].mode){
+    RepeatExc(){
+        console.log("RepeatExc this: ");
+        console.log(this);
+        switch(this.secExcTab[this.trainingNumber].mode){
             case 0: //timer
-                if(that.secExcTab[that.trainingNumber].tempAmount[0] == 0 && that.secExcTab[that.trainingNumber].tempAmount[1] == 0){
-                    document.getElementById("b" + that.trainingNumber).style.backgroundColor = "#9EF01A";
-                    document.getElementById("b" + that.trainingNumber).setAttribute("class", "accordion-button naglowek-listy collapsed");
-                    document.getElementById("b" + that.trainingNumber).setAttribute("aria-expanded", "false");
-                    document.getElementById("id" + that.trainingNumber).setAttribute("class", "accordion-collapse collapse");
+                if(this.secExcTab[this.trainingNumber].tempAmount[0] == 0 && this.secExcTab[this.trainingNumber].tempAmount[1] == 0){
+                    this.setAttributes();
                     var zeroMin = ""; //zero ustawiane dla minut
                     var zeroSec = ""; //zero ustawiane dla sekund
-                    if(that.secExcTab[that.trainingNumber].amount[0] < 10)
+                    if(this.secExcTab[this.trainingNumber].amount[0] < 10)
                         zeroMin = "0";
-                    if(that.secExcTab[that.trainingNumber].amount[1] < 10)
+                    if(this.secExcTab[this.trainingNumber].amount[1] < 10)
                         zeroSec = "0";
-                    var timeSum = zeroMin + that.secExcTab[that.trainingNumber].amount[0] + ":" + zeroSec + that.secExcTab[that.trainingNumber].amount[1];
-                    document.getElementById("b" + that.secExcTab[that.trainingNumber].which).innerHTML = that.secExcTab[that.trainingNumber].name +': '+ timeSum + that.secExcTab[that.trainingNumber].getHowMany();
-                    clearTimeout(that.timer);
+                    var timeSum = zeroMin + this.secExcTab[this.trainingNumber].amount[0] + ":" + zeroSec + this.secExcTab[this.trainingNumber].amount[1];
+                    document.getElementById("b" + this.secExcTab[this.trainingNumber].which).innerHTML = this.secExcTab[this.trainingNumber].name +': '+ timeSum + this.secExcTab[this.trainingNumber].getHowMany();
+                    clearTimeout(this.timer);
                     //startowanie kolejnego treningu na liście
-                    that.trainingNumber++;
-                    StartBlock(that);
+                    this.trainingNumber++;
+                    StartBlock(this);
                 }else{
-                    that.secExcTab[that.trainingNumber].DoExcersise();
-                    that.timer = setTimeout(that.RepeatExc, 1000);
+                    this.secExcTab[this.trainingNumber].DoExcersise();
+
+                    let that = this;
+                    this.timer = setTimeout(
+                        function(){
+                            that.RepeatExc();
+                        },
+                        1000
+                    );
                 }
                 break;
             case 1: //amount
-                if(that.secExcTab[that.trainingNumber].tempAmount[0] != 1)
-                   that.secExcTab[that.trainingNumber].DoExcersise();
+                if(this.secExcTab[this.trainingNumber].tempAmount[0] != 1)
+                   this.secExcTab[this.trainingNumber].DoExcersise();
                 else{
-                    document.getElementById("b" + that.trainingNumber).style.backgroundColor = "#9EF01A";
-                    document.getElementById("b" + that.trainingNumber).setAttribute("class", "accordion-button naglowek-listy collapsed");
-                    document.getElementById("b" + that.trainingNumber).setAttribute("aria-expanded", "false");
-                    document.getElementById("id" + that.trainingNumber).setAttribute("class", "accordion-collapse collapse");
-                    document.getElementById("b" + that.secExcTab[that.trainingNumber].which).innerHTML = that.secExcTab[that.trainingNumber].name +': '+ that.secExcTab[that.trainingNumber].amount[0] + that.secExcTab[that.trainingNumber].getHowMany();
+                    this.setAttributes();
+                    document.getElementById("b" + this.secExcTab[this.trainingNumber].which).innerHTML = this.secExcTab[this.trainingNumber].name +': '+ this.secExcTab[this.trainingNumber].amount[0] + this.secExcTab[this.trainingNumber].getHowMany();
                     
                     //startowanie kolejnego treningu na liście
-                    that.trainingNumber++;
-                    StartBlock(that);
+                    this.trainingNumber++;
+                    StartBlock(this);
                 }
                 break;
         }
         
     }
+
+    setAttributes(){
+        document.getElementById("b" + this.trainingNumber).style.backgroundColor = "#9EF01A";
+        document.getElementById("b" + this.trainingNumber).setAttribute("class", "accordion-button naglowek-listy collapsed");
+        document.getElementById("b" + this.trainingNumber).setAttribute("aria-expanded", "false");
+        document.getElementById("id" + this.trainingNumber).setAttribute("class", "accordion-collapse collapse");
+    }
     
 }
 
-function Excersise(name, desc, mode, amount, which){
-    this.name = name;
-    this.desc = desc;
-    this.mode = mode; //0 - timer | 1 - amount
+class Excersise {
+    name = null;
+    desc = null;
+    mode = null; //0 - timer | 1 - amount
     //ilość czasu/powtórzeń
-    this.which = which; //ktory to trening z kolei | which == 0 -> AddControlPanel (panel z opcjami typu start/stop etc)
-    var that = this;
+    which = null; //ktory to trening z kolei | which == 0 -> AddControlPanel (panel z opcjami typu start/stop etc)
     
     //0 - minutes/how many repeats | 1 - secounds
-    this.amount = new Array(amount.length);
-    this.tempAmount = new Array(amount.length);
-    
-    for(let i = 0; i < amount.length; i++){
-        this.amount[i] = amount[i];
-        this.tempAmount[i] = amount[i];
+    amount = [];
+    tempAmount = [];
+
+    constructor(name, desc, mode, amount, which) {
+        this.name = name;
+        this.desc = desc;
+        this.mode = mode;
+        this.which = which;
+
+        this.amount = new Array(amount.length);
+        this.tempAmount = new Array(amount.length);
+
+        for(let i = 0; i < amount.length; i++){
+            this.amount[i] = amount[i];
+            this.tempAmount[i] = amount[i];
+        }
     }
-    
-    Excersise.prototype.getHowMany = function(){
+
+    getHowMany(){
+        let toReturn = null;
         switch(this.mode){
             case 0:
-                return " minut";
+                toReturn = "minut";
                 break;
             case 1:
-                return " serii";
+                toReturn = "serii";
                 break;
         }
+
+        return toReturn;
     }
     
     //wykonanie ćwiczenia
-    Excersise.prototype.DoExcersise = function(){
+    DoExcersise(){
         switch(this.mode){
             case 0://timer
                 if(this.tempAmount[1] == 0){
@@ -300,23 +314,38 @@ function Excersise(name, desc, mode, amount, which){
     }  
         
     //dodaje guziki do panelu kontrolnego w zależności od trybu
-    Excersise.prototype.AddOptions = function(){
-        if(this.mode == 0)
+    AddOptions(){
+        if(this.mode === 0)
             return '<button class="col-md-6 col-lg-3 opt" id="opt1">WSTRZYMAJ</button><button class="col-md-6 col-lg-3 opt" id="opt2">STOP</button><button class="col-md-6 col-lg-3 opt" id="opt3">POMIŃ</button>';
         else
             return '<button class="col-md-6 col-lg-3 opt" id="opt1">NASTEPNE POWTORZENIE</button><button class="col-md-6 col-lg-3 opt" id="opt3">POMIŃ</button>';
     }
 
-    Excersise.prototype.AddControlPanel = function(){
-        return '<div class="accordion-item cialo-listy"><h2 class="accordion-header h2" id="ha0"></h2><div class="accordion-button collapsed naglowek-listy" data-bs-target="#id0" aria-expanded="false" aria-controls="id0"><div id="buttons" class="row justify-content-center w-100"></div></div></div><div id="id0" class="accordion-collapse collapse" aria-labelledby="ha0" data-bs-parent="#listaCwiczen"><div class="accordion-body"></div></div></div>';
+    AddControlPanel(){
+        return `
+            <div class="accordion-item cialo-listy">
+                <h2 class="accordion-header h2" id="ha0"></h2>
+                <div 
+                    class="accordion-button collapsed naglowek-listy" 
+                    data-bs-target="#id0" 
+                    aria-expanded="false" 
+                    aria-controls="id0"
+                >
+                    <div id="buttons" class="row justify-content-center w-100"></div>
+                </div>
+            </div>
+            <div id="id0" class="accordion-collapse collapse" aria-labelledby="ha0" data-bs-parent="#listaCwiczen">
+                <div class="accordion-body"></div>
+            </div>
+        </div>`;
     }
 
     //W zależności od przebiegu zwraca albo opcje kontroli treningu albo listę ćwiczeń
-    Excersise.prototype.AddList = function(){
-        var tempAmount = 0;
-        if(this.mode == 0){   //oba w przypadku kiedy
-            var zeroMin = ""; //zero ustawiane dla minut
-            var zeroSec = ""; //zero ustawiane dla sekund
+    AddList(){
+        let tempAmount = 0;
+        if(this.mode === 0){   //oba w przypadku kiedy
+            let zeroMin = ""; //zero ustawiane dla minut
+            let zeroSec = ""; //zero ustawiane dla sekund
             if(this.amount[0] < 10)
                 zeroMin = "0";
             if(this.amount[1] < 10)
@@ -325,6 +354,29 @@ function Excersise(name, desc, mode, amount, which){
         }else
             tempAmount = this.amount[0];
 
-        return '<div class="accordion-item cialo-listy"><h2 class="accordion-header h2" id="ha' + this.which +'"><button id="b' + this.which + '" class="accordion-button collapsed naglowek-listy" type="button" data-bs-toggle="collapse" data-bs-target="#id' + this.which + '" aria-expanded="false" aria-controls="id' + this.which + '">'+ this.name +': '+ tempAmount + this.getHowMany() + '</button></h2><div id="id'+ this.which +'" class="accordion-collapse collapse" aria-labelledby="ha'+ this.which +'" data-bs-parent="#listaCwiczen"><div class="accordion-body">'+ this.desc +'</div></div></div>'
+        return `
+            <div class="accordion-item cialo-listy">
+                <h2 class="accordion-header h2" id="ha${this.which}">
+                    <button 
+                        id="b${this.which}" 
+                        class="accordion-button collapsed naglowek-listy" 
+                        type="button" 
+                        data-bs-toggle="collapse" 
+                        data-bs-target="#id${this.which}" 
+                        aria-expanded="false" 
+                        aria-controls="id${this.which}"
+                    >
+                        ${this.name}: ${tempAmount} ${this.getHowMany()} 
+                    </button>
+                </h2>
+                <div 
+                    id="id${this.which}" 
+                    class="accordion-collapse collapse" 
+                    aria-labelledby="ha${this.which}" 
+                    data-bs-parent="#listaCwiczen"
+                >
+                    <div class="accordion-body">${this.desc}</div>
+                </div>
+            </div>`;
     }
 }
