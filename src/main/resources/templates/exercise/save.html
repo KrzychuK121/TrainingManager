@@ -9,10 +9,11 @@
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 <span th:if="${message != null}" th:text="${message}"></span>
             </div>
+            <!--/*@thymesVar id="exercise" type="springweb.trainingmanager.models.viewmodels.exercise.ExerciseRead"*/-->
             <form
                 action=""
                 method="post"
-                th:action="@{/exercise/create}"
+                th:action="@{|/exercise/${action}|}"
                 th:object="${exercise}"
             >
                 <fieldset>
@@ -59,17 +60,37 @@
                         lub wpisz 0
                     </div>
 
-                    <label>Czas wykonania</label>
+                    <label class="form-label" for="time">Czas wykonania</label>
                     <input
+                        id="time"
                         th:field="*{time}"
                         name="time"
                         aria-describedby="timeHelp"
                         pattern="[0-9]{2}:[0-9]{2}"
+                        class="form-control"
                     />
                     <div id="timeHelp" class="form-text">
                         Jeśli ćwiczenia polegają na ilości powtórzeń, możesz zostawić
                         to pole puste (lub wpisz przewidywaną długość treningu)
                     </div>
+                    <label class="form-label" for="trainings">Lista treningów do przypisania</label>
+                    <select
+                        class="form-select form-select-lg"
+                        aria-label="label"
+                        id="trainings"
+                        th:if="${allTrainings != null and !allTrainings.isEmpty()}"
+                        name="trainingIds"
+                        multiple
+                    >
+                        <option value="" selected>---Wybierz treningi---</option>
+                        <option
+                            th:each="training, i : ${allTrainings}"
+                            th:value="${training.id}"
+                            th:text="${training.title}"
+                            th:selected="${selected != null and selected.contains(training.id)}"
+                        >
+                        </option>
+                    </select>
                     <div class="py-5">
                         <button type="submit" class="btn btn-success">Zapisz</button>
                     </div>

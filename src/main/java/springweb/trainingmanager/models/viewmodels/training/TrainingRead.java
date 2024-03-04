@@ -8,6 +8,7 @@ import org.hibernate.validator.constraints.Length;
 import springweb.trainingmanager.models.entities.Exercise;
 import springweb.trainingmanager.models.entities.Training;
 import springweb.trainingmanager.models.viewmodels.exercise.ExerciseRead;
+import springweb.trainingmanager.models.viewmodels.exercise.ExerciseTraining;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,18 +21,20 @@ public class TrainingRead {
     @NotBlank(message = "Opis nie może być pusty")
     @Length(min = 3, max = 300, message = "Opis musi mieścić się między 3 a 300 znaków")
     protected String description;
-    protected List<ExerciseRead> exercises;
+    protected List<ExerciseTraining> exercises;
 
-    public TrainingRead(Training training, int id) {
-        this.id = id;
+    public TrainingRead(Training training) {
+        this.id = training.getId();
         this.title = training.getTitle();
         this.description = training.getDescription();
-        this.exercises = ExerciseRead.toExerciseReadList(training.getExercises());
+        this.exercises = ExerciseTraining.toExerciseTrainingList(
+            training.getExercises()
+        );
     }
 
     public static List<TrainingRead> toTrainingReadList(final List<Training> list){
         List<TrainingRead> result = new ArrayList<>(list.size());
-        list.forEach(training -> result.add(new TrainingRead(training, training.getId())));
+        list.forEach(training -> result.add(new TrainingRead(training)));
         return result;
     }
 
@@ -55,11 +58,11 @@ public class TrainingRead {
         this.description = description;
     }
 
-    public List<ExerciseRead> getExercises() {
+    public List<ExerciseTraining> getExercises() {
         return exercises;
     }
 
-    public void setExercises(List<ExerciseRead> exercises) {
+    public void setExercises(List<ExerciseTraining> exercises) {
         this.exercises = exercises;
     }
 }

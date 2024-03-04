@@ -5,12 +5,14 @@ import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.Range;
 import org.springframework.format.annotation.DateTimeFormat;
 import springweb.trainingmanager.models.entities.Exercise;
+import springweb.trainingmanager.models.viewmodels.training.TrainingExercise;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ExerciseRead {
+    private int id;
     @NotBlank(message = "Nazwa ćwiczenia jest wymagana")
     @Length(min = 3, max = 100, message = "Nazwa ćwiczenia musi mieścić się między 3 a 100 znaków")
     private String name;
@@ -25,19 +27,30 @@ public class ExerciseRead {
     private int repetition;
     @DateTimeFormat(pattern = "HH:mm:ss")
     private LocalTime time;
+    private List<TrainingExercise> trainings = new ArrayList<>();
 
     public ExerciseRead(Exercise exercise) {
+        this.id = exercise.getId();
         this.name = exercise.getName();
         this.description = exercise.getDescription();
         this.rounds = exercise.getRounds();
         this.repetition = exercise.getRepetition();
         this.time = exercise.getTime();
+        this.trainings = TrainingExercise.toTrainingExerciseList(exercise.getTrainings());
     }
 
     public static List<ExerciseRead> toExerciseReadList(final List<Exercise> list){
         List<ExerciseRead> result = new ArrayList<>(list.size());
         list.forEach(exercise -> result.add(new ExerciseRead(exercise)));
         return result;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -58,5 +71,13 @@ public class ExerciseRead {
 
     public LocalTime getTime() {
         return time;
+    }
+
+    public List<TrainingExercise> getTrainings() {
+        return trainings;
+    }
+
+    public void setTrainings(List<TrainingExercise> trainings) {
+        this.trainings = trainings;
     }
 }

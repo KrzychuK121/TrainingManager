@@ -5,7 +5,9 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import org.hibernate.validator.constraints.Length;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(name = "training")
@@ -19,14 +21,14 @@ public class Training {
     @NotBlank(message = "Opis nie może być pusty")
     @Length(min = 3, max = 300, message = "Opis musi mieścić się między 3 a 300 znaków")
     private String description;
-    @OneToMany(
-        mappedBy = "training",
-        cascade = CascadeType.ALL,
-        orphanRemoval = true,
-        fetch = FetchType.LAZY
+    @ManyToMany
+    @JoinTable(
+        name = "training_exercise",
+        joinColumns = @JoinColumn(name = "training_id"),
+        inverseJoinColumns = @JoinColumn(name = "exercise_id")
     )
     @Valid
-    private List<Exercise> exercises;
+    private List<Exercise> exercises = new ArrayList<>();
 
     public Training(){ }
 
@@ -34,7 +36,7 @@ public class Training {
         return id;
     }
 
-    void setId(int id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -66,6 +68,16 @@ public class Training {
     public void copy(Training toCopy){
         this.title = toCopy.title;
         this.description = toCopy.description;
-        this.exercises = toCopy.exercises;
+        this.exercises = toCopy.exercises == null || toCopy.exercises.isEmpty() ?
+            null :
+            toCopy.exercises;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Training training = (Training) o;
+        return id == training.id && Objects.equals(title, training.title) && Objects.equals(description, training.description);
     }
 }

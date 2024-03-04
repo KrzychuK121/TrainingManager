@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import org.hibernate.validator.constraints.Length;
 import springweb.trainingmanager.models.entities.Exercise;
 import springweb.trainingmanager.models.entities.Training;
+import springweb.trainingmanager.models.viewmodels.exercise.ExerciseTraining;
 import springweb.trainingmanager.models.viewmodels.exercise.ExerciseWrite;
 
 import java.util.ArrayList;
@@ -17,10 +18,10 @@ public class TrainingWrite {
     @NotBlank(message = "Opis nie może być pusty")
     @Length(min = 3, max = 300, message = "Opis musi mieścić się między 3 a 300 znaków")
     private String description;
-    private List<ExerciseWrite> exercises = new ArrayList<>();
+    private List<ExerciseTraining> exercises = new ArrayList<>();
 
     public TrainingWrite() {
-        exercises.add(new ExerciseWrite());
+
     }
 
     public String getTitle() {
@@ -39,11 +40,11 @@ public class TrainingWrite {
         this.description = description;
     }
 
-    public List<ExerciseWrite> getExercises() {
+    public List<ExerciseTraining> getExercises() {
         return exercises;
     }
 
-    public void setExercises(List<ExerciseWrite> exercises) {
+    public void setExercises(List<ExerciseTraining> exercises) {
         this.exercises = exercises;
     }
 
@@ -52,7 +53,8 @@ public class TrainingWrite {
 
         toReturn.setTitle(title);
         toReturn.setDescription(description);
-        toReturn.setExercises(ExerciseWrite.toExerciseList(exercises));
+        if(exercises != null)
+            toReturn.setExercises(ExerciseTraining.toExerciseList(exercises));
 
         return toReturn;
     }

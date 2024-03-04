@@ -19,7 +19,13 @@
                             <h2 class="accordion-header h2" id="ha0"></h2>
                             <div class="accordion-button collapsed naglowek-listy" data-bs-target="#id0" aria-expanded="false" aria-controls="id0">
                                 <div id="buttons" class="row justify-content-center w-100">
-                                    <button class="col-md-6 opt" id="opt0">START</button>
+                                    <button
+                                        class="col-md-6 opt"
+                                        id="opt0"
+                                        th:onclick="|run(*{id})|"
+                                    >
+                                        START
+                                    </button>
                                 </div>
                             </div>
                             <div id="id0" class="accordion-collapse collapse" aria-labelledby="ha0" data-bs-parent="#listaCwiczen">
@@ -34,7 +40,7 @@
                                 <button
                                     th:id="|b${i.index + 1}|" class="accordion-button collapsed naglowek-listy"
                                     type="button" data-bs-toggle="collapse"
-                                    th:data-bs-target="|#id${i.index + 1}|"
+                                    th:data-bs-target="'#id' + ${i.index + 1}"
                                     aria-expanded="false"
                                     th:aria-controls="|id${i.index + 1}|"
                                 >
@@ -71,9 +77,11 @@
             
         </div>
         <script>
-            var myElement = document.getElementById("opt0");
-            myElement.onclick = DoTraining;
+            function run(trainingId){
+                (async function() { await DoTraining(trainingId); })();
+            }
         </script>
+        <script src="/script/js/trening.js"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js" integrity="sha384-7+zCNj/IqJ95wo16oMtfsKbZ9ccEh31eOz1HGyDuCQ6wgnyJNSYdrPa03rtR1zdB" crossorigin="anonymous"></script>
         <script src="/script/js/lib/bootstrap.min.js"></script>

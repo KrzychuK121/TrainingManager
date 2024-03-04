@@ -1,0 +1,12 @@
+create table IDENTITY_USER
+(
+    ID              CHARACTER VARYING(255) not null
+        primary key,
+    FIRST_NAME      CHARACTER VARYING(25),
+    LAST_NAME       CHARACTER VARYING(30),
+    PASSWORD        CHARACTER VARYING(30),
+    USERNAME        CHARACTER VARYING(255) not null
+        constraint UK_8UMUOTQD9HNOVOYCH8UVUDE1P
+            unique,
+    PASSWORD_HASHED CHARACTER VARYING(255)
+);

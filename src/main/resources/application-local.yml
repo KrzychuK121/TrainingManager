@@ -3,5 +3,5 @@ spring:
     enabled: true
     path: '/console'
 
-  datasource.url: 'jdbc:h2:file:C:\Users\Krzysiek\Desktop\Projects\Java\trainingmanager\local-db'
+  datasource.url: 'jdbc:h2:file:~/local-db'
   jpa.hibernate.ddl-auto: update

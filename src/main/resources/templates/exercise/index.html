@@ -1,12 +1,20 @@
 <!doctype html>
-<html lang="pl" xmlns:th="http://www.thymeleaf.org">
+<html lang="pl" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org">
 <head th:replace="~{defaulttemplate :: head}"></head>
 <body>
     <header th:replace="~{defaulttemplate :: header}" id="h_menu" class="container-fluid"></header>
     <div class="container">
         <main>
+            <div th:replace="~{defaulttemplate :: alert}"></div>
             <h1>Lista wszystkich ćwiczeń</h1>
-            <table class="table table-bordered table-success table-striped">
+            <div th:if="${exercises.isEmpty()}">
+                Brak ćwiczeń do wyświetlenia
+            </div>
+            <table
+                class="table table-bordered table-success table-striped"
+                th:if="${!exercises.isEmpty()}"
+            >
+
                 <thead>
                     <tr>
                         <th>Nazwa</th>
@@ -18,14 +26,46 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr th:each="exercise: ${exercises}">
+                    <tr th:each="exercise, i: ${exercises}">
                         <td th:text="${exercise.name}"></td>
                         <td th:text="${exercise.description}"></td>
                         <td th:text="${exercise.rounds}"></td>
                         <td th:text="${exercise.repetition}"></td>
                         <td th:text="${exercise.time}"></td>
                         <td>
-                            <a href="#">Edytuj</a>
+                            <fieldset>
+                                <form
+                                    method="get"
+                                    action="#"
+                                    th:action="@{/exercise/edit/{id}(id=${exercise.id})}"
+                                >
+                                    <button
+                                        type="submit"
+                                        class="btn btn-primary"
+                                    >
+                                        Edytuj
+                                    </button> |
+                                </form>
+                                <form
+                                    method="get"
+                                    action="#"
+                                    sec:authorize="hasRole('ROLE_ADMIN')"
+                                    th:action="@{/exercise/delete/{id}(id=${exercise.id})}"
+                                >
+                                    <!-- Modal -->
+                                    <div
+                                        th:replace="~{defaulttemplate :: modal-delete('delItem' + ${i.index})}"
+                                    ></div>
+                                    <button
+                                        type="button"
+                                        class="btn btn-primary"
+                                        data-bs-toggle="modal"
+                                        th:data-bs-target="'#delItem' + ${i.index}"
+                                    >
+                                        Usuń
+                                    </button> |
+                                </form>
+                            </fieldset>
                         </td>
                     </tr>
                 </tbody>
@@ -34,6 +74,6 @@
     </div>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js" integrity="sha384-7+zCNj/IqJ95wo16oMtfsKbZ9ccEh31eOz1HGyDuCQ6wgnyJNSYdrPa03rtR1zdB" crossorigin="anonymous"></script>
-<script src="script/js/lib/bootstrap.min.js"></script>
+<script src="/script/js/lib/bootstrap.min.js"></script>
 </body>
 </html>

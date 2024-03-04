@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="pl" xmlns:th="http://www.thymeleaf.org">
+<html lang="pl" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org">
 <head th:fragment="head">
     <meta charset="UTF-8">
     <meta
@@ -13,20 +13,19 @@
     <link href="https://fonts.googleapis.com/css2?family=Sansita+Swashed:wght@700&display=swap" rel="stylesheet">
     <script src="../../static/script/js/trening.js">
     </script>-->
-    <link rel="icon" type="image/png" href="/img/fav/favicon2.png">
+    <link rel="icon" type="image/png" href="/img/icon-scaled.png">
+
     <link rel="stylesheet" type="text/css" href="/script/css/lib/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="/script/css/style.css">
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Sansita+Swashed:wght@700&display=swap" rel="stylesheet">
-    <script src="/static/script/js/trening.js">
-    </script>
     <!--/*@thymesVar id="title" type="java.lang.String"*/-->
     <title th:text="${title}"></title>
 </head>
 <body>
     <header th:fragment="header" id="h_menu" class="container-fluid">
         <nav id="menu">
-            <article id="h_strony" class="b_strony"><img src="/img/icon.png" alt="icon.png" style="padding-right: 10px;">Trening</article>
+            <article id="h_strony" class="b_strony"><img src="/img/icon-scaled.png" alt="icon.png" style="padding-right: 10px;">Trening</article>
             <ul class="nav justify-content-center">
                 <li class="nav-item">
                     <a
@@ -57,6 +56,32 @@
                         <li><a class="dropdown-item" th:href="@{/exercise/create}">Stwórz</a></li>
                     </ul>
                 </li>
+                <li class="nav-item">
+                    <span
+                        class="nav-link disabled"
+                        sec:authorize="isAuthenticated()"
+                        th:if="${session.welcomeInfo != null}"
+                        th:text="|Witaj ${session.welcomeInfo[0]} ${session.welcomeInfo[1]}!|"
+                    ></span>
+                </li>
+                <li class="nav-item">
+                    <a
+                        class="nav-link active"
+                        aria-current="page"
+                        sec:authorize="isAuthenticated()"
+                        th:href="@{/logout}"
+                    >
+                        Wyloguj się
+                    </a>
+                    <a
+                        class="nav-link active"
+                        aria-current="page"
+                        sec:authorize="!isAuthenticated()"
+                        th:href="@{/login}"
+                    >
+                        Zaloguj się
+                    </a>
+                </li>
                 <!--<li class="nav-item">
                     <a class="nav-link" href="#">Link</a>
                 </li>-->
@@ -66,7 +91,40 @@
     </header>
     <div class="container">
         <main class="col-md-6 col-lg-8">
-
+            <div
+                th:fragment="alert"
+                th:if="${mess != null}"
+                th:class="|alert alert-${messType} alert-dismissible|"
+                role="alert"
+            >
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                <span th:if="${mess != null}" th:text="${mess}"></span>
+            </div>
+            <!--Modal to delete-->
+            <div
+                th:fragment="modal-delete(id)"
+                th:id="${id}"
+                class="modal fade"
+                tabindex="-1"
+                aria-labelledby="deleteModalLabel"
+                aria-hidden="true"
+            >
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="deleteModalLabel">Potwierdź usuwanie</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            Czy na pewno chcesz usunąć ten element?
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Anuluj</button>
+                            <button type="submit" class="btn btn-danger" >Usuń</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </main>
     </div>
     <script>
@@ -75,6 +133,6 @@
     </script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js" integrity="sha384-7+zCNj/IqJ95wo16oMtfsKbZ9ccEh31eOz1HGyDuCQ6wgnyJNSYdrPa03rtR1zdB" crossorigin="anonymous"></script>
-    <script src="script/js/lib/bootstrap.min.js"></script>
+    <script src="/script/js/lib/bootstrap.min.js"></script>
 </body>
 </html>

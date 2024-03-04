@@ -56,6 +56,11 @@ main{
     color: #fff530;
 }
 
+.modal > div > div > div {
+    color: wheat;
+    background-color: #232323;
+}
+
 aside{
     background-color: #D9C7A7;
     /*height: 100%;*/
