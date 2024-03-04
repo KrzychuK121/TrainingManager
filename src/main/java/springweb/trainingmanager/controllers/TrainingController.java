@@ -66,13 +66,16 @@ public class TrainingController {
 
     private void prepExerciseSelect(Model model, String[] selected){
         List<ExerciseTraining> exerciseSelectList = ExerciseTraining.toExerciseTrainingList(exerciseRepo.findAll());
-        if(selected != null && selected.length != 0 && selected.length != exerciseSelectList.size())
-            throw new IllegalStateException("Lista zaznaczonych elementów nie może mieć innej wielkości jak lista wszystkich elementów.");
+        if(selected != null && selected.length > exerciseSelectList.size())
+            throw new IllegalStateException("Lista zaznaczonych elementów nie może być mniejsza niż lista wszystkich elementów.");
         model.addAttribute("allExercises", exerciseSelectList);
         if(selected.length != 0){
             List<Integer> selectedInt = new ArrayList<>();
-            for(String sel : selected)
+            for(String sel : selected){
+                if(sel.isBlank())
+                    continue;
                 selectedInt.add(Integer.parseInt(sel));
+            }
             model.addAttribute("selected", selectedInt);
         }
 
@@ -93,16 +96,17 @@ public class TrainingController {
 
     @Secured({"ROLE_USER", "ROLE_ADMIN"})
     @PostMapping(
-        value = "/create",
+        value = {"/create", "/edit/*"},
         params = "addExercise",
         produces = MediaType.TEXT_HTML_VALUE
     )
     String addExercise(
         @ModelAttribute("training") TrainingWrite current,
+        @ModelAttribute("action") String action,
         Model model,
         String[] exerciseIds
     ){
-        logger.info("Training create addExercise");
+        logger.info("Training create addExercise with action: " + action);
         prepExerciseSelect(model, exerciseIds);
         current.getExercises().add(new ExerciseTraining());
         return "training/save";
@@ -242,6 +246,7 @@ public class TrainingController {
         return ResponseEntity.noContent().build();
     }
 
+    @Secured({"ROLE_USER", "ROLE_ADMIN"})
     @GetMapping("/edit/{id}")
     public String editView(
         @PathVariable int id,
@@ -276,7 +281,11 @@ public class TrainingController {
         return selected;
     }
 
-    @PostMapping("/create/{id}")
+    @Secured({"ROLE_USER", "ROLE_ADMIN"})
+    @PostMapping(
+        value = "/edit/{id}",
+        params = "!addExercise"
+    )
     public String editView(
         @PathVariable int id,
         @ModelAttribute("exercise") @Valid TrainingWrite toEdit,
