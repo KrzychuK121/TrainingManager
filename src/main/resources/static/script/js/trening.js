@@ -84,24 +84,53 @@ function Training(trainingNumber) {
     var excTab = [ 
     ["", "", 0, 0], 
         
-    ["Zabijanie celów w kółku", "Stój pośrodku botów ustawionych na tryb treningu. Obracaj się dookoła, robiąc jak największe ruchy i zabijaj headshotem kolejne boty, trenując tym samym celność.", 0, [10, 0] ], 
+    [
+        "Zabijanie celów w kółku",
+        "Stój pośrodku botów ustawionych na tryb treningu. Obracaj się dookoła, robiąc jak największe ruchy i zabijaj headshotem kolejne boty, trenując tym samym celność.",
+        0,
+        [10, 0]
+    ],
     
-    ["Flicki", "Stój blisko botów ustawionych na tryb treningu. Chodź po mapie, skupiając uwagę na jednym bocie. Po chwili przeflickuj szybko na innego bota, którego widzisz kątem oka, trenując tym samym reakcję na nagłych przeciwników. Dla utrudnienia warto chodzić dookoła jednego celu, starając się utrzymać celownik cały czas na jego głowie (przykleić się celownikiem do jego głowy niczym magnes). Pomaga to trenować celność przy ruchliwych celach.", 0, [10, 0] ],
+    [
+        "Flicki",
+        "Stój blisko botów ustawionych na tryb treningu. Chodź po mapie, skupiając uwagę na jednym bocie. Po chwili przeflickuj szybko na innego bota, którego widzisz kątem oka, trenując tym samym reakcję na nagłych przeciwników. Dla utrudnienia warto chodzić dookoła jednego celu, starając się utrzymać celownik cały czas na jego głowie (przykleić się celownikiem do jego głowy niczym magnes). Pomaga to trenować celność przy ruchliwych celach.",
+        0,
+        [10, 0]
+    ],
     
-    ["Kontrola serii", "Ustaw skończoność amunicji. Stój blisko botów ustawionych na tryb treningu. Spróbuj zabić 3 boty za pomocą jednej serii, trenując tym samym kontrolę fullauto. Zalecane nie celowanie w głowę, tak aby jak najwięcej pocisków musiało zostać wystrzelonych by pokonać cel. Dla utrudnienia można ustawić się trochę dalej od botów. Im dalej znajduje się cel tym większy rozrzut i tym ciężej go kontrolować.", 0, [10, 0] ],
+    [
+        "Kontrola serii", "Ustaw skończoność amunicji. Stój blisko botów ustawionych na tryb treningu. Spróbuj zabić 3 boty za pomocą jednej serii, trenując tym samym kontrolę fullauto. Zalecane nie celowanie w głowę, tak aby jak najwięcej pocisków musiało zostać wystrzelonych by pokonać cel. Dla utrudnienia można ustawić się trochę dalej od botów. Im dalej znajduje się cel tym większy rozrzut i tym ciężej go kontrolować.",
+        0,
+        [10, 0]
+    ],
     
-    ["Strzelnica - średni", "Uruchom średnią trudność 30 botów, które pojawią się na ekranie jeden po 2m. Spróbuj zabić jak najwięcej z nich za pomocą strzału w głowę.", 1, [10, 0] ],
+    [
+        "Strzelnica - średni",
+        "Uruchom średnią trudność 30 botów, które pojawią się na ekranie jeden po 2m. Spróbuj zabić jak najwięcej z nich za pomocą strzału w głowę.",
+        1,
+        [10, 0]
+    ],
     
-    ["Strzelnica - trudny", "Uruchom trudny trych 30 botów, które pojawią się na ekranie jeden po 2m. Spróbuj zabić jak najwięcej z nich za pomocą strzału w głowę.", 1, [10, 0] ],
+    [
+        "Strzelnica - trudny",
+        "Uruchom trudny trych 30 botów, które pojawią się na ekranie jeden po 2m. Spróbuj zabić jak najwięcej z nich za pomocą strzału w głowę.",
+        1,
+        [10, 0]
+    ],
     
-    ["Deathmatch", "Rozegraj 5 deathmatchy trenując tym samym Twoje umiejętności strzeleckie w praktyce, konforntując je z realnymi przeciwnikami. Tym samym ćwiczysz pozycjonowanie celownika we właściwym miejscu, dzięki czemu będziesz automatycznie trzymał celownik na poziomie głowy przeciwnika.", 1, [5, 0] ] ];
+    [
+        "Deathmatch",
+        "Rozegraj 5 deathmatchy trenując tym samym Twoje umiejętności strzeleckie w praktyce, konforntując je z realnymi przeciwnikami. Tym samym ćwiczysz pozycjonowanie celownika we właściwym miejscu, dzięki czemu będziesz automatycznie trzymał celownik na poziomie głowy przeciwnika.",
+        1,
+        [5, 0] ]
+    ];
     
     /*var secExcTab = [
         new Excersise("", "", 0, 0),//panel kontrolny
         
         new Excersise("Zabijanie celów w kółku", "Stój pośrodku botów ustawionych na tryb treningu. Obracaj się dookoła, robiąc jak największe ruchy i zabijaj headshotem kolejne boty, trenując tym samym celność.", 0, 10),
         
-        new Excersise("Flicki", "Stój blisko botów ustawionych na tryb treningu. Chodź po mapie, skupiając uwagę na jednym bocie. Po chwili przeflickuj szybko na innego bota, którego widzisz kątem oka, trenując tym samym reakcję na nagłych przeciwników. Dla utrudnienia warto chodzić dookoła jednego celu, starając się utrzymać celownik cały czas na jego głowie (przykleić się celownikiem do jego głowy niczym magnes). Pomaga to trenować celność przy ruchliwych celach.", 0, 10),
+        new Excersise("Flicki", "Stój, blisko botów ustawionych na tryb treningu. Chodź po mapie, skupiając uwagę na jednym bocie. Po chwili przeflickuj szybko na innego bota, którego widzisz kątem oka, trenując tym samym reakcję na nagłych przeciwników. Dla utrudnienia warto chodzić dookoła jednego celu, starając się utrzymać celownik cały czas na jego głowie (przykleić się celownikiem do jego głowy niczym magnes). Pomaga to trenować celność przy ruchliwych celach.", 0, 10),
         
         new Excersise("Kontrola serii", "Ustaw skończoność amunicji. Stój blisko botów ustawionych na tryb treningu. Spróbuj zabić 3 boty za pomocą jednej serii, trenując tym samym kontrolę fullauto. Zalecane nie celowanie w głowę, tak aby jak najwięcej pocisków musiało zostać wystrzelonych by pokonać cel. Dla utrudnienia można ustawić się trochę dalej od botów. Im dalej znajduje się cel tym większy rozrzut i tym ciężej go kontrolować.", 0, 10),
         
