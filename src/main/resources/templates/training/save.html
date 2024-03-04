@@ -17,6 +17,7 @@
         >
             <fieldset>
                 <legend>Stwórz nowy trening</legend>
+                <input type="hidden" name="action" th:value="${action}" />
                 <label class="form-label" for="title">Tytuł</label>
                 <input th:field="*{title}" id="title" class="form-control" />
                 <div
@@ -53,7 +54,10 @@
                     </option>
                 </select>
                 <button type="submit" name="addExercise">+</button>
-                <fieldset th:each="exercise, i : *{exercises}">
+                <fieldset
+                    th:if="${id == null}"
+                    th:each="exercise, i : *{exercises}"
+                >
                     <legend th:text="|Ćwiczenie ${i.index + 1}|"></legend>
                     <label class="form-label" th:for="|name${i.index + 1}|">Nazwa</label>
                     <input
