@@ -184,7 +184,7 @@ public class TrainingController {
         produces = MediaType.APPLICATION_JSON_VALUE
     )
     @ResponseBody
-    ResponseEntity<Training> getById(@PathVariable int id){
+    ResponseEntity<TrainingRead> getById(@PathVariable int id){
         Training found = null;
         try {
             found = service.getById(id);
@@ -192,7 +192,7 @@ public class TrainingController {
             logger.error("Wystąpił wyjątek: " + e.getMessage());
             return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.ok(found);
+        return ResponseEntity.ok(new TrainingRead(found));
     }
 
     @Secured({"ROLE_USER", "ROLE_ADMIN"})
