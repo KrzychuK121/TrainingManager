@@ -170,7 +170,8 @@ class Training {
                 break;
             case 'START':
                 document.getElementById("opt1").innerHTML = 'WSTRZYMAJ';
-                this.timer = setTimeout(this.RepeatExc, 1000);
+                let that = this;
+                this.setTimer(that);
                 break;
         }
     }
@@ -214,12 +215,7 @@ class Training {
                     this.secExcTab[this.trainingNumber].DoExcersise();
 
                     let that = this;
-                    this.timer = setTimeout(
-                        function(){
-                            that.RepeatExc();
-                        },
-                        1000
-                    );
+                    this.setTimer(that);
                 }
                 break;
             case 1: //amount
@@ -236,6 +232,15 @@ class Training {
                 break;
         }
         
+    }
+
+    setTimer(that) {
+        this.timer = setTimeout(
+            function () {
+                that.RepeatExc();
+            },
+            1000
+        );
     }
 
     setAttributes(){
