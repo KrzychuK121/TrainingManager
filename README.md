@@ -23,9 +23,9 @@ There are few default accounts. These accounts allows you to test full potential
 
 ### Administrator account
 **login:** admin<br>
-**password:** admin1234<br>
+**password:** Adm1nP@ss<br>
 
 ### User accounts
 **User**
 **login:** user<br>
-**password:** user12345<br>
+**password:** UserP@ssw0rd<br>
