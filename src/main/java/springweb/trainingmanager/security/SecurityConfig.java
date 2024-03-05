@@ -18,6 +18,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import springweb.trainingmanager.models.entities.User;
 import springweb.trainingmanager.models.viewmodels.user.MyUserDetails;
+import springweb.trainingmanager.services.MyUserDetailsService;
 
 import java.io.IOException;
 
@@ -33,7 +34,9 @@ import static org.springframework.security.config.Customizer.withDefaults;
 public class SecurityConfig {
     private final HttpSession session;
 
-    public SecurityConfig(final HttpSession session) {
+    public SecurityConfig(
+        final HttpSession session
+    ) {
         this.session = session;
     }
 
@@ -78,17 +81,4 @@ public class SecurityConfig {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-
-    /*@Bean
-    public InMemoryUserDetailsManager userDetailsService(PasswordEncoder passwordEncoder) {
-        UserDetails user = User.withUsername("user")
-                .password(passwordEncoder.encode("user"))
-                .roles("USER")
-                .build();
-        UserDetails admin = User.withUsername("admin")
-                .password(passwordEncoder.encode("admin"))
-                .roles("ADMIN")
-                .build();
-        return new InMemoryUserDetailsManager(user, admin);
-    }*/
 }
