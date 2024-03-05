@@ -22,10 +22,10 @@ This project was created using **Spring Boot v.3.2.2**. Please make sure you hav
 There are few default accounts. These accounts allows you to test full potential of the application.
 
 ### Administrator account
-**login:** admin<br>
+**login:** Administrator<br>
 **password:** Adm1nP@ss<br>
 
 ### User accounts
 **User**
-**login:** user<br>
+**login:** Uzytkownik<br>
 **password:** UserP@ssw0rd<br>
