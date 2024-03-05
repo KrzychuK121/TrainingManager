@@ -53,8 +53,16 @@ public class MyUserDetailsService implements UserDetailsManager {
     @Override
     public void changePassword(String oldPassword, String newPassword) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        MyUserDetails userDetails = (MyUserDetails)auth.getPrincipal();
-        return;
+        if(auth == null)
+            throw new IllegalStateException("Nie można zmienić hasła ponieważ użytkownik nie jest zalogowany.");
+
+        MyUserDetails userDetails = (MyUserDetails) auth.getPrincipal();
+        User userToUpdate = userDetails.getUser();
+
+        userToUpdate.setPassword(newPassword);
+        userToUpdate.setPasswordHashed(encoder.encode(newPassword));
+
+        repository.save(userToUpdate);
     }
 
     @Override
