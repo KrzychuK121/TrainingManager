@@ -21,6 +21,7 @@ public abstract class UserSchema {
     @Column(nullable = false, unique = true)
     protected String username;
 
+    @Transient
     @Length(min = 8, max = 30, message = "Hasło musi mieć od 8 do 30 znaków")
     protected String password;
 
