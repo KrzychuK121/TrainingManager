@@ -10,12 +10,8 @@ public class UserWrite extends UserSchema {
     @Transient
     @NotBlank(message = "Powtórz hasło.")
     private String passwordRepeat;
-    @Transient
-    private final PasswordEncoder encoder;
 
-    public UserWrite(final PasswordEncoder encoder) {
-        this.encoder = encoder;
-    }
+    public UserWrite() { }
 
     public String getPasswordRepeat() {
         return passwordRepeat;
@@ -31,7 +27,7 @@ public class UserWrite extends UserSchema {
         toReturn.setUsername(username);
         toReturn.setFirstName(firstName);
         toReturn.setLastName(lastName);
-        toReturn.setPasswordHashed(encoder.encode(password));
+        toReturn.setPassword(password);
 
         return toReturn;
     }
