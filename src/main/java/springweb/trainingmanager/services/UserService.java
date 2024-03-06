@@ -3,31 +3,36 @@ package springweb.trainingmanager.services;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import springweb.trainingmanager.models.entities.Role;
+import springweb.trainingmanager.models.entities.Training;
 import springweb.trainingmanager.models.entities.User;
+import springweb.trainingmanager.models.viewmodels.training.TrainingExercise;
 import springweb.trainingmanager.models.viewmodels.user.MyUserDetails;
 import springweb.trainingmanager.models.viewmodels.user.UserWrite;
 import springweb.trainingmanager.repositories.forcontrollers.RoleRepository;
 import springweb.trainingmanager.repositories.forcontrollers.UserRepository;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Service
 public class UserService {
     private final MyUserDetailsService userDetailsService;
     private final UserRepository repository;
-    private final RoleRepository roleRepository;
+    private final RoleService roleService;
     private final PasswordEncoder encoder;
     public static final String PASSWORDS_NOT_EQUAL_MESSAGE = "Hasła się różnią. Sprawdź poprawność haseł";
 
     public UserService(
         final MyUserDetailsService userDetailsService,
         final UserRepository repository,
-        final RoleRepository roleRepository,
+        final RoleService roleService,
         final PasswordEncoder encoder
     ) {
         this.userDetailsService = userDetailsService;
         this.repository = repository;
-        this.roleRepository = roleRepository;
+        this.roleService = roleService;
         this.encoder = encoder;
     }
 
@@ -41,22 +46,44 @@ public class UserService {
         if(!ifPasswordsMatches(toSave.getPassword(), toSave.getPasswordRepeat()))
             throw new IllegalArgumentException(PASSWORDS_NOT_EQUAL_MESSAGE);
 
+        Set<Role> rolesToSave = prepRoles(roles);
+
         User userToSave = toSave.toUser();
         userToSave.setPasswordHashed(encoder.encode(toSave.getPassword()));
-        userToSave.setRoles(roles);
+        userToSave.setRoles(rolesToSave);
 
-        roles.forEach(
+        rolesToSave.forEach(
             role -> {
                 Set<User> users = role.getUsers();
                 users.add(userToSave);
 
                 role.setUsers(users);
-                roleRepository.save(role);
+                roleService.save(role);
             }
         );
         userDetailsService.createUser(new MyUserDetails(userToSave));
-        //User saved = ((MyUserDetails) userDetailsService.loadUserByUsername(toSave.getUsername())).getUser();
 
+    }
+
+    private Set<Role> prepRoles(Set<Role> roles){
+        if(roles == null || roles.isEmpty())
+            return null;
+
+        Set<Role> rolesToSave = new HashSet<>(roles.size());
+        roles.forEach(
+            role -> {
+                Role found = roleService.getOptionalRoleByName(role.getName())
+                    .orElse(role);
+
+                if(found.getId() == 0){
+                    var savedRole = roleService.save(found);
+                    rolesToSave.add(savedRole);
+                }else
+                    rolesToSave.add(found);
+
+            }
+        );
+        return rolesToSave;
     }
 
 }
