@@ -7,20 +7,14 @@ import jakarta.validation.constraints.NotBlank;
 import org.hibernate.validator.constraints.Length;
 import springweb.trainingmanager.models.entities.Exercise;
 import springweb.trainingmanager.models.entities.Training;
+import springweb.trainingmanager.models.schemas.TrainingSchema;
 import springweb.trainingmanager.models.viewmodels.exercise.ExerciseRead;
 import springweb.trainingmanager.models.viewmodels.exercise.ExerciseTraining;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class TrainingRead {
-    private final int id;
-    @NotBlank(message = "Tytuł treningu jest wymagany")
-    @Length(min = 3, max = 100, message = "Tytuł musi mieścić się między 3 a 100 znaków")
-    protected String title;
-    @NotBlank(message = "Opis nie może być pusty")
-    @Length(min = 3, max = 300, message = "Opis musi mieścić się między 3 a 300 znaków")
-    protected String description;
+public class TrainingRead extends TrainingSchema {
     protected List<ExerciseTraining> exercises;
 
     public TrainingRead(Training training) {
@@ -38,20 +32,8 @@ public class TrainingRead {
         return result;
     }
 
-    public int getId() {
-        return id;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
     public void setTitle(String title) {
         this.title = title;
-    }
-
-    public String getDescription() {
-        return description;
     }
 
     public void setDescription(String description) {
