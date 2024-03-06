@@ -65,7 +65,6 @@ public class UserManagerController {
         if(result.hasErrors())
             return "userManager/register";
 
-        // TODO: Make it download from repository and then sent to the user service
         Role roleUser = new Role();
         roleUser.setName("ROLE_USER");
 
