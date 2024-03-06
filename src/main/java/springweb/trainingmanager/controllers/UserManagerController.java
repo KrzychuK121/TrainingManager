@@ -21,6 +21,7 @@ import springweb.trainingmanager.repositories.forcontrollers.RoleRepository;
 import springweb.trainingmanager.repositories.forcontrollers.UserRepository;
 import springweb.trainingmanager.services.UserService;
 
+import java.util.List;
 import java.util.Set;
 
 @Controller
@@ -49,7 +50,7 @@ public class UserManagerController {
 
     @GetMapping("/register")
     String register(Model model){
-        model.addAttribute("user", new UserWrite(encoder));
+        model.addAttribute("user", new UserWrite());
         return "userManager/register";
     }
 
@@ -64,8 +65,12 @@ public class UserManagerController {
         if(result.hasErrors())
             return "userManager/register";
 
+        // TODO: Make it download from repository and then sent to the user service
+        Role roleUser = new Role();
+        roleUser.setName("ROLE_USER");
+
         try {
-            service.register(current);
+            service.register(current, Set.of(roleUser));
         } catch (IllegalArgumentException e){
             logger.error("Wystąpił wyjątek: " + e.getMessage());
             model.addAttribute("messType", "danger");
