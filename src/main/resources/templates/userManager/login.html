@@ -4,6 +4,7 @@
 <body>
     <header th:replace="~{defaulttemplate :: header}" id="h_menu" class="container-fluid"></header>
     <div class="container">
+        <div th:replace="~{defaulttemplate :: alert}"></div>
         <main>
             <form th:action="@{/login}" method='POST'>
                 <fieldset>
