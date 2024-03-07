@@ -6,21 +6,24 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import springweb.trainingmanager.models.entities.Exercise;
+import springweb.trainingmanager.models.entities.Role;
 import springweb.trainingmanager.models.entities.Training;
-import springweb.trainingmanager.models.viewmodels.exercise.ExerciseRead;
+import springweb.trainingmanager.models.schemas.RoleSchema;
 import springweb.trainingmanager.models.viewmodels.exercise.ExerciseTraining;
-import springweb.trainingmanager.models.viewmodels.training.TrainingExercise;
 import springweb.trainingmanager.models.viewmodels.training.TrainingRead;
 import springweb.trainingmanager.models.viewmodels.training.TrainingWrite;
+import springweb.trainingmanager.models.viewmodels.user.MyUserDetails;
 import springweb.trainingmanager.repositories.forcontrollers.ExerciseRepository;
 import springweb.trainingmanager.services.TrainingService;
 
 import java.net.URI;
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -53,7 +56,7 @@ public class TrainingController {
     )
     @ResponseBody
     ResponseEntity<TrainingRead> create(@RequestBody @Valid TrainingWrite toCreate){
-        Training created = service.create(toCreate);
+        Training created = service.create(toCreate, null);
         var trainingRead = new TrainingRead(created);
         return ResponseEntity.created(
             URI.create("/training/" + created.getId())
@@ -69,7 +72,7 @@ public class TrainingController {
         if(selected != null && selected.length > exerciseSelectList.size())
             throw new IllegalStateException("Lista zaznaczonych elementów nie może być mniejsza niż lista wszystkich elementów.");
         model.addAttribute("allExercises", exerciseSelectList);
-        if(selected.length != 0){
+        if(selected != null && selected.length != 0){
             List<Integer> selectedInt = new ArrayList<>();
             for(String sel : selected){
                 if(sel.isBlank())
@@ -122,6 +125,7 @@ public class TrainingController {
         @ModelAttribute("training") @Valid TrainingWrite toSave,
         BindingResult result,
         Model model,
+        Authentication auth,
         String[] exerciseIds
     ){
         if(result.hasErrors()){
@@ -130,9 +134,13 @@ public class TrainingController {
             return "training/save";
         }
 
+        MyUserDetails userDetails = (MyUserDetails) auth.getPrincipal();
+
+        boolean ifUser = userDetails.isInRole(RoleSchema.ROLE_USER);
+
         setExercisesById(toSave, exerciseIds);
 
-        service.create(toSave);
+        service.create(toSave, ifUser ? userDetails.getUser().getId() : null);
         prepExerciseSelect(model);
         model.addAttribute("action", "create");
         model.addAttribute("training", new TrainingWrite());
@@ -193,6 +201,16 @@ public class TrainingController {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(new TrainingRead(found));
+    }
+
+    @GetMapping(
+        value ="/api/users/{userId}",
+        produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    @ResponseBody
+    ResponseEntity<List<TrainingRead>> getByUserId(@PathVariable String userId){
+        List<TrainingRead> usersTrainings = service.getByUserId(userId);
+        return ResponseEntity.ok(usersTrainings);
     }
 
     @Secured({"ROLE_USER", "ROLE_ADMIN"})
