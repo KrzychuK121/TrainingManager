@@ -119,13 +119,13 @@ public class TrainingService {
         if(toEdit == null)
             return;
         toEdit.forEach(
-                user -> {
-                    if(ifAdd)
-                        user.getTrainings().add(toAddOrRemove);
-                    else
-                        user.getTrainings().remove(toAddOrRemove);
-                    userRepository.save(user);
-                }
+            user -> {
+                if(ifAdd)
+                    user.getTrainings().add(toAddOrRemove);
+                else
+                    user.getTrainings().remove(toAddOrRemove);
+                userRepository.save(user);
+            }
         );
     }
 
