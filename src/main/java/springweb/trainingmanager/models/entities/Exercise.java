@@ -19,7 +19,6 @@ import java.util.Objects;
 public class Exercise extends ExerciseSchema {
     @ManyToMany(mappedBy = "exercises")
     @Valid
-    //@JsonIgnore
     private List<Training> trainings = new ArrayList<>();
 
     public Exercise(){ }
