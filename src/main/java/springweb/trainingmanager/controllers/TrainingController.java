@@ -21,6 +21,7 @@ import springweb.trainingmanager.models.viewmodels.training.TrainingWrite;
 import springweb.trainingmanager.models.viewmodels.user.MyUserDetails;
 import springweb.trainingmanager.repositories.forcontrollers.ExerciseRepository;
 import springweb.trainingmanager.services.TrainingService;
+import springweb.trainingmanager.services.UserService;
 
 import java.net.URI;
 import java.security.Principal;
@@ -46,11 +47,10 @@ public class TrainingController {
     String getTitle(){ return "TrainingM - Treningi"; }
 
     List<TrainingRead> getTrainings(Authentication auth){
-        MyUserDetails userDetails = (MyUserDetails) auth.getPrincipal();
-        boolean ifUser = userDetails.isInRole(RoleSchema.ROLE_USER);
+        String userId = UserService.getUserIdByAuth(auth);
 
-        return ifUser ?
-        service.getByUserId(userDetails.getUser().getId()) :
+        return userId != null ?
+        service.getByUserId(userId) :
         service.getAll();
     }
 
@@ -139,13 +139,9 @@ public class TrainingController {
             return "training/save";
         }
 
-        MyUserDetails userDetails = (MyUserDetails) auth.getPrincipal();
-
-        boolean ifUser = userDetails.isInRole(RoleSchema.ROLE_USER);
-
         setExercisesById(toSave, exerciseIds);
 
-        service.create(toSave, ifUser ? userDetails.getUser().getId() : null);
+        service.create(toSave, UserService.getUserIdByAuth(auth));
         prepExerciseSelect(model);
         model.addAttribute("action", "create");
         model.addAttribute("training", new TrainingWrite());
@@ -201,7 +197,7 @@ public class TrainingController {
     ResponseEntity<TrainingRead> getById(@PathVariable int id){
         Training found = null;
         try {
-            found = service.getById(id);
+            found = service.getById(id, null);
         } catch(IllegalArgumentException e) {
             logger.error("Wystąpił wyjątek: " + e.getMessage());
             return ResponseEntity.notFound().build();
@@ -231,7 +227,7 @@ public class TrainingController {
     ){
         Training found = null;
         try {
-            found = service.getById(id);
+            found = service.getById(id, UserService.getUserIdByAuth(auth));
         } catch(IllegalArgumentException e) {
             logger.error("Wystąpił wyjątek: " + e.getMessage());
             model.addAttribute("messType", "danger");
@@ -263,7 +259,7 @@ public class TrainingController {
         @PathVariable int id
     ){
         try {
-            service.edit(toEdit, id);
+            service.edit(toEdit, id, null);
         } catch(IllegalArgumentException e) {
             logger.error("Wystąpił wyjątek: " + e.getMessage());
             return ResponseEntity.notFound().build();
@@ -275,15 +271,17 @@ public class TrainingController {
     @GetMapping("/edit/{id}")
     public String editView(
         @PathVariable int id,
-        Model model
+        Model model,
+        Authentication auth
     ){
         TrainingRead toEdit = null;
         try {
-            toEdit = new TrainingRead(service.getById(id));
+            toEdit = new TrainingRead(service.getById(id, UserService.getUserIdByAuth(auth)));
         } catch(IllegalArgumentException e) {
             logger.error("Wystąpił wyjątek: " + e.getMessage());
             model.addAttribute("messType", "danger");
             model.addAttribute("mess", "Nie można edytować. " + e.getMessage());
+            model.addAttribute("trainings", getTrainings(auth));
             return "training/index";
         }
 
@@ -328,7 +326,7 @@ public class TrainingController {
         setExercisesById(toEdit, exerciseIds);
 
         try {
-            service.edit(toEdit, id);
+            service.edit(toEdit, id, UserService.getUserIdByAuth(auth));
         } catch(IllegalArgumentException e) {
             logger.error("Wystąpił wyjątek: " + e.getMessage());
             model.addAttribute("message", "Wystąpił problem przy edycji. " + e.getMessage());
@@ -348,7 +346,7 @@ public class TrainingController {
     @ResponseBody
     public ResponseEntity<?> delete(@PathVariable int id){
         try {
-            service.delete(id);
+            service.delete(id, null);
         } catch(IllegalArgumentException e) {
             logger.error("Wystąpił wyjątek: " + e.getMessage());
             return ResponseEntity.notFound().build();
@@ -368,7 +366,7 @@ public class TrainingController {
         Authentication auth
     ){
         try {
-            service.delete(id);
+            service.delete(id, UserService.getUserIdByAuth(auth));
         } catch(IllegalArgumentException e) {
             logger.error("Wystąpił wyjątek: " + e.getMessage());
             model.addAttribute("messType", "danger");
