@@ -190,6 +190,16 @@ public class ExerciseController {
         return ResponseEntity.ok(found);
     }
 
+    // TODO: Make implementation of this method
+    /*@GetMapping(
+        value = "/api/{userId}",
+        produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    @ResponseBody
+    public ResponseEntity<List<ExerciseRead>> getByUserId(@PathVariable String userId){
+        return ResponseEntity.noContent().build();
+    }*/
+
     @PutMapping(
         value = "/api/{id}",
         produces = MediaType.APPLICATION_JSON_VALUE,
