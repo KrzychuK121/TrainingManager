@@ -17,7 +17,7 @@ import java.util.Optional;
 @Repository
 interface SqlTrainingRepository extends TrainingRepository, JpaRepository<Training, Integer> {
     @Override
-    @Query("SELECT t FROM Training t LEFT JOIN FETCH t.exercises")
+    @Query("SELECT t FROM Training t LEFT JOIN FETCH t.exercises LEFT JOIN FETCH t.users")
     List<Training> findAll();
 
     @Override
