@@ -45,8 +45,13 @@ public class TrainingController {
     @ModelAttribute("title")
     String getTitle(){ return "TrainingM - Treningi"; }
 
-    List<TrainingRead> getTrainings(){
-        return TrainingRead.toTrainingReadList(service.getAll());
+    List<TrainingRead> getTrainings(Authentication auth){
+        MyUserDetails userDetails = (MyUserDetails) auth.getPrincipal();
+        boolean ifUser = userDetails.isInRole(RoleSchema.ROLE_USER);
+
+        return ifUser ?
+        service.getByUserId(userDetails.getUser().getId()) :
+        service.getAll();
     }
 
     @PostMapping(
@@ -173,17 +178,18 @@ public class TrainingController {
     )
     @ResponseBody
     ResponseEntity<List<TrainingRead>> getAll(){
-        return ResponseEntity.ok(
-            TrainingRead.toTrainingReadList(service.getAll())
-        );
+        return ResponseEntity.ok(service.getAll());
     }
 
     @Secured({"ROLE_USER", "ROLE_ADMIN"})
     @GetMapping(
         produces = MediaType.TEXT_HTML_VALUE
     )
-    String getAllView(Model model){
-        model.addAttribute("trainings", getTrainings());
+    String getAllView(
+        Model model,
+        Authentication auth
+    ){
+        model.addAttribute("trainings", getTrainings(auth));
         return "training/index";
     }
 
@@ -220,7 +226,8 @@ public class TrainingController {
     )
     String train(
         @PathVariable int id,
-        Model model
+        Model model,
+        Authentication auth
     ){
         Training found = null;
         try {
@@ -229,7 +236,7 @@ public class TrainingController {
             logger.error("Wystąpił wyjątek: " + e.getMessage());
             model.addAttribute("messType", "danger");
             model.addAttribute("mess", e.getMessage());
-            model.addAttribute("trainings", getTrainings());
+            model.addAttribute("trainings", getTrainings(auth));
             return "training/index";
         }
 
@@ -237,7 +244,7 @@ public class TrainingController {
             logger.warn("Wystąpił problem: brak ćwiczeń");
             model.addAttribute("messType", "danger");
             model.addAttribute("mess", "Wybierz trening zawierający ćwiczenia!");
-            model.addAttribute("trainings", getTrainings());
+            model.addAttribute("trainings", getTrainings(auth));
             return "training/index";
         }
 
@@ -308,8 +315,9 @@ public class TrainingController {
         @PathVariable int id,
         @ModelAttribute("exercise") @Valid TrainingWrite toEdit,
         BindingResult result,
-        String[] exerciseIds,
-        Model model
+        Model model,
+        Authentication auth,
+        String[] exerciseIds
     ){
         if(result.hasErrors()){
             model.addAttribute("action", "edit/" + id);
@@ -326,7 +334,7 @@ public class TrainingController {
             model.addAttribute("message", "Wystąpił problem przy edycji. " + e.getMessage());
         }
 
-        model.addAttribute("trainings", getTrainings());
+        model.addAttribute("trainings", getTrainings(auth));
         model.addAttribute("messType", "success");
         model.addAttribute("mess", "Edycja przeszła pomyślnie.");
         return "training/index";
@@ -356,7 +364,8 @@ public class TrainingController {
     )
     public String deleteView(
         @PathVariable int id,
-        Model model
+        Model model,
+        Authentication auth
     ){
         try {
             service.delete(id);
@@ -366,7 +375,7 @@ public class TrainingController {
             model.addAttribute("mess", "Nie można usunąć. " + e.getMessage());
             return "training/index";
         } finally {
-            model.addAttribute("trainings", getTrainings());
+            model.addAttribute("trainings", getTrainings(auth));
         }
         model.addAttribute("mess", "Pomyślnie usunięto wiersz.");
         model.addAttribute("messType", "success");
