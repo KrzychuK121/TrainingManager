@@ -1,10 +1,12 @@
 package springweb.trainingmanager.services;
 
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import springweb.trainingmanager.models.entities.Role;
 import springweb.trainingmanager.models.entities.Training;
 import springweb.trainingmanager.models.entities.User;
+import springweb.trainingmanager.models.schemas.RoleSchema;
 import springweb.trainingmanager.models.viewmodels.training.TrainingExercise;
 import springweb.trainingmanager.models.viewmodels.user.MyUserDetails;
 import springweb.trainingmanager.models.viewmodels.user.UserWrite;
@@ -34,6 +36,23 @@ public class UserService {
         this.repository = repository;
         this.roleService = roleService;
         this.encoder = encoder;
+    }
+
+    /**
+     * Method that gets authentication object, gets MyUserDetails out
+     * of it and then returns its id.
+     *
+     * @param auth Authentication object
+     *
+     * @return If logged user is in role ROLE_USER then returns his id.
+     *         Otherwise, returns null
+     */
+    public static String getUserIdByAuth(Authentication auth){
+        MyUserDetails userDetails = (MyUserDetails) auth.getPrincipal();
+        // TODO: Check if the user has role ADMIN. If yes, then return null too (just in case)
+        return userDetails.isInRole(RoleSchema.ROLE_USER) ?
+        userDetails.getUser().getId() :
+        null;
     }
 
     public boolean ifPasswordsMatches(String password, String passwordRepeat){
