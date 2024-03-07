@@ -129,8 +129,10 @@ public class TrainingService {
         );
     }
 
-    public List<Training> getAll(){
-        return repository.findAll();
+    public List<TrainingRead> getAll(){
+        return TrainingRead.toTrainingReadList(
+            repository.findAll()
+        );
     }
 
     public Training getById(int id){
