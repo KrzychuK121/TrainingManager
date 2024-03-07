@@ -135,11 +135,24 @@ public class TrainingService {
         );
     }
 
-    public Training getById(int id){
-        return repository.findById(id)
+    public Training getById(int id, String userId){
+        Training found = repository.findById(id)
             .orElseThrow(
-                () -> new IllegalArgumentException("Nie znaleziono treningu o podanym numerze id")
+                () -> new IllegalArgumentException("Nie znaleziono treningu o podanym numerze id.")
             );
+
+        if(userId == null)
+            return found;
+
+        if(
+            found.getUsers().stream()
+            .anyMatch(
+                user -> user.getId().equals(userId)
+            )
+        )
+            return found;
+        else
+            throw new IllegalArgumentException("Nie masz dostępu do tego treningu.");
     }
 
     // TODO: Use it in controller when ROLE_USER registered, otherwise normal getAll
@@ -156,19 +169,19 @@ public class TrainingService {
         return usersTrainings;
     }
 
-    public void edit(TrainingWrite toEdit, int id){
+    public void edit(TrainingWrite toEdit, int id, String userId){
         List<Exercise> preparedExerciseList = prepExercises(toEdit.getExercises());
         toEdit.setExercises(ExerciseTraining.toExerciseTrainingList(preparedExerciseList));
 
-        Training toSave = getById(id);
+        Training toSave = getById(id, userId);
         editTrainingInExercises(toSave, toSave.getExercises(), false);
 
         toSave.copy(toEdit.toTraining());
         var saved = repository.save(toSave);
         editTrainingInExercises(saved, saved.getExercises(), true);
     }
-    public void delete(int id){
-        var toDelete = getById(id);
+    public void delete(int id, String userId){
+        var toDelete = getById(id, userId);
         editTrainingInExercises(toDelete, toDelete.getExercises(), false);
         editTrainingInUsers(toDelete, toDelete.getUsers(), false);
 
