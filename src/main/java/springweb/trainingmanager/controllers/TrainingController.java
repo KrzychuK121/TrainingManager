@@ -3,6 +3,7 @@ package springweb.trainingmanager.controllers;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
@@ -24,6 +25,7 @@ import springweb.trainingmanager.services.TrainingService;
 import springweb.trainingmanager.services.UserService;
 
 import java.net.URI;
+import java.net.http.HttpResponse;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
@@ -89,7 +91,7 @@ public class TrainingController {
 
     }
 
-    @Secured({"ROLE_USER", "ROLE_ADMIN"})
+    @Secured({RoleSchema.ROLE_ADMIN, RoleSchema.ROLE_USER})
     @GetMapping(
         value = "/create",
         produces = MediaType.TEXT_HTML_VALUE
@@ -102,7 +104,7 @@ public class TrainingController {
         return "training/save";
     }
 
-    @Secured({"ROLE_USER", "ROLE_ADMIN"})
+    @Secured({RoleSchema.ROLE_ADMIN, RoleSchema.ROLE_USER})
     @PostMapping(
         value = {"/create", "/edit/*"},
         params = "addExercise",
@@ -120,7 +122,7 @@ public class TrainingController {
         return "training/save";
     }
 
-    @Secured({"ROLE_USER", "ROLE_ADMIN"})
+    @Secured({RoleSchema.ROLE_ADMIN, RoleSchema.ROLE_USER})
     @PostMapping(
         value = "/create",
         produces = MediaType.TEXT_HTML_VALUE,
@@ -177,7 +179,7 @@ public class TrainingController {
         return ResponseEntity.ok(service.getAll());
     }
 
-    @Secured({"ROLE_USER", "ROLE_ADMIN"})
+    @Secured({RoleSchema.ROLE_ADMIN, RoleSchema.ROLE_USER})
     @GetMapping(
         produces = MediaType.TEXT_HTML_VALUE
     )
@@ -189,17 +191,23 @@ public class TrainingController {
         return "training/index";
     }
 
+    @Secured({RoleSchema.ROLE_ADMIN, RoleSchema.ROLE_USER})
     @GetMapping(
         value = "/api/{id}",
         produces = MediaType.APPLICATION_JSON_VALUE
     )
     @ResponseBody
-    ResponseEntity<TrainingRead> getById(@PathVariable int id){
+    ResponseEntity<TrainingRead> getById(
+        @PathVariable int id,
+        Authentication auth
+    ){
         Training found = null;
         try {
-            found = service.getById(id, null);
+            found = service.getById(id, UserService.getUserIdByAuth(auth));
         } catch(IllegalArgumentException e) {
             logger.error("Wystąpił wyjątek: " + e.getMessage());
+            if(e.getMessage().contains("Nie masz dostępu"))
+                return new ResponseEntity(e.getMessage(), HttpStatus.UNAUTHORIZED);
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(new TrainingRead(found));
@@ -215,7 +223,7 @@ public class TrainingController {
         return ResponseEntity.ok(usersTrainings);
     }
 
-    @Secured({"ROLE_USER", "ROLE_ADMIN"})
+    @Secured({RoleSchema.ROLE_ADMIN, RoleSchema.ROLE_USER})
     @GetMapping(
         value = "/train/{id}",
         produces = MediaType.TEXT_HTML_VALUE
@@ -267,7 +275,7 @@ public class TrainingController {
         return ResponseEntity.noContent().build();
     }
 
-    @Secured({"ROLE_USER", "ROLE_ADMIN"})
+    @Secured({RoleSchema.ROLE_ADMIN, RoleSchema.ROLE_USER})
     @GetMapping("/edit/{id}")
     public String editView(
         @PathVariable int id,
@@ -304,7 +312,7 @@ public class TrainingController {
         return selected;
     }
 
-    @Secured({"ROLE_USER", "ROLE_ADMIN"})
+    @Secured({RoleSchema.ROLE_ADMIN, RoleSchema.ROLE_USER})
     @PostMapping(
         value = "/edit/{id}",
         params = "!addExercise"
@@ -355,7 +363,7 @@ public class TrainingController {
         return ResponseEntity.noContent().build();
     }
 
-    @Secured("ROLE_ADMIN")
+    @Secured(RoleSchema.ROLE_ADMIN)
     @GetMapping(
         value = "/delete/{id}",
         produces = MediaType.TEXT_HTML_VALUE
