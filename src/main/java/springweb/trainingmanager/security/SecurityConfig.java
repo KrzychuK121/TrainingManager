@@ -71,7 +71,8 @@ public class SecurityConfig {
             .logout(withDefaults())
             .exceptionHandling( exep -> exep
                 .accessDeniedPage("/access-denied")
-            ).csrf(AbstractHttpConfigurer::disable);
+            ).csrf(AbstractHttpConfigurer::disable)
+            .httpBasic(Customizer.withDefaults());
         return http.build();
     }
 
