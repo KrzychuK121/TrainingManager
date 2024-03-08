@@ -12,6 +12,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import springweb.trainingmanager.models.entities.Exercise;
 import springweb.trainingmanager.models.entities.Training;
+import springweb.trainingmanager.models.schemas.RoleSchema;
 import springweb.trainingmanager.models.viewmodels.exercise.ExerciseRead;
 import springweb.trainingmanager.models.viewmodels.exercise.ExerciseWrite;
 import springweb.trainingmanager.models.viewmodels.training.TrainingExercise;
@@ -84,7 +85,7 @@ public class ExerciseController {
 
     }
 
-    @Secured({"ROLE_USER", "ROLE_ADMIN"})
+    @Secured({RoleSchema.ROLE_ADMIN, RoleSchema.ROLE_USER})
     @GetMapping(
         value = "/create",
         produces = MediaType.TEXT_HTML_VALUE
@@ -96,7 +97,7 @@ public class ExerciseController {
         return "exercise/save";
     }
 
-    @Secured({"ROLE_USER", "ROLE_ADMIN"})
+    @Secured({RoleSchema.ROLE_ADMIN, RoleSchema.ROLE_USER})
     @PostMapping(
         value = "/create",
         produces = MediaType.TEXT_HTML_VALUE,
@@ -153,7 +154,7 @@ public class ExerciseController {
         }
     }
 
-    @Secured({"ROLE_USER", "ROLE_ADMIN"})
+    @Secured({RoleSchema.ROLE_ADMIN, RoleSchema.ROLE_USER})
     @GetMapping(produces = MediaType.TEXT_HTML_VALUE)
     public String getAllView(Model model){
         model.addAttribute("exercises", getExercises());
@@ -220,6 +221,7 @@ public class ExerciseController {
         return ResponseEntity.noContent().build();
     }
 
+    @Secured({RoleSchema.ROLE_ADMIN, RoleSchema.ROLE_USER})
     @GetMapping("/edit/{id}")
     public String editView(
         @PathVariable int id,
@@ -254,6 +256,7 @@ public class ExerciseController {
     }
 
 
+    @Secured({RoleSchema.ROLE_ADMIN, RoleSchema.ROLE_USER})
     @PostMapping("/edit/{id}")
     public String editView(
         @PathVariable int id,
@@ -299,7 +302,7 @@ public class ExerciseController {
         return ResponseEntity.noContent().build();
     }
 
-    @Secured("ROLE_ADMIN")
+    @Secured(RoleSchema.ROLE_ADMIN)
     @GetMapping(
         value = "/delete/{id}",
         produces = MediaType.TEXT_HTML_VALUE
