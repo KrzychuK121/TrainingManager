@@ -13,17 +13,11 @@ import java.util.Optional;
 public interface TrainingRepository {
 
     List<Training> findAll();
-
-    Training save(Training entity);
-
-    Optional<Training> findById(Integer integer);
-
-    boolean existsById(Integer integer);
-
     Page<Training> findAll(Pageable pageable);
-
+    Optional<Training> findById(Integer integer);
     Optional<Training> findByTraining(Training training);
-
+    Training save(Training entity);
+    boolean existsById(Integer integer);
     void deleteById(Integer integer);
     void delete(Training entity);
 }
