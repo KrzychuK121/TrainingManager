@@ -140,7 +140,10 @@
                 th:action="@{/training}"
                 th:object="${pages}"
             >
-                <div class="row justify-content-center">
+                <div
+                    class="row justify-content-center"
+                    th:if="${pages != null}"
+                >
                     <input type="submit" hidden/> <!--If pressed enter in input name="page", then will submit the form-->
                     <button
                             class="btn btn-primary col-sm-1"
