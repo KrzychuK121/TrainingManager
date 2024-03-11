@@ -7,21 +7,20 @@ import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.WebAttributes;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import springweb.trainingmanager.models.entities.Role;
-import springweb.trainingmanager.models.entities.User;
 import springweb.trainingmanager.models.viewmodels.user.UserWrite;
-import springweb.trainingmanager.repositories.forcontrollers.RoleRepository;
-import springweb.trainingmanager.repositories.forcontrollers.UserRepository;
 import springweb.trainingmanager.services.UserService;
 
-import java.util.List;
+import javax.naming.AuthenticationException;
 import java.util.Set;
 
 @Controller
@@ -43,11 +42,29 @@ public class UserManagerController {
     String getTitle(){
         return "TrainingM - Użytkownik";
     }
+    
     @GetMapping("/login")
     String login(){
         return "userManager/login";
     }
 
+    @PostMapping("/loginErr")
+    String loginErr(HttpServletRequest request, Model model){
+        HttpSession session = request.getSession(false);
+        String errorMessage = "Nieprawidłowy login lub hasło.";
+        if (session != null) {
+            AuthenticationException ex = (AuthenticationException) session
+                .getAttribute(WebAttributes.AUTHENTICATION_EXCEPTION);
+            if (ex != null) {
+                errorMessage = ex.getMessage();
+            }
+        }
+        model.addAttribute("mess", errorMessage);
+        model.addAttribute("messType", "danger");
+        return "userManager/login";
+    }
+
+    
     @GetMapping("/register")
     String register(Model model){
         model.addAttribute("user", new UserWrite());
