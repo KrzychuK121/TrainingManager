@@ -70,7 +70,12 @@
                     </tr>
                 </tbody>
             </table>
-            <form th:replace="~{defaulttemplate :: pages-form(${pages})}"></form>
+            <form
+                th:insert="~{defaulttemplate :: pages-form(${pages})}"
+                action="#"
+                th:action="@{/exercise}"
+                th:object="${pages}"
+            ></form>
         </main>
     </div>
 <script th:replace="~{defaulttemplate :: setPageInput}"></script>

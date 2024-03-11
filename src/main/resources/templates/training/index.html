@@ -89,7 +89,12 @@
             </table>
             <hr />
         </div>
-        <form th:replace="~{defaulttemplate :: pages-form(${pages})}"></form>
+        <form
+            th:insert="~{defaulttemplate :: pages-form(${pages})}"
+            action="#"
+            th:action="@{/training}"
+            th:object="${pages}"
+        ></form>
     </main>
 </div>
 <script th:replace="~{defaulttemplate :: setPageInput}"></script>
