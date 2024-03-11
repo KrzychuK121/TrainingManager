@@ -132,6 +132,40 @@
                     </div>
                 </div>
             </div>
+            <!--Page change form-->
+            <!--/*@thymesVar id="pages" type="org.springframework.data.domain.Page"*/-->
+            <form
+                th:fragment="pages-form(pages)"
+                action="#"
+                th:action="@{/training}"
+                th:object="${pages}"
+            >
+                <div class="row justify-content-center">
+                    <input type="submit" hidden/> <!--If pressed enter in input name="page", then will submit the form-->
+                    <button
+                            class="btn btn-primary col-sm-1"
+                            th:onclick="|setPageInput(*{previousOrFirstPageable().getPageNumber()})|"
+                            type="submit"
+                            th:disabled="*{!hasPrevious()}"
+                    >
+                        <|====
+                    </button>
+                    <input
+                            class="col-sm-1"
+                            id="page"
+                            name="page"
+                            th:value="*{number}"
+                    />
+                    <button
+                            class="btn btn-primary col-sm-1"
+                            th:onclick="|setPageInput(*{nextOrLastPageable().getPageNumber()})|"
+                            type="submit"
+                            th:disabled="*{!hasNext()}"
+                    >
+                        ====|>
+                    </button>
+                </div>
+            </form>
         </main>
     </div>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
