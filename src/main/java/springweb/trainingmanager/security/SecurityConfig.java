@@ -69,6 +69,7 @@ public class SecurityConfig {
                         }
                     )
             )
+            .rememberMe(configurer -> Customizer.withDefaults())
             .logout(withDefaults())
             .exceptionHandling( exep -> exep
                 .accessDeniedPage("/access-denied")
