@@ -3,6 +3,9 @@ package springweb.trainingmanager.controllers;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -13,20 +16,16 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import springweb.trainingmanager.models.entities.Exercise;
-import springweb.trainingmanager.models.entities.Role;
 import springweb.trainingmanager.models.entities.Training;
 import springweb.trainingmanager.models.schemas.RoleSchema;
 import springweb.trainingmanager.models.viewmodels.exercise.ExerciseTraining;
 import springweb.trainingmanager.models.viewmodels.training.TrainingRead;
 import springweb.trainingmanager.models.viewmodels.training.TrainingWrite;
-import springweb.trainingmanager.models.viewmodels.user.MyUserDetails;
 import springweb.trainingmanager.repositories.forcontrollers.ExerciseRepository;
 import springweb.trainingmanager.services.TrainingService;
 import springweb.trainingmanager.services.UserService;
 
 import java.net.URI;
-import java.net.http.HttpResponse;
-import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,12 +47,21 @@ public class TrainingController {
     @ModelAttribute("title")
     String getTitle(){ return "TrainingM - Treningi"; }
 
-    List<TrainingRead> getTrainings(Authentication auth){
+    List<TrainingRead> getTrainings(
+        Authentication auth,
+        @PageableDefault(size = 2) Pageable page,
+        Model model
+    ){
         String userId = UserService.getUserIdByAuth(auth);
+        Page<TrainingRead> pagedList = null;
+        if(userId == null) {
+            pagedList = service.getAll(page);
+            model.addAttribute("pages", pagedList);
+        }
 
         return userId != null ?
         service.getByUserId(userId) :
-        service.getAll();
+        pagedList.getContent();
     }
 
     @PostMapping(
@@ -175,8 +183,11 @@ public class TrainingController {
         produces = MediaType.APPLICATION_JSON_VALUE
     )
     @ResponseBody
-    ResponseEntity<List<TrainingRead>> getAll(){
-        return ResponseEntity.ok(service.getAll());
+    ResponseEntity<List<TrainingRead>> getAll(@PageableDefault(size = 2) Pageable page){
+        return ResponseEntity.ok(
+            service.getAll(page)
+            .stream().toList()
+        );
     }
 
     @Secured({RoleSchema.ROLE_ADMIN, RoleSchema.ROLE_USER})
@@ -185,9 +196,10 @@ public class TrainingController {
     )
     String getAllView(
         Model model,
-        Authentication auth
+        Authentication auth,
+        @PageableDefault(size = 2) Pageable page
     ){
-        model.addAttribute("trainings", getTrainings(auth));
+        model.addAttribute("trainings", getTrainings(auth, page, model));
         return "training/index";
     }
 
@@ -231,7 +243,8 @@ public class TrainingController {
     String train(
         @PathVariable int id,
         Model model,
-        Authentication auth
+        Authentication auth,
+        @PageableDefault(size = 2) Pageable page
     ){
         Training found = null;
         try {
@@ -240,7 +253,7 @@ public class TrainingController {
             logger.error("Wystąpił wyjątek: " + e.getMessage());
             model.addAttribute("messType", "danger");
             model.addAttribute("mess", e.getMessage());
-            model.addAttribute("trainings", getTrainings(auth));
+            model.addAttribute("trainings", getTrainings(auth, page, model));
             return "training/index";
         }
 
@@ -248,7 +261,7 @@ public class TrainingController {
             logger.warn("Wystąpił problem: brak ćwiczeń");
             model.addAttribute("messType", "danger");
             model.addAttribute("mess", "Wybierz trening zawierający ćwiczenia!");
-            model.addAttribute("trainings", getTrainings(auth));
+            model.addAttribute("trainings", getTrainings(auth, page, model));
             return "training/index";
         }
 
@@ -280,7 +293,8 @@ public class TrainingController {
     public String editView(
         @PathVariable int id,
         Model model,
-        Authentication auth
+        Authentication auth,
+        @PageableDefault(size = 2) Pageable page
     ){
         TrainingRead toEdit = null;
         try {
@@ -289,7 +303,7 @@ public class TrainingController {
             logger.error("Wystąpił wyjątek: " + e.getMessage());
             model.addAttribute("messType", "danger");
             model.addAttribute("mess", "Nie można edytować. " + e.getMessage());
-            model.addAttribute("trainings", getTrainings(auth));
+            model.addAttribute("trainings", getTrainings(auth, page, model));
             return "training/index";
         }
 
@@ -323,6 +337,7 @@ public class TrainingController {
         BindingResult result,
         Model model,
         Authentication auth,
+        @PageableDefault(size = 2) Pageable page,
         String[] exerciseIds
     ){
         if(result.hasErrors()){
@@ -340,7 +355,7 @@ public class TrainingController {
             model.addAttribute("message", "Wystąpił problem przy edycji. " + e.getMessage());
         }
 
-        model.addAttribute("trainings", getTrainings(auth));
+        model.addAttribute("trainings", getTrainings(auth, page, model));
         model.addAttribute("messType", "success");
         model.addAttribute("mess", "Edycja przeszła pomyślnie.");
         return "training/index";
@@ -371,7 +386,8 @@ public class TrainingController {
     public String deleteView(
         @PathVariable int id,
         Model model,
-        Authentication auth
+        Authentication auth,
+        @PageableDefault(size = 2) Pageable page
     ){
         try {
             service.delete(id, UserService.getUserIdByAuth(auth));
@@ -381,7 +397,7 @@ public class TrainingController {
             model.addAttribute("mess", "Nie można usunąć. " + e.getMessage());
             return "training/index";
         } finally {
-            model.addAttribute("trainings", getTrainings(auth));
+            model.addAttribute("trainings", getTrainings(auth, page, model));
         }
         model.addAttribute("mess", "Pomyślnie usunięto wiersz.");
         model.addAttribute("messType", "success");
