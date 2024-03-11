@@ -54,6 +54,7 @@ public class SecurityConfig {
             .formLogin(
                 formLogin -> formLogin.loginPage("/login").permitAll()
                     .defaultSuccessUrl("/glowna")
+                    .failureForwardUrl("/loginErr")
                     .successHandler(
                         new SavedRequestAwareAuthenticationSuccessHandler() {
                             @Override
