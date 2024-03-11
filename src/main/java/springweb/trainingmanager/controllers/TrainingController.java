@@ -186,7 +186,7 @@ public class TrainingController {
     ResponseEntity<List<TrainingRead>> getAll(@PageableDefault(size = 2) Pageable page){
         return ResponseEntity.ok(
             service.getAll(page)
-            .stream().toList()
+            .getContent()
         );
     }
 
