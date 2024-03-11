@@ -2,6 +2,8 @@ package springweb.trainingmanager.services;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
@@ -131,10 +133,17 @@ public class TrainingService {
         );
     }
 
-    public List<TrainingRead> getAll(@PageableDefault(2) Pageable page){
-        return TrainingRead.toTrainingReadList(
-            repository.findAll(page).stream().toList()
-        );
+    public Page<TrainingRead> getAll(Pageable page){
+        Page<TrainingRead> toReturn = repository.findAll(page).map(TrainingRead::new);
+        if(toReturn.getContent().isEmpty())
+            toReturn = repository.findAll(
+                PageRequest.of(
+                    toReturn.getTotalPages() - 2,
+                    toReturn.getSize()
+                )
+            ).map(TrainingRead::new);
+
+        return toReturn;
     }
 
     public Training getById(int id, String userId){
