@@ -3,6 +3,9 @@ package springweb.trainingmanager.controllers;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
@@ -16,6 +19,7 @@ import springweb.trainingmanager.models.schemas.RoleSchema;
 import springweb.trainingmanager.models.viewmodels.exercise.ExerciseRead;
 import springweb.trainingmanager.models.viewmodels.exercise.ExerciseWrite;
 import springweb.trainingmanager.models.viewmodels.training.TrainingExercise;
+import springweb.trainingmanager.models.viewmodels.training.TrainingRead;
 import springweb.trainingmanager.repositories.forcontrollers.TrainingRepository;
 import springweb.trainingmanager.services.ExerciseService;
 
@@ -44,8 +48,13 @@ public class ExerciseController {
         return "TrainingM - Ćwiczenia";
     }
 
-    List<ExerciseRead> getExercises(){
-        return ExerciseRead.toExerciseReadList(service.getAll());
+    List<ExerciseRead> getExercises(
+        Pageable page,
+        Model model
+    ){
+        Page<ExerciseRead> pagedList =  service.getAll(page);
+        model.addAttribute("pages", pagedList);
+        return pagedList.getContent();
     }
 
     @PostMapping(
@@ -156,8 +165,11 @@ public class ExerciseController {
 
     @Secured({RoleSchema.ROLE_ADMIN, RoleSchema.ROLE_USER})
     @GetMapping(produces = MediaType.TEXT_HTML_VALUE)
-    public String getAllView(Model model){
-        model.addAttribute("exercises", getExercises());
+    public String getAllView(
+        Pageable page,
+        Model model
+    ){
+        model.addAttribute("exercises", getExercises(page, model));
         return "exercise/index";
     }
 
@@ -166,11 +178,12 @@ public class ExerciseController {
         produces = MediaType.APPLICATION_JSON_VALUE
     )
     @ResponseBody
-    public ResponseEntity<List<ExerciseRead>> getAll(){
+    public ResponseEntity<List<ExerciseRead>> getAll(
+        Pageable page
+    ){
         return ResponseEntity.ok(
-            ExerciseRead.toExerciseReadList(
-                service.getAll()
-            )
+            service.getAll(page)
+            .getContent()
         );
     }
 
@@ -263,6 +276,7 @@ public class ExerciseController {
         @ModelAttribute("exercise") @Valid ExerciseWrite toEdit,
         BindingResult result,
         String[] trainingIds,
+        Pageable page,
         Model model
     ){
         if(result.hasErrors()){
@@ -280,7 +294,7 @@ public class ExerciseController {
             model.addAttribute("message", "Wystąpił problem przy edycji. " + e.getMessage());
         }
 
-        model.addAttribute("exercises", getExercises());
+        model.addAttribute("exercises", getExercises(page, model));
         model.addAttribute("messType", "success");
         model.addAttribute("mess", "Edycja przeszła pomyślnie.");
         return "exercise/index";
@@ -309,6 +323,7 @@ public class ExerciseController {
     )
     public String deleteView(
         @PathVariable int id,
+        Pageable page,
         Model model
     ){
         try {
@@ -319,7 +334,7 @@ public class ExerciseController {
             model.addAttribute("mess", "Nie można usunąć. " + e.getMessage());
             return "exercise/index";
         } finally {
-            model.addAttribute("exercises", getExercises());
+            model.addAttribute("exercises", getExercises(page, model));
         }
         model.addAttribute("mess", "Pomyślnie usunięto wiersz.");
         model.addAttribute("messType", "success");
