@@ -1,6 +1,7 @@
 package springweb.trainingmanager.security;
 
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -21,6 +22,8 @@ import springweb.trainingmanager.models.viewmodels.user.MyUserDetails;
 import springweb.trainingmanager.services.MyUserDetailsService;
 
 import java.io.IOException;
+import java.net.HttpCookie;
+import java.util.Arrays;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
@@ -32,13 +35,9 @@ import static org.springframework.security.config.Customizer.withDefaults;
     prePostEnabled = true
 )
 public class SecurityConfig {
-    private final HttpSession session;
-
-    public SecurityConfig(
-        final HttpSession session
-    ) {
-        this.session = session;
-    }
+    public static final String WELCOME_FIRST_NAME = "welcomeFirstName";
+    public static final String WELCOME_LAST_NAME = "welcomeLastName";
+    public SecurityConfig() { }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -49,6 +48,7 @@ public class SecurityConfig {
                     .requestMatchers("/glowna").permitAll()
                     .requestMatchers("/exercise/api").permitAll()
                     .requestMatchers("/training/api").permitAll()
+                    .requestMatchers("/logout").authenticated()
                     .anyRequest().permitAll()
             )
             .formLogin(
@@ -61,16 +61,28 @@ public class SecurityConfig {
                             public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws ServletException, IOException {
                                 MyUserDetails userDetails = (MyUserDetails) authentication.getPrincipal();
                                 User loggedUser = userDetails.getUser();
-                                String[] welcomeInfo = { loggedUser.getFirstName(), loggedUser.getLastName() };
-                                session.setAttribute("welcomeInfo", welcomeInfo);
-
+                                // TODO: Fix the cookie max age depends on the remember me option
+                                Cookie cookieFN = new Cookie(WELCOME_FIRST_NAME, loggedUser.getFirstName());
+                                cookieFN.setMaxAge(14 * 24 * 60 * 60);
+                                Cookie cookieLN = new Cookie(WELCOME_LAST_NAME, loggedUser.getLastName());
+                                cookieLN.setMaxAge(14 * 24 * 60 * 60);
+                                response.addCookie(cookieFN);
+                                response.addCookie(cookieLN);
                                 super.onAuthenticationSuccess(request, response, authentication);
                             }
                         }
                     )
             )
-            .rememberMe(configurer -> Customizer.withDefaults())
-            .logout(withDefaults())
+            .rememberMe(
+                customize -> customize.key("K8s#gs*3js(*3jsf89SadaJS*#@")
+            )
+            .logout(
+                logout -> logout.logoutSuccessUrl("/logout-success")
+                    .deleteCookies(
+                        SecurityConfig.WELCOME_FIRST_NAME,
+                        SecurityConfig.WELCOME_LAST_NAME
+                    )
+            )
             .exceptionHandling( exep -> exep
                 .accessDeniedPage("/access-denied")
             ).csrf(AbstractHttpConfigurer::disable)
