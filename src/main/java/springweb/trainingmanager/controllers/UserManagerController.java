@@ -1,11 +1,14 @@
 package springweb.trainingmanager.controllers;
 
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.WebAttributes;
 import org.springframework.stereotype.Controller;
@@ -18,10 +21,15 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import springweb.trainingmanager.models.entities.Role;
 import springweb.trainingmanager.models.viewmodels.user.UserWrite;
+import springweb.trainingmanager.security.SecurityConfig;
 import springweb.trainingmanager.services.UserService;
 
 import javax.naming.AuthenticationException;
+import java.net.HttpCookie;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Controller
 public class UserManagerController {
@@ -44,7 +52,9 @@ public class UserManagerController {
     }
     
     @GetMapping("/login")
-    String login(){
+    String login(Authentication auth){
+        if(auth != null && auth.isAuthenticated())
+            return "../static/index";
         return "userManager/login";
     }
 
@@ -104,16 +114,11 @@ public class UserManagerController {
         return "userManager/accessDenied";
     }
 
-    @GetMapping("/logout")
+    @GetMapping("/logout-success")
     String logout(
         HttpServletRequest request,
-        HttpSession session
+        HttpServletResponse response
     ) throws ServletException {
-        if(session.getAttribute("welcomeInfo") != null){
-            session.removeAttribute("welcomeInfo");
-        }
-
-        request.logout();
         return "userManager/logout";
     }
 
