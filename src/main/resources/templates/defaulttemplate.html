@@ -141,33 +141,48 @@
             >
                 <input type="submit" hidden/> <!--If pressed enter in input name="page", then will submit the form-->
                 <button
-                        class="btn btn-primary col-sm-1"
-                        th:onclick="|setPageInput(*{previousOrFirstPageable().getPageNumber()})|"
-                        type="submit"
-                        th:disabled="*{!hasPrevious()}"
+                    class="btn btn-primary col-sm-1"
+                    th:onclick="|setPageInput(*{previousOrFirstPageable().getPageNumber()})|"
+                    type="submit"
+                    th:disabled="*{!hasPrevious()}"
                 >
                     <|====
                 </button>
                 <input
-                        class="col-sm-1"
-                        id="page"
-                        name="page"
-                        th:value="*{number}"
+                    class="col-sm-1"
+                    id="page"
+                    name="page"
+                    th:value="*{number}"
                 />
                 <button
-                        class="btn btn-primary col-sm-1"
-                        th:onclick="|setPageInput(*{nextOrLastPageable().getPageNumber()})|"
-                        type="submit"
-                        th:disabled="*{!hasNext()}"
+                    class="btn btn-primary col-sm-1"
+                    th:onclick="|setPageInput(*{nextOrLastPageable().getPageNumber()})|"
+                    type="submit"
+                    th:disabled="*{!hasNext() or content.isEmpty()}"
                 >
                     ====|>
                 </button>
+                <!--<input
+                    type="hidden"
+                    name="sort"
+                    id="sort"
+                    value="id"
+                />-->
             </div>
         </main>
     </div>
     <script th:fragment="setPageInput">
         function setPageInput(pageNumber){
             document.getElementById("page").value = pageNumber;
+        }
+
+        function setPageSort(sortOrder){
+            let sortTag = document.getElementById("sort");
+            if(sortTag.value.toString().search("desc") === -1)
+                sortTag.value = sortOrder + ",desc";
+            else{
+                sortTag.value = sortOrder.substring(0, sortTag.value.length - 5);
+            }
         }
     </script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>

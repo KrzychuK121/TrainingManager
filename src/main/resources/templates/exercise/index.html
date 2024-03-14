@@ -14,10 +14,14 @@
                 class="table table-bordered table-success table-striped"
                 th:if="${!exercises.isEmpty()}"
             >
-
                 <thead>
                     <tr>
-                        <th>Nazwa</th>
+                        <th>
+                            <form action="#" th:action="@{/exercise}">
+                                <input type="hidden" id="sort" name="sort"/>
+                                <button onclick="setPageSort('name')">Nazwa</button>
+                            </form>
+                        </th>
                         <th>Opis</th>
                         <th>Serie</th>
                         <th>Potwórzenia</th>
