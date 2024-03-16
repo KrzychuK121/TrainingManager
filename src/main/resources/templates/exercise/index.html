@@ -18,8 +18,18 @@
                     <tr>
                         <th>
                             <form action="#" th:action="@{/exercise}">
-                                <input type="hidden" id="sort" name="sort"/>
-                                <button onclick="setPageSort('name')">Nazwa</button>
+                                <input
+                                    type="hidden"
+                                    id="sort"
+                                    name="sort"
+                                    th:value="${newOrder.getProperty().equals('name') ? newOrder : 'name' }"
+                                />
+                                <button
+                                    class="btn btn-primary"
+                                    onclick="setPageSort('name')"
+                                >
+                                    Nazwa
+                                </button>
                             </form>
                         </th>
                         <th>Opis</th>
@@ -74,8 +84,9 @@
                     </tr>
                 </tbody>
             </table>
+            <!--/*@thymesVar id="exerciseSort" type="java.lang.String"*/-->
             <form
-                th:insert="~{defaulttemplate :: pages-form(${pages})}"
+                th:insert="~{defaulttemplate :: pages-form(${pages}, ${currOrder})}"
                 action="#"
                 th:action="@{/exercise}"
                 th:object="${pages}"
