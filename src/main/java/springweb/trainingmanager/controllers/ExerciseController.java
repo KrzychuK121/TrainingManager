@@ -5,7 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
@@ -170,6 +170,20 @@ public class ExerciseController {
         Model model
     ){
         model.addAttribute("exercises", getExercises(page, model));
+        var order = page.getSort().get()
+            .findFirst()
+            .orElse(
+                new Sort.Order(
+                    Sort.Direction.ASC,
+                    "id"
+                )
+            );
+        logger.info("---------------------");
+        logger.info("currOrder: " + order);
+        logger.info("newOrder: " + order.reverse());
+        logger.info("---------------------");
+        model.addAttribute("currOrder", order);
+        model.addAttribute("newOrder", order.reverse());
         return "exercise/index";
     }
 
