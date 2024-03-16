@@ -17,20 +17,15 @@
                 <thead>
                     <tr>
                         <th>
-                            <form action="#" th:action="@{/exercise}">
-                                <input
-                                    type="hidden"
-                                    id="sort"
-                                    name="sort"
-                                    th:value="${newOrder.getProperty().equals('name') ? newOrder : 'name' }"
-                                />
-                                <button
-                                    class="btn btn-primary"
-                                    onclick="setPageSort('name')"
-                                >
-                                    Nazwa
-                                </button>
-                            </form>
+                            <a th:href="@{|
+                                /exercise?sort=${
+                                    newOrder.getProperty().equals('name') ?
+                                    newOrder.getProperty() + ',' + newOrder.getDirection().toString().toLowerCase() :
+                                    'name'
+                                }
+                            |}">
+                                Nazwa
+                            </a>
                         </th>
                         <th>Opis</th>
                         <th>Serie</th>
