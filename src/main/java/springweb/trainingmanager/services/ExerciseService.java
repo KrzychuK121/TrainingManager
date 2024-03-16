@@ -99,14 +99,14 @@ public class ExerciseService {
         );
     }
 
-
     public Page<ExerciseRead> getAll(Pageable page){
         Page<ExerciseRead> toReturn = repository.findAll(page).map(ExerciseRead::new);
         if(toReturn.getContent().isEmpty())
             toReturn = repository.findAll(
                 PageRequest.of(
-                toReturn.getTotalPages() - 2,
-                    toReturn.getSize()
+                    PageSortService.getPageNumber(toReturn),
+                    toReturn.getSize(),
+                    page.getSort()
                 )
             ).map(ExerciseRead::new);
         return toReturn;
