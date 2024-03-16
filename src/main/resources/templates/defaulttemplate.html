@@ -135,7 +135,7 @@
             <!--Page change form-->
             <!--/*@thymesVar id="pages" type="org.springframework.data.domain.Page"*/-->
             <div
-                th:fragment="pages-form(pages)"
+                th:fragment="pages-form(pages, currOrder)"
                 class="row justify-content-center"
                 th:if="${pages != null}"
             >
@@ -162,12 +162,12 @@
                 >
                     ====|>
                 </button>
-                <!--<input
+                <input
                     type="hidden"
                     name="sort"
                     id="sort"
-                    value="id"
-                />-->
+                    th:value="${currOrder}"
+                />
             </div>
         </main>
     </div>
