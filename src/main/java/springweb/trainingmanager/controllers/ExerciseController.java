@@ -178,6 +178,7 @@ public class ExerciseController {
                     "id"
                 )
             );
+        // TODO: Remove logger info after repairs.
         logger.info("---------------------");
         logger.info("currOrder: " + order);
         logger.info("newOrder: " + order.reverse());
