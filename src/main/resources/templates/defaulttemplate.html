@@ -134,6 +134,7 @@
             </div>
             <!--Page change form-->
             <!--/*@thymesVar id="pages" type="org.springframework.data.domain.Page"*/-->
+            <!--/*@thymesVar id="currOrder" type="org.springframework.data.domain.Sort.Order"*/-->
             <div
                 th:fragment="pages-form(pages, currOrder)"
                 class="row justify-content-center"
@@ -162,11 +163,15 @@
                 >
                     ====|>
                 </button>
+                <!--TODO: Need testing if page change works with sort order-->
                 <input
                     type="hidden"
                     name="sort"
                     id="sort"
-                    th:value="${currOrder}"
+                    th:value="${
+                        currOrder.getProperty() + ',' +
+                        currOrder.getDirection().toString().toLowerCase()
+                    }"
                 />
             </div>
         </main>
