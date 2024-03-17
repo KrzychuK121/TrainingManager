@@ -178,11 +178,6 @@ public class ExerciseController {
                     "id"
                 )
             );
-        // TODO: Remove logger info after repairs.
-        logger.info("---------------------");
-        logger.info("currOrder: " + order);
-        logger.info("newOrder: " + order.reverse());
-        logger.info("---------------------");
         model.addAttribute("currOrder", order);
         model.addAttribute("newOrder", order.reverse());
         return "exercise/index";

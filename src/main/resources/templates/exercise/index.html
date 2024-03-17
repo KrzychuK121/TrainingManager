@@ -17,20 +17,20 @@
                 <thead>
                     <tr>
                         <th>
-                            <a th:href="@{|
-                                /exercise?sort=${
-                                    newOrder.getProperty().equals('name') ?
-                                    newOrder.getProperty() + ',' + newOrder.getDirection().toString().toLowerCase() :
-                                    'name'
-                                }
-                            |}">
-                                Nazwa
-                            </a>
+                            <a th:replace="~{defaulttemplate :: sort-anchor('exercise', ${newOrder}, 'name', 'Nazwa')}"></a>
                         </th>
-                        <th>Opis</th>
-                        <th>Serie</th>
-                        <th>Potwórzenia</th>
-                        <th>Czas (do wykonania/przewidywany)</th>
+                        <th>
+                            <a th:replace="~{defaulttemplate :: sort-anchor('exercise', ${newOrder}, 'description', 'Opis')}"></a>
+                        </th>
+                        <th>
+                            <a th:replace="~{defaulttemplate :: sort-anchor('exercise', ${newOrder}, 'rounds', 'Serie')}"></a>
+                        </th>
+                        <th>
+                            <a th:replace="~{defaulttemplate :: sort-anchor('exercise', ${newOrder}, 'repetition', 'Potwórzenia')}"></a>
+                        </th>
+                        <th>
+                            <a th:replace="~{defaulttemplate :: sort-anchor('exercise', ${newOrder}, 'time', 'Czas (do wykonania/przewidywany)')}"></a>
+                        </th>
                         <th></th>
                     </tr>
                 </thead>
