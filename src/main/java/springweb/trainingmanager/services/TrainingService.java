@@ -134,6 +134,12 @@ public class TrainingService {
     }
 
     public Page<TrainingRead> getAll(Pageable page){
+        page = PageSortService.validateSort(
+            Training.class,
+            page,
+            LoggerFactory.getLogger(TrainingService.class)
+        );
+
         Page<TrainingRead> toReturn = repository.findAll(page).map(TrainingRead::new);
         if(toReturn.getContent().isEmpty())
             toReturn = repository.findAll(
