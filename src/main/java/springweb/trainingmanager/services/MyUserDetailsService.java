@@ -36,6 +36,10 @@ public class MyUserDetailsService implements UserDetailsManager {
     @Override
     public void createUser(UserDetails user) {
         User toSave = ((MyUserDetails) user).getUser();
+
+        toSave.setFirstName(toSave.getFirstName().toLowerCase());
+        toSave.setLastName(toSave.getLastName().toLowerCase());
+
         repository.save(toSave);
     }
 
