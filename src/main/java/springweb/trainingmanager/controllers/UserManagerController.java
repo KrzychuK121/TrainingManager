@@ -1,7 +1,6 @@
 package springweb.trainingmanager.controllers;
 
 import jakarta.servlet.ServletException;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -17,19 +16,13 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import springweb.trainingmanager.models.entities.Role;
 import springweb.trainingmanager.models.viewmodels.user.UserWrite;
-import springweb.trainingmanager.security.SecurityConfig;
 import springweb.trainingmanager.services.UserService;
 
 import javax.naming.AuthenticationException;
-import java.net.HttpCookie;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Controller
 public class UserManagerController {
