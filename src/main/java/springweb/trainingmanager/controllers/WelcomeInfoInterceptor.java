@@ -7,7 +7,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
+import springweb.trainingmanager.models.entities.User;
+import springweb.trainingmanager.models.viewmodels.user.MyUserDetails;
 import springweb.trainingmanager.security.SecurityConfig;
+import springweb.trainingmanager.services.MyUserDetailsService;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -15,6 +18,14 @@ import java.util.List;
 
 @Component
 public class WelcomeInfoInterceptor implements HandlerInterceptor {
+    private final MyUserDetailsService userDetailsService;
+
+    public WelcomeInfoInterceptor(
+        final MyUserDetailsService userDetailsService
+    ){
+        this.userDetailsService = userDetailsService;
+    }
+
     @Override
     public boolean preHandle(
         HttpServletRequest request,
@@ -22,28 +33,21 @@ public class WelcomeInfoInterceptor implements HandlerInterceptor {
         Object handler
     ) throws Exception {
         Logger logger = LoggerFactory.getLogger(WelcomeInfoInterceptor.class);
-        var session = request.getSession();
-        if(request.getCookies() == null)
+        if(request.getUserPrincipal() == null)
             return HandlerInterceptor.super.preHandle(request, response, handler);
-        var cookies = List.of(request.getCookies());
+
+        User loggedUser = ((MyUserDetails) userDetailsService.loadUserByUsername(
+            request.getUserPrincipal().getName()
+        )).getUser();
+
+        var session = request.getSession();
         final String WELCOME_INFO = "welcomeInfo";
 
-        if(
-            session.getAttribute(WELCOME_INFO) != null ||
-            cookies.stream().noneMatch(
-                cookie -> cookie.getName().equals(SecurityConfig.WELCOME_FIRST_NAME)
-            )  ||
-            cookies.stream().noneMatch(
-                cookie -> cookie.getName().equals(SecurityConfig.WELCOME_LAST_NAME)
-            )
-        )
+        if(session.getAttribute(WELCOME_INFO) != null)
             return HandlerInterceptor.super.preHandle(request, response, handler);
-        logger.info("Setting session " + WELCOME_INFO +  " attribute from cookies.");
+        logger.info("Setting session '" + WELCOME_INFO +  "' attribute from logged user.");
 
-        Cookie firstNameCookie = getCookieByName(SecurityConfig.WELCOME_FIRST_NAME, cookies);
-        Cookie lastNameCookie = getCookieByName(SecurityConfig.WELCOME_LAST_NAME, cookies);
-
-        session.setAttribute(WELCOME_INFO, new String[]{ firstNameCookie.getValue(), lastNameCookie.getValue() });
+        session.setAttribute(WELCOME_INFO, new String[]{ loggedUser.getFirstName(), loggedUser.getLastName() });
         return HandlerInterceptor.super.preHandle(request, response, handler);
     }
 
@@ -51,6 +55,6 @@ public class WelcomeInfoInterceptor implements HandlerInterceptor {
         return cookies.stream().filter(
             cookie -> cookie.getName().equals(name)
         ).findAny()
-        .orElseThrow(() -> new IllegalArgumentException("Nie istnieje cookie o nazwie: " + name));
+        .orElseThrow(() -> new IllegalArgumentException("Nie istnieje ciasteczko o nazwie: '" + name + "'."));
     }
 }
