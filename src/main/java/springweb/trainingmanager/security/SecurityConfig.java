@@ -55,23 +55,6 @@ public class SecurityConfig {
                 formLogin -> formLogin.loginPage("/login").permitAll()
                     .defaultSuccessUrl("/glowna")
                     .failureForwardUrl("/loginErr")
-                    .successHandler(
-                        new SavedRequestAwareAuthenticationSuccessHandler() {
-                            @Override
-                            public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws ServletException, IOException {
-                                MyUserDetails userDetails = (MyUserDetails) authentication.getPrincipal();
-                                User loggedUser = userDetails.getUser();
-                                // TODO: Fix the cookie max age depends on the remember me option
-                                Cookie cookieFN = new Cookie(WELCOME_FIRST_NAME, loggedUser.getFirstName());
-                                cookieFN.setMaxAge(14 * 24 * 60 * 60);
-                                Cookie cookieLN = new Cookie(WELCOME_LAST_NAME, loggedUser.getLastName());
-                                cookieLN.setMaxAge(14 * 24 * 60 * 60);
-                                response.addCookie(cookieFN);
-                                response.addCookie(cookieLN);
-                                super.onAuthenticationSuccess(request, response, authentication);
-                            }
-                        }
-                    )
             )
             .rememberMe(
                 customize -> customize.key("K8s#gs*3js(*3jsf89SadaJS*#@")
