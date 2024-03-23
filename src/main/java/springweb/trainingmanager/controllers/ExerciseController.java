@@ -22,6 +22,7 @@ import springweb.trainingmanager.models.viewmodels.training.TrainingExercise;
 import springweb.trainingmanager.models.viewmodels.training.TrainingRead;
 import springweb.trainingmanager.repositories.forcontrollers.TrainingRepository;
 import springweb.trainingmanager.services.ExerciseService;
+import springweb.trainingmanager.services.PageSortService;
 
 import java.net.URI;
 import java.time.LocalTime;
@@ -170,16 +171,7 @@ public class ExerciseController {
         Model model
     ){
         model.addAttribute("exercises", getExercises(page, model));
-        var order = page.getSort().get()
-            .findFirst()
-            .orElse(
-                new Sort.Order(
-                    Sort.Direction.ASC,
-                    "id"
-                )
-            );
-        model.addAttribute("currOrder", order);
-        model.addAttribute("newOrder", order.reverse());
+        PageSortService.setSortModels(page, model, "id");
         return "exercise/index";
     }
 

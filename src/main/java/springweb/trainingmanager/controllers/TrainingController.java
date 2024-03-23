@@ -23,6 +23,7 @@ import springweb.trainingmanager.models.viewmodels.exercise.ExerciseTraining;
 import springweb.trainingmanager.models.viewmodels.training.TrainingRead;
 import springweb.trainingmanager.models.viewmodels.training.TrainingWrite;
 import springweb.trainingmanager.repositories.forcontrollers.ExerciseRepository;
+import springweb.trainingmanager.services.PageSortService;
 import springweb.trainingmanager.services.TrainingService;
 import springweb.trainingmanager.services.UserService;
 
@@ -201,6 +202,7 @@ public class TrainingController {
         @PageableDefault(size = 2) Pageable page
     ){
         model.addAttribute("trainings", getTrainings(auth, page, model));
+        PageSortService.setSortModels(page, model, "id");
         return "training/index";
     }
 
