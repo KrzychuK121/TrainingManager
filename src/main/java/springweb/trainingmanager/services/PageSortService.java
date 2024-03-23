@@ -6,6 +6,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.ui.Model;
 import springweb.trainingmanager.models.entities.Exercise;
 
 import java.lang.reflect.Field;
@@ -58,6 +59,23 @@ public class PageSortService {
             page.getPageSize(),
             Sort.by(orderToSave)
         );
+    }
+
+    public static void setSortModels(
+        final Pageable page,
+        final Model model,
+        final String defaultSortField
+    ){
+        var order = page.getSort().get()
+            .findFirst()
+            .orElse(
+                new Sort.Order(
+                    Sort.Direction.ASC,
+                    defaultSortField
+                )
+            );
+        model.addAttribute("currOrder", order);
+        model.addAttribute("newOrder", order.reverse());
     }
 
     private static String capitalize(String toCapitalize){
