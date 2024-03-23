@@ -90,7 +90,7 @@
             <hr />
         </div>
         <form
-            th:insert="~{defaulttemplate :: pages-form(${pages})}"
+            th:insert="~{defaulttemplate :: pages-form(${pages}, ${currOrder})}"
             action="#"
             th:action="@{/training}"
             th:object="${pages}"
