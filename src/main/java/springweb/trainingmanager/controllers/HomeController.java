@@ -17,17 +17,8 @@ public class HomeController {
 
     @GetMapping("/glowna")
     String mainView(
-        Model model,
-        HttpSession session,
-        Authentication auth
+        Model model
     ){
-        if(auth != null && auth.isAuthenticated()){
-            MyUserDetails userDetails = (MyUserDetails) auth.getPrincipal();
-            User loggedUser = userDetails.getUser();
-            String[] welcomeInfo = { loggedUser.getFirstName(), loggedUser.getLastName() };
-            session.setAttribute("welcomeInfo", welcomeInfo);
-        }
-
         model.addAttribute("title", "TrainingM - Strona główna");
         return "index2";
     }

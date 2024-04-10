@@ -82,10 +82,20 @@ function StartBlock(obj){
 
 async function DoTraining(trainingId){
     const train = new Training(trainingId, 1);
-    await train.init();
-    //console.log(train);
-    train.ShowList();
-    StartBlock(train);
+    train.init().then(
+        () => {
+            // TODO: Repair this so when the exception occurs, next methods will not do anything
+            //console.log(train);
+            train.ShowList();
+            StartBlock(train);
+        }
+    ).catch(
+        (error) => {
+            console.log(error);
+        }
+    );
+
+
 }
 
 class Training {
@@ -193,8 +203,6 @@ class Training {
     
     //funkcja, która w pętli powtarza ćwiczenia na czas i/lub sprawdza
     RepeatExc(){
-        console.log("RepeatExc this: ");
-        console.log(this);
         switch(this.secExcTab[this.trainingNumber].mode){
             case 0: //timer
                 if(this.secExcTab[this.trainingNumber].tempAmount[0] == 0 && this.secExcTab[this.trainingNumber].tempAmount[1] == 0){

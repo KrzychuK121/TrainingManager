@@ -14,14 +14,23 @@
                 class="table table-bordered table-success table-striped"
                 th:if="${!exercises.isEmpty()}"
             >
-
                 <thead>
                     <tr>
-                        <th>Nazwa</th>
-                        <th>Opis</th>
-                        <th>Serie</th>
-                        <th>Potwórzenia</th>
-                        <th>Czas (do wykonania/przewidywany)</th>
+                        <th>
+                            <a th:replace="~{defaulttemplate :: sort-anchor('exercise', ${newOrder}, 'name', 'Nazwa')}"></a>
+                        </th>
+                        <th>
+                            <a th:replace="~{defaulttemplate :: sort-anchor('exercise', ${newOrder}, 'description', 'Opis')}"></a>
+                        </th>
+                        <th>
+                            <a th:replace="~{defaulttemplate :: sort-anchor('exercise', ${newOrder}, 'rounds', 'Serie')}"></a>
+                        </th>
+                        <th>
+                            <a th:replace="~{defaulttemplate :: sort-anchor('exercise', ${newOrder}, 'repetition', 'Potwórzenia')}"></a>
+                        </th>
+                        <th>
+                            <a th:replace="~{defaulttemplate :: sort-anchor('exercise', ${newOrder}, 'time', 'Czas (do wykonania/przewidywany)')}"></a>
+                        </th>
                         <th></th>
                     </tr>
                 </thead>
@@ -70,8 +79,16 @@
                     </tr>
                 </tbody>
             </table>
+            <!--/*@thymesVar id="exerciseSort" type="java.lang.String"*/-->
+            <form
+                th:insert="~{defaulttemplate :: pages-form(${pages}, ${currOrder})}"
+                action="#"
+                th:action="@{/exercise}"
+                th:object="${pages}"
+            ></form>
         </main>
     </div>
+<script th:replace="~{defaulttemplate :: setPageInput}"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js" integrity="sha384-7+zCNj/IqJ95wo16oMtfsKbZ9ccEh31eOz1HGyDuCQ6wgnyJNSYdrPa03rtR1zdB" crossorigin="anonymous"></script>
 <script src="/script/js/lib/bootstrap.min.js"></script>

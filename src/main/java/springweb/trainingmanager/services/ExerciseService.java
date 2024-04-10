@@ -2,9 +2,14 @@ package springweb.trainingmanager.services;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import springweb.trainingmanager.models.entities.Exercise;
 import springweb.trainingmanager.models.entities.Training;
+import springweb.trainingmanager.models.viewmodels.exercise.ExerciseRead;
 import springweb.trainingmanager.models.viewmodels.exercise.ExerciseWrite;
 import springweb.trainingmanager.models.viewmodels.training.TrainingExercise;
 import springweb.trainingmanager.repositories.forcontrollers.ExerciseRepository;
@@ -12,6 +17,7 @@ import springweb.trainingmanager.repositories.forcontrollers.TrainingRepository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ExerciseService {
@@ -95,9 +101,19 @@ public class ExerciseService {
         );
     }
 
+    public Page<ExerciseRead> getAll(Pageable page){
+        page = PageSortService.validateSort(Exercise.class, page, logger);
 
-    public List<Exercise> getAll(){
-        return repository.findAll();
+        Page<ExerciseRead> toReturn = repository.findAll(page).map(ExerciseRead::new);
+        if(toReturn.getContent().isEmpty())
+            toReturn = repository.findAll(
+                PageRequest.of(
+                    PageSortService.getPageNumber(toReturn),
+                    toReturn.getSize(),
+                    page.getSort()
+                )
+            ).map(ExerciseRead::new);
+        return toReturn;
     }
 
     public Exercise getById(int id){

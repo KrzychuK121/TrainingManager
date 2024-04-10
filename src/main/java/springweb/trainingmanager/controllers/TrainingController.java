@@ -3,22 +3,29 @@ package springweb.trainingmanager.controllers;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import springweb.trainingmanager.models.entities.Exercise;
 import springweb.trainingmanager.models.entities.Training;
-import springweb.trainingmanager.models.viewmodels.exercise.ExerciseRead;
+import springweb.trainingmanager.models.schemas.RoleSchema;
 import springweb.trainingmanager.models.viewmodels.exercise.ExerciseTraining;
-import springweb.trainingmanager.models.viewmodels.training.TrainingExercise;
 import springweb.trainingmanager.models.viewmodels.training.TrainingRead;
 import springweb.trainingmanager.models.viewmodels.training.TrainingWrite;
 import springweb.trainingmanager.repositories.forcontrollers.ExerciseRepository;
+import springweb.trainingmanager.services.PageSortService;
 import springweb.trainingmanager.services.TrainingService;
+import springweb.trainingmanager.services.UserService;
 
 import java.net.URI;
 import java.util.ArrayList;
@@ -42,8 +49,21 @@ public class TrainingController {
     @ModelAttribute("title")
     String getTitle(){ return "TrainingM - Treningi"; }
 
-    List<TrainingRead> getTrainings(){
-        return TrainingRead.toTrainingReadList(service.getAll());
+    List<TrainingRead> getTrainings(
+        Authentication auth,
+        @PageableDefault(size = 2) Pageable page,
+        Model model
+    ){
+        String userId = UserService.getUserIdByAuth(auth);
+        Page<TrainingRead> pagedList = null;
+        if(userId == null) {
+            pagedList = service.getAll(page);
+            model.addAttribute("pages", pagedList);
+        }
+
+        return userId != null ?
+        service.getByUserId(userId) :
+        pagedList.getContent();
     }
 
     @PostMapping(
@@ -53,7 +73,7 @@ public class TrainingController {
     )
     @ResponseBody
     ResponseEntity<TrainingRead> create(@RequestBody @Valid TrainingWrite toCreate){
-        Training created = service.create(toCreate);
+        Training created = service.create(toCreate, null);
         var trainingRead = new TrainingRead(created);
         return ResponseEntity.created(
             URI.create("/training/" + created.getId())
@@ -69,7 +89,7 @@ public class TrainingController {
         if(selected != null && selected.length > exerciseSelectList.size())
             throw new IllegalStateException("Lista zaznaczonych elementów nie może być mniejsza niż lista wszystkich elementów.");
         model.addAttribute("allExercises", exerciseSelectList);
-        if(selected.length != 0){
+        if(selected != null && selected.length != 0){
             List<Integer> selectedInt = new ArrayList<>();
             for(String sel : selected){
                 if(sel.isBlank())
@@ -81,7 +101,7 @@ public class TrainingController {
 
     }
 
-    @Secured({"ROLE_USER", "ROLE_ADMIN"})
+    @Secured({RoleSchema.ROLE_ADMIN, RoleSchema.ROLE_USER})
     @GetMapping(
         value = "/create",
         produces = MediaType.TEXT_HTML_VALUE
@@ -94,7 +114,7 @@ public class TrainingController {
         return "training/save";
     }
 
-    @Secured({"ROLE_USER", "ROLE_ADMIN"})
+    @Secured({RoleSchema.ROLE_ADMIN, RoleSchema.ROLE_USER})
     @PostMapping(
         value = {"/create", "/edit/*"},
         params = "addExercise",
@@ -112,7 +132,7 @@ public class TrainingController {
         return "training/save";
     }
 
-    @Secured({"ROLE_USER", "ROLE_ADMIN"})
+    @Secured({RoleSchema.ROLE_ADMIN, RoleSchema.ROLE_USER})
     @PostMapping(
         value = "/create",
         produces = MediaType.TEXT_HTML_VALUE,
@@ -122,6 +142,7 @@ public class TrainingController {
         @ModelAttribute("training") @Valid TrainingWrite toSave,
         BindingResult result,
         Model model,
+        Authentication auth,
         String[] exerciseIds
     ){
         if(result.hasErrors()){
@@ -132,7 +153,7 @@ public class TrainingController {
 
         setExercisesById(toSave, exerciseIds);
 
-        service.create(toSave);
+        service.create(toSave, UserService.getUserIdByAuth(auth));
         prepExerciseSelect(model);
         model.addAttribute("action", "create");
         model.addAttribute("training", new TrainingWrite());
@@ -164,54 +185,78 @@ public class TrainingController {
         produces = MediaType.APPLICATION_JSON_VALUE
     )
     @ResponseBody
-    ResponseEntity<List<TrainingRead>> getAll(){
+    ResponseEntity<List<TrainingRead>> getAll(@PageableDefault(size = 2) Pageable page){
         return ResponseEntity.ok(
-            TrainingRead.toTrainingReadList(service.getAll())
+            service.getAll(page)
+            .getContent()
         );
     }
 
-    @Secured({"ROLE_USER", "ROLE_ADMIN"})
+    @Secured({RoleSchema.ROLE_ADMIN, RoleSchema.ROLE_USER})
     @GetMapping(
         produces = MediaType.TEXT_HTML_VALUE
     )
-    String getAllView(Model model){
-        model.addAttribute("trainings", getTrainings());
+    String getAllView(
+        Model model,
+        Authentication auth,
+        @PageableDefault(size = 2) Pageable page
+    ){
+        model.addAttribute("trainings", getTrainings(auth, page, model));
+        PageSortService.setSortModels(page, model, "id");
         return "training/index";
     }
 
+    @Secured({RoleSchema.ROLE_ADMIN, RoleSchema.ROLE_USER})
     @GetMapping(
         value = "/api/{id}",
         produces = MediaType.APPLICATION_JSON_VALUE
     )
     @ResponseBody
-    ResponseEntity<TrainingRead> getById(@PathVariable int id){
+    ResponseEntity<TrainingRead> getById(
+        @PathVariable int id,
+        Authentication auth
+    ){
         Training found = null;
         try {
-            found = service.getById(id);
+            found = service.getById(id, UserService.getUserIdByAuth(auth));
         } catch(IllegalArgumentException e) {
             logger.error("Wystąpił wyjątek: " + e.getMessage());
+            if(e.getMessage().contains("Nie masz dostępu"))
+                return new ResponseEntity(e.getMessage(), HttpStatus.UNAUTHORIZED);
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(new TrainingRead(found));
     }
 
-    @Secured({"ROLE_USER", "ROLE_ADMIN"})
+    @GetMapping(
+        value ="/api/users/{userId}",
+        produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    @ResponseBody
+    ResponseEntity<List<TrainingRead>> getByUserId(@PathVariable String userId){
+        List<TrainingRead> usersTrainings = service.getByUserId(userId);
+        return ResponseEntity.ok(usersTrainings);
+    }
+
+    @Secured({RoleSchema.ROLE_ADMIN, RoleSchema.ROLE_USER})
     @GetMapping(
         value = "/train/{id}",
         produces = MediaType.TEXT_HTML_VALUE
     )
     String train(
         @PathVariable int id,
-        Model model
+        Model model,
+        Authentication auth,
+        @PageableDefault(size = 2) Pageable page
     ){
         Training found = null;
         try {
-            found = service.getById(id);
+            found = service.getById(id, UserService.getUserIdByAuth(auth));
         } catch(IllegalArgumentException e) {
             logger.error("Wystąpił wyjątek: " + e.getMessage());
             model.addAttribute("messType", "danger");
             model.addAttribute("mess", e.getMessage());
-            model.addAttribute("trainings", getTrainings());
+            model.addAttribute("trainings", getTrainings(auth, page, model));
             return "training/index";
         }
 
@@ -219,7 +264,7 @@ public class TrainingController {
             logger.warn("Wystąpił problem: brak ćwiczeń");
             model.addAttribute("messType", "danger");
             model.addAttribute("mess", "Wybierz trening zawierający ćwiczenia!");
-            model.addAttribute("trainings", getTrainings());
+            model.addAttribute("trainings", getTrainings(auth, page, model));
             return "training/index";
         }
 
@@ -238,7 +283,7 @@ public class TrainingController {
         @PathVariable int id
     ){
         try {
-            service.edit(toEdit, id);
+            service.edit(toEdit, id, null);
         } catch(IllegalArgumentException e) {
             logger.error("Wystąpił wyjątek: " + e.getMessage());
             return ResponseEntity.notFound().build();
@@ -246,19 +291,22 @@ public class TrainingController {
         return ResponseEntity.noContent().build();
     }
 
-    @Secured({"ROLE_USER", "ROLE_ADMIN"})
+    @Secured({RoleSchema.ROLE_ADMIN, RoleSchema.ROLE_USER})
     @GetMapping("/edit/{id}")
     public String editView(
         @PathVariable int id,
-        Model model
+        Model model,
+        Authentication auth,
+        @PageableDefault(size = 2) Pageable page
     ){
         TrainingRead toEdit = null;
         try {
-            toEdit = new TrainingRead(service.getById(id));
+            toEdit = new TrainingRead(service.getById(id, UserService.getUserIdByAuth(auth)));
         } catch(IllegalArgumentException e) {
             logger.error("Wystąpił wyjątek: " + e.getMessage());
             model.addAttribute("messType", "danger");
             model.addAttribute("mess", "Nie można edytować. " + e.getMessage());
+            model.addAttribute("trainings", getTrainings(auth, page, model));
             return "training/index";
         }
 
@@ -281,7 +329,7 @@ public class TrainingController {
         return selected;
     }
 
-    @Secured({"ROLE_USER", "ROLE_ADMIN"})
+    @Secured({RoleSchema.ROLE_ADMIN, RoleSchema.ROLE_USER})
     @PostMapping(
         value = "/edit/{id}",
         params = "!addExercise"
@@ -290,8 +338,10 @@ public class TrainingController {
         @PathVariable int id,
         @ModelAttribute("exercise") @Valid TrainingWrite toEdit,
         BindingResult result,
-        String[] exerciseIds,
-        Model model
+        Model model,
+        Authentication auth,
+        @PageableDefault(size = 2) Pageable page,
+        String[] exerciseIds
     ){
         if(result.hasErrors()){
             model.addAttribute("action", "edit/" + id);
@@ -302,13 +352,13 @@ public class TrainingController {
         setExercisesById(toEdit, exerciseIds);
 
         try {
-            service.edit(toEdit, id);
+            service.edit(toEdit, id, UserService.getUserIdByAuth(auth));
         } catch(IllegalArgumentException e) {
             logger.error("Wystąpił wyjątek: " + e.getMessage());
             model.addAttribute("message", "Wystąpił problem przy edycji. " + e.getMessage());
         }
 
-        model.addAttribute("trainings", getTrainings());
+        model.addAttribute("trainings", getTrainings(auth, page, model));
         model.addAttribute("messType", "success");
         model.addAttribute("mess", "Edycja przeszła pomyślnie.");
         return "training/index";
@@ -322,7 +372,7 @@ public class TrainingController {
     @ResponseBody
     public ResponseEntity<?> delete(@PathVariable int id){
         try {
-            service.delete(id);
+            service.delete(id, null);
         } catch(IllegalArgumentException e) {
             logger.error("Wystąpił wyjątek: " + e.getMessage());
             return ResponseEntity.notFound().build();
@@ -331,24 +381,26 @@ public class TrainingController {
         return ResponseEntity.noContent().build();
     }
 
-    @Secured("ROLE_ADMIN")
+    @Secured(RoleSchema.ROLE_ADMIN)
     @GetMapping(
         value = "/delete/{id}",
         produces = MediaType.TEXT_HTML_VALUE
     )
     public String deleteView(
         @PathVariable int id,
-        Model model
+        Model model,
+        Authentication auth,
+        @PageableDefault(size = 2) Pageable page
     ){
         try {
-            service.delete(id);
+            service.delete(id, UserService.getUserIdByAuth(auth));
         } catch(IllegalArgumentException e) {
             logger.error("Wystąpił wyjątek: " + e.getMessage());
             model.addAttribute("messType", "danger");
             model.addAttribute("mess", "Nie można usunąć. " + e.getMessage());
             return "training/index";
         } finally {
-            model.addAttribute("trainings", getTrainings());
+            model.addAttribute("trainings", getTrainings(auth, page, model));
         }
         model.addAttribute("mess", "Pomyślnie usunięto wiersz.");
         model.addAttribute("messType", "success");

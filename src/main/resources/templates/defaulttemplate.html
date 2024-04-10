@@ -58,7 +58,7 @@
                 </li>
                 <li class="nav-item">
                     <span
-                        class="nav-link disabled"
+                        class="nav-link disabled text-capitalize"
                         sec:authorize="isAuthenticated()"
                         th:if="${session.welcomeInfo != null}"
                         th:text="|Witaj ${session.welcomeInfo[0]} ${session.welcomeInfo[1]}!|"
@@ -73,14 +73,23 @@
                     >
                         Wyloguj się
                     </a>
-                    <a
-                        class="nav-link active"
-                        aria-current="page"
-                        sec:authorize="!isAuthenticated()"
-                        th:href="@{/login}"
-                    >
-                        Zaloguj się
-                    </a>
+                    <div class="nav-item" sec:authorize="!isAuthenticated()">
+                        <a
+                            class="nav-link active"
+                            aria-current="page"
+                            th:href="@{/login}"
+                        >
+                            Zaloguj się
+                        </a>
+                        <a
+                            class="nav-link active"
+                            aria-current="page"
+                            th:href="@{/register}"
+                        >
+                            Rejestracja
+                        </a>
+                    </div>
+
                 </li>
                 <!--<li class="nav-item">
                     <a class="nav-link" href="#">Link</a>
@@ -100,6 +109,13 @@
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 <span th:if="${mess != null}" th:text="${mess}"></span>
             </div>
+            <!--Validation error field-->
+            <div
+                th:fragment="validation-error(field)"
+                class="text-danger"
+                th:if="${field != null and #fields.hasErrors(field)}"
+                th:text="${#fields.errors(field)}"
+            ></div>
             <!--Modal to delete-->
             <div
                 th:fragment="modal-delete(id)"
@@ -125,11 +141,75 @@
                     </div>
                 </div>
             </div>
+            <!--Page change form-->
+            <!--/*@thymesVar id="pages" type="org.springframework.data.domain.Page"*/-->
+            <!--/*@thymesVar id="currOrder" type="org.springframework.data.domain.Sort.Order"*/-->
+            <div
+                th:fragment="pages-form(pages, currOrder)"
+                class="row justify-content-center"
+                th:if="${pages != null}"
+            >
+                <input type="submit" hidden/> <!--If pressed enter in input name="page", then will submit the form-->
+                <button
+                    class="btn btn-primary col-sm-1"
+                    th:onclick="|setPageInput(*{previousOrFirstPageable().getPageNumber()})|"
+                    type="submit"
+                    th:disabled="*{!hasPrevious()}"
+                >
+                    <|====
+                </button>
+                <input
+                    class="col-sm-1"
+                    id="page"
+                    name="page"
+                    th:value="*{number}"
+                />
+                <button
+                    class="btn btn-primary col-sm-1"
+                    th:onclick="|setPageInput(*{nextOrLastPageable().getPageNumber()})|"
+                    type="submit"
+                    th:disabled="*{!hasNext() or content.isEmpty()}"
+                >
+                    ====|>
+                </button>
+                <!--TODO: Need testing if page change works with sort order-->
+                <input
+                    type="hidden"
+                    name="sort"
+                    id="sort"
+                    th:value="${
+                        currOrder.getProperty() + ',' +
+                        currOrder.getDirection().toString().toLowerCase()
+                    }"
+                />
+            </div>
+            <!--Anchor for sorting-->
+            <!--/*@thymesVar id="newOrder" type="org.springframework.data.domain.Sort.Order"*/-->
+            <a
+                th:fragment="sort-anchor(path, newOrder, sortVar, display)"
+                th:text="${display}"
+                th:href="@{|
+                    /${path}?sort=${
+                        newOrder.getProperty().equals('__${sortVar}__') ?
+                        newOrder.getProperty() + ',' + newOrder.getDirection().toString().toLowerCase() :
+                        '__${sortVar}__'
+                    }
+            |}"></a>
         </main>
     </div>
-    <script>
-        var myElement = document.getElementById("opt0");
-        myElement.onclick = DoTraining;
+    <script th:fragment="setPageInput">
+        function setPageInput(pageNumber){
+            document.getElementById("page").value = pageNumber;
+        }
+
+        function setPageSort(sortOrder){
+            let sortTag = document.getElementById("sort");
+            if(sortTag.value.toString().search("desc") === -1)
+                sortTag.value = sortOrder + ",desc";
+            else{
+                sortTag.value = sortOrder.substring(0, sortTag.value.length - 5);
+            }
+        }
     </script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js" integrity="sha384-7+zCNj/IqJ95wo16oMtfsKbZ9ccEh31eOz1HGyDuCQ6wgnyJNSYdrPa03rtR1zdB" crossorigin="anonymous"></script>

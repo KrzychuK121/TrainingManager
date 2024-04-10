@@ -4,18 +4,19 @@
 <body>
     <header th:replace="~{defaulttemplate :: header}" id="h_menu" class="container-fluid"></header>
     <div class="container">
+        <div th:replace="~{defaulttemplate :: alert}"></div>
         <main>
-            <h1>Login</h1>
-                <form th:action="@{/login}" method='POST'>
-                    <fieldset>
-                    <legend>Logowanie</legend>
-                        <label class="form-label" for="username">Login:</label>
-                            <input type='text' name='username' value='' class="form-control" id="username"/>
-                        <label class="form-label" for="password">Hasło:</label>
-                            <input type='password' name='password' class="form-control" id="password" />
-                            <input name="submit" type="submit" value="Zaloguj" />
-                    </fieldset>
-                </form>
+            <form th:action="@{/login}" method='POST'>
+                <fieldset>
+                <legend>Logowanie</legend>
+                    <label class="form-label" for="username">Login:</label>
+                        <input type="text" name="username" class="form-control" id="username"/>
+                    <label class="form-label" for="password">Hasło:</label>
+                        <input type="password" name="password" class="form-control" id="password" />
+                        <input class="btn btn-info" name="submit" type="submit" value="Zaloguj" /><br />
+                    <input type="checkbox" name="remember-me" /> Zapamiętaj mnie
+                </fieldset>
+            </form>
         </main>
     </div>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>

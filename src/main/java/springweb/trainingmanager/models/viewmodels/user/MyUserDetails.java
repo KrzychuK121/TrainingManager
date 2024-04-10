@@ -24,6 +24,13 @@ public class MyUserDetails implements UserDetails {
         return user;
     }
 
+    public boolean isInRole(String role){
+        return getAuthorities()
+        .stream().anyMatch(
+            grantedAuthority -> grantedAuthority.getAuthority().equals(role)
+        );
+    }
+
     @Override
     public String getPassword() {
         return user.getPasswordHashed();

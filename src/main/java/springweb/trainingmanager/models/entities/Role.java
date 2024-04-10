@@ -5,13 +5,14 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 import springweb.trainingmanager.models.schemas.RoleSchema;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
 @Table(name = "roles")
 public class Role extends RoleSchema {
     @ManyToMany(mappedBy = "roles")
-    private Set<User> users;
+    private Set<User> users = new HashSet<>();
     public Role() { }
 
     public Set<User> getUsers() {
