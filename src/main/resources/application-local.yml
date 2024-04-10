@@ -3,5 +3,5 @@ spring:
     enabled: true
     path: '/console'
 
-  datasource.url: 'jdbc:h2:file:~/local-db'
+  datasource.url: 'jdbc:h2:mem:trainingmanager-db'
   jpa.hibernate.ddl-auto: validate
