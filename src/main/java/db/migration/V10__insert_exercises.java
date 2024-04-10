@@ -37,6 +37,7 @@ public class V10__insert_exercises extends BaseJavaMigration {
         List<Exercise> toReturn = new ArrayList<>(4);
 
         createNewExercise(
+            1,
             "Pompki",
             "Zwyczajne pompki, bez utrudnień",
             3,
@@ -46,6 +47,7 @@ public class V10__insert_exercises extends BaseJavaMigration {
         );
 
         createNewExercise(
+            2,
             "Brzuszki",
             "Brzuszki z obciążeniem 4kg/rękę",
             4,
@@ -55,6 +57,7 @@ public class V10__insert_exercises extends BaseJavaMigration {
         );
 
         createNewExercise(
+            3,
             "Przeciąganie liny",
             "Ćw na brzuch, udawane przeciąganie liny",
             3,
@@ -64,6 +67,7 @@ public class V10__insert_exercises extends BaseJavaMigration {
         );
 
         createNewExercise(
+            4,
             "Rozpiętki",
             "Przy obciążeniu 5kg/rękę",
             3,
@@ -76,6 +80,7 @@ public class V10__insert_exercises extends BaseJavaMigration {
     }
 
     private void createNewExercise(
+        int id,
         String name,
         String description,
         int rounds,
@@ -85,6 +90,7 @@ public class V10__insert_exercises extends BaseJavaMigration {
     ) {
         Exercise ex = new Exercise();
 
+        ex.setId(id);
         ex.setName(name);
         ex.setDescription(description);
         ex.setRounds(rounds);
