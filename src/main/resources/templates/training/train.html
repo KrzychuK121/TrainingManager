@@ -47,7 +47,7 @@
                                     <span th:text="|*{exercises[__${i.index}__].name}:|" class="me-1"></span>
                                     <span
                                         th:if="*{exercises[__${i.index}__].repetition == 0}"
-                                        th:text="*{exercises[__${i.index}__].time.toString()}"
+                                        th:text="|*{exercises[__${i.index}__].rounds} serii *{exercises[__${i.index}__].time.toString()}|"
                                     ></span>
                                     <span
                                         th:if="*{exercises[__${i.index}__].repetition != 0}"
