@@ -60,6 +60,14 @@ public abstract class ExerciseSchema {
         return time;
     }
 
+    public Difficulty getDifficulty() {
+        return difficulty;
+    }
+
+    public void setDifficulty(Difficulty difficulty) {
+        this.difficulty = difficulty;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -70,7 +78,8 @@ public abstract class ExerciseSchema {
                 repetition == exercise.repetition &&
                 Objects.equals(name, exercise.name) &&
                 Objects.equals(description, exercise.description) &&
-                Objects.equals(time, exercise.time);
+                Objects.equals(time, exercise.time) &&
+                difficulty == exercise.difficulty;
     }
 
 }
