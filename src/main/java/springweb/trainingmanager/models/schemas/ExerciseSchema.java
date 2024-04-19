@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.Range;
 import org.springframework.format.annotation.DateTimeFormat;
+import springweb.trainingmanager.models.entities.Difficulty;
 import springweb.trainingmanager.models.entities.Training;
 
 import java.time.LocalTime;
@@ -32,6 +33,8 @@ public abstract class ExerciseSchema {
     protected int repetition;
     @DateTimeFormat(pattern = "mm:ss")
     protected LocalTime time;
+    // TODO: Make it work by adding migration
+    protected Difficulty difficulty;
 
     public int getId() {
         return id;
