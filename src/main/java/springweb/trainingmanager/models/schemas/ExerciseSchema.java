@@ -32,7 +32,7 @@ public abstract class ExerciseSchema {
     @Range(min = 0, max = 100, message = "Ilość powtórzeń musi mieścić się między 0 a 100")
     protected int repetition;
 
-    protected float weights;
+    //protected float weights;
     @DateTimeFormat(pattern = "mm:ss")
     protected LocalTime time;
     @Enumerated(EnumType.STRING)
