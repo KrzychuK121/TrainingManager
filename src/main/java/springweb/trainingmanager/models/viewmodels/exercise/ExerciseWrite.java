@@ -76,6 +76,8 @@ public class ExerciseWrite extends ExerciseSchema {
         toReturn.setRounds(rounds);
         toReturn.setRepetition(repetition);
         toReturn.setTime(time);
+        toReturn.setDifficulty(difficulty);
+
         if(trainings != null)
             toReturn.setTrainings(TrainingExercise.toTrainingList(trainings));
 

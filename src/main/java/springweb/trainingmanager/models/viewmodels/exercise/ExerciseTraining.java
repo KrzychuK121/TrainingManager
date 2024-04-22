@@ -22,6 +22,7 @@ public class ExerciseTraining extends ExerciseSchema {
         this.rounds = exercise.getRounds();
         this.repetition = exercise.getRepetition();
         this.time = exercise.getTime();
+        this.difficulty = exercise.getDifficulty();
     }
 
     public static List<ExerciseTraining> toExerciseTrainingList(final List<Exercise> list){
@@ -82,6 +83,7 @@ public class ExerciseTraining extends ExerciseSchema {
         toReturn.setRounds(rounds);
         toReturn.setRepetition(repetition);
         toReturn.setTime(time);
+        toReturn.setDifficulty(difficulty);
 
         return toReturn;
     }
