@@ -31,8 +31,7 @@ public abstract class ExerciseSchema {
     // powtórzenia
     @Range(min = 0, max = 100, message = "Ilość powtórzeń musi mieścić się między 0 a 100")
     protected int repetition;
-
-    //protected float weights;
+    protected float weights;
     @DateTimeFormat(pattern = "mm:ss")
     protected LocalTime time;
     @Enumerated(EnumType.STRING)
@@ -58,16 +57,16 @@ public abstract class ExerciseSchema {
         return repetition;
     }
 
+    public float getWeights() {
+        return weights;
+    }
+
     public LocalTime getTime() {
         return time;
     }
 
     public Difficulty getDifficulty() {
         return difficulty;
-    }
-
-    public void setDifficulty(Difficulty difficulty) {
-        this.difficulty = difficulty;
     }
 
     @Override

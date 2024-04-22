@@ -21,6 +21,7 @@ public class ExerciseRead extends ExerciseSchema {
         this.description = exercise.getDescription();
         this.rounds = exercise.getRounds();
         this.repetition = exercise.getRepetition();
+        this.weights = exercise.getWeights();
         this.time = exercise.getTime();
         this.difficulty = exercise.getDifficulty();
         this.trainings = TrainingExercise.toTrainingExerciseList(exercise.getTrainings());

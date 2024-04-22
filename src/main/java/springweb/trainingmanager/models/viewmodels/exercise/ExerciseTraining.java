@@ -4,6 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.Range;
 import org.springframework.format.annotation.DateTimeFormat;
+import springweb.trainingmanager.models.entities.Difficulty;
 import springweb.trainingmanager.models.entities.Exercise;
 import springweb.trainingmanager.models.schemas.ExerciseSchema;
 
@@ -21,6 +22,7 @@ public class ExerciseTraining extends ExerciseSchema {
         this.description = exercise.getDescription();
         this.rounds = exercise.getRounds();
         this.repetition = exercise.getRepetition();
+        this.weights = exercise.getWeights();
         this.time = exercise.getTime();
         this.difficulty = exercise.getDifficulty();
     }
@@ -43,6 +45,7 @@ public class ExerciseTraining extends ExerciseSchema {
             toSave.setDescription(exerciseTraining.description);
             toSave.setRounds(exerciseTraining.rounds);
             toSave.setRepetition(exerciseTraining.repetition);
+            toSave.setWeights(exerciseTraining.weights);
             toSave.setTime(exerciseTraining.time);
 
             result.add(toSave);
@@ -71,8 +74,16 @@ public class ExerciseTraining extends ExerciseSchema {
         this.repetition = repetition;
     }
 
+    public void setWeights(float weights){
+        this.weights = weights;
+    }
+
     public void setTime(LocalTime time) {
         this.time = time;
+    }
+
+    public void setDifficulty(Difficulty difficulty){
+        this.difficulty = difficulty;
     }
 
     public Exercise toExercise(){
@@ -82,6 +93,7 @@ public class ExerciseTraining extends ExerciseSchema {
         toReturn.setDescription(description);
         toReturn.setRounds(rounds);
         toReturn.setRepetition(repetition);
+        toReturn.setWeights(weights);
         toReturn.setTime(time);
         toReturn.setDifficulty(difficulty);
 
