@@ -13,6 +13,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import springweb.trainingmanager.models.entities.Difficulty;
 import springweb.trainingmanager.models.entities.Exercise;
 import springweb.trainingmanager.models.entities.Training;
 import springweb.trainingmanager.models.schemas.RoleSchema;
@@ -42,6 +43,14 @@ public class ExerciseController {
     ) {
         this.service = service;
         this.trainingRepo = trainingRepo;
+    }
+
+    private void setDifficulty(Model model){
+        model.addAttribute("difficultyArray", Difficulty.values());
+        ArrayList<String> desc = new ArrayList<>(Difficulty.values().length);
+        for(Difficulty difficulty : Difficulty.values())
+            desc.add(Difficulty.getEnumDesc(difficulty));
+        model.addAttribute("difficultyDescArray", desc);
     }
 
     @ModelAttribute("title")
@@ -103,6 +112,7 @@ public class ExerciseController {
     public String createView(Model model){
         model.addAttribute("exercise", new ExerciseWrite());
         model.addAttribute("action", "create");
+        setDifficulty(model);
         prepTrainingSelect(model);
         return "exercise/save";
     }
@@ -123,30 +133,36 @@ public class ExerciseController {
 
         if(result.hasErrors()){
             model.addAttribute("action", "create");
+            setDifficulty(model);
             prepTrainingSelect(model, trainingIds);
             return "exercise/save";
         }
 
         setTrainingsById(toSave, trainingIds);
 
-        if(time != null && !time.isEmpty()){
-            String[] times = time.split(":");
-            LocalTime timeToSave = LocalTime.of(
-                    0,
-                    Integer.parseInt(times[0]),
-                    Integer.parseInt(times[1])
-            );
-
-            toSave.setTime(timeToSave);
-        }
+        setTime(toSave, time);
 
         service.create(toSave);
         prepTrainingSelect(model);
         model.addAttribute("action", "create");
         model.addAttribute("exercise", new ExerciseWrite());
+        setDifficulty(model);
         model.addAttribute("message", "Utworzono nowe ćwiczenie!");
 
         return "exercise/save";
+    }
+
+    private static void setTime(ExerciseWrite toSave, String time) {
+        if(time != null && !time.isEmpty()){
+            String[] times = time.split(":");
+            LocalTime timeToSave = LocalTime.of(
+                0,
+                Integer.parseInt(times[0]),
+                Integer.parseInt(times[1])
+            );
+
+            toSave.setTime(timeToSave);
+        }
     }
 
     private void setTrainingsById(ExerciseWrite toSave, String[] trainingIds) {
@@ -170,9 +186,13 @@ public class ExerciseController {
         Pageable page,
         Model model
     ){
+        initIndexModel(page, model);
+        return "exercise/index";
+    }
+
+    private void initIndexModel(Pageable page, Model model) {
         model.addAttribute("exercises", getExercises(page, model));
         PageSortService.setSortModels(page, model, "id");
-        return "exercise/index";
     }
 
     @GetMapping(
@@ -257,6 +277,7 @@ public class ExerciseController {
         prepTrainingSelect(model, selected);
         model.addAttribute("action", "edit/" + id);
         model.addAttribute("exercise", toEdit);
+        setDifficulty(model);
         model.addAttribute("id", id);
         return "exercise/save";
     }
@@ -277,28 +298,34 @@ public class ExerciseController {
         @PathVariable int id,
         @ModelAttribute("exercise") @Valid ExerciseWrite toEdit,
         BindingResult result,
+        String time,
         String[] trainingIds,
         Pageable page,
         Model model
     ){
         if(result.hasErrors()){
             model.addAttribute("action", "edit/" + id);
+            setDifficulty(model);
             prepTrainingSelect(model, trainingIds);
             return "exercise/save";
         }
 
         setTrainingsById(toEdit, trainingIds);
+        setTime(toEdit, time);
 
         try {
             service.edit(toEdit, id);
         } catch(IllegalArgumentException e) {
             logger.error("Wystąpił wyjątek: " + e.getMessage());
+            model.addAttribute("exercises", getExercises(page, model));
             model.addAttribute("message", "Wystąpił problem przy edycji. " + e.getMessage());
+            return "exercise/index";
         }
 
-        model.addAttribute("exercises", getExercises(page, model));
+        setDifficulty(model);
         model.addAttribute("messType", "success");
         model.addAttribute("mess", "Edycja przeszła pomyślnie.");
+        initIndexModel(page, model);
         return "exercise/index";
     }
 
@@ -336,7 +363,7 @@ public class ExerciseController {
             model.addAttribute("mess", "Nie można usunąć. " + e.getMessage());
             return "exercise/index";
         } finally {
-            model.addAttribute("exercises", getExercises(page, model));
+            initIndexModel(page, model);
         }
         model.addAttribute("mess", "Pomyślnie usunięto wiersz.");
         model.addAttribute("messType", "success");
