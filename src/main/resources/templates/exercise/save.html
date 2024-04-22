@@ -73,6 +73,28 @@
                         Jeśli ćwiczenia polegają na ilości powtórzeń, możesz zostawić
                         to pole puste (lub wpisz przewidywaną długość treningu)
                     </div>
+
+                    <label class="form-label" for="difficulty">Powtórzenia</label>
+                    <select
+                        class="form-select form-select-lg"
+                        aria-label="label"
+                        id="difficulty"
+                        th:field="*{difficulty}"
+                    >
+                        <option value="" selected>---Wybierz poziom trudności---</option>
+                        <!--/*@thymesVar id="Difficulty" type="springweb.trainingmanager.models.entities.Difficulty"*/-->
+                        <option
+                            th:each="difficulty, i : ${difficultyArray}"
+                            th:value="${difficulty}"
+                            th:text="${difficultyDescArray.get(__${i.index}__)}"
+                        ></option>
+                    </select>
+                    <div
+                        class="text-danger"
+                        th:if="${#fields.hasErrors('difficulty')}"
+                        th:text="${#fields.errors('difficulty')}"
+                    ></div>
+
                     <label class="form-label" for="trainings">Lista treningów do przypisania</label>
                     <select
                         class="form-select form-select-lg"
