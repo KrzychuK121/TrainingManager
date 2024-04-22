@@ -1,8 +1,10 @@
 package springweb.trainingmanager.models.schemas;
 
+import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import org.hibernate.annotations.Type;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.Range;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -31,7 +33,9 @@ public abstract class ExerciseSchema {
     // powtórzenia
     @Range(min = 0, max = 100, message = "Ilość powtórzeń musi mieścić się między 0 a 100")
     protected int repetition;
-    protected float weights;
+    @Column(columnDefinition = "SMALLINT")
+    @Range(min = 0, max = 300, message = "Ilość obciążenia musi mieścić się między 0 a 300")
+    protected int weights;
     @DateTimeFormat(pattern = "mm:ss")
     protected LocalTime time;
     @Enumerated(EnumType.STRING)
@@ -57,7 +61,7 @@ public abstract class ExerciseSchema {
         return repetition;
     }
 
-    public float getWeights() {
+    public int getWeights() {
         return weights;
     }
 

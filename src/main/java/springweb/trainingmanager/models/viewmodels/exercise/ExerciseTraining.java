@@ -74,7 +74,7 @@ public class ExerciseTraining extends ExerciseSchema {
         this.repetition = repetition;
     }
 
-    public void setWeights(float weights){
+    public void setWeights(int weights){
         this.weights = weights;
     }
 
