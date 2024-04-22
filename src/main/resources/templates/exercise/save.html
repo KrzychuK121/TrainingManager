@@ -74,7 +74,21 @@
                         to pole puste (lub wpisz przewidywaną długość treningu)
                     </div>
 
-                    <label class="form-label" for="difficulty">Powtórzenia</label>
+                    <label class="form-label" for="weights">Obciążenie</label>
+                    <input
+                        th:field="*{weights}"
+                        type="number"
+                        id="weights"
+                        class="form-control"
+                        aria-describedby="repetitionHelp"
+                    />
+                    <div
+                        class="text-danger"
+                        th:if="${#fields.hasErrors('weights')}"
+                        th:text="${#fields.errors('weights')}"
+                    ></div>
+
+                    <label class="form-label" for="difficulty">Poziom trudności</label>
                     <select
                         class="form-select form-select-lg"
                         aria-label="label"
