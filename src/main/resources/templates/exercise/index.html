@@ -34,6 +34,9 @@
                         <th>
                             <a th:replace="~{defaulttemplate :: sort-anchor('exercise', ${newOrder}, 'difficulty', 'Trudność')}"></a>
                         </th>
+                        <th>
+                            <a th:replace="~{defaulttemplate :: sort-anchor('exercise', ${newOrder}, 'weights', 'Obciążenie')}"></a>
+                        </th>
                         <th></th>
                     </tr>
                 </thead>
@@ -45,6 +48,8 @@
                         <td th:text="${exercise.repetition}"></td>
                         <td th:text="${exercise.time}"></td>
                         <td th:text="${T(springweb.trainingmanager.models.entities.Difficulty).getEnumDesc(exercise.difficulty)}"></td>
+                        <td th:if="${exercise.weights == 0}">brak</td>
+                        <td th:unless="${exercise.weights == 0}" th:text="${exercise.weights}"></td>
                         <td>
                             <fieldset>
                                 <form
