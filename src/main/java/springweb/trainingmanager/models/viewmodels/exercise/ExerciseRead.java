@@ -23,6 +23,7 @@ public class ExerciseRead extends ExerciseSchema {
         this.repetition = exercise.getRepetition();
         this.weights = exercise.getWeights();
         this.time = exercise.getTime();
+        this.bodyPart = exercise.getBodyPart();
         this.difficulty = exercise.getDifficulty();
         this.trainings = TrainingExercise.toTrainingExerciseList(exercise.getTrainings());
     }

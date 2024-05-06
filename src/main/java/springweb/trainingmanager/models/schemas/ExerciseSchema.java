@@ -4,10 +4,12 @@ import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import org.hibernate.annotations.Type;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.Range;
 import org.springframework.format.annotation.DateTimeFormat;
+import springweb.trainingmanager.models.entities.BodyPart;
 import springweb.trainingmanager.models.entities.Difficulty;
 import springweb.trainingmanager.models.entities.Training;
 
@@ -38,6 +40,9 @@ public abstract class ExerciseSchema {
     protected int weights;
     @DateTimeFormat(pattern = "mm:ss")
     protected LocalTime time;
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    protected BodyPart bodyPart;
     @Enumerated(EnumType.STRING)
     protected Difficulty difficulty;
 
@@ -69,6 +74,10 @@ public abstract class ExerciseSchema {
         return time;
     }
 
+    public BodyPart getBodyPart(){
+        return bodyPart;
+    }
+
     public Difficulty getDifficulty() {
         return difficulty;
     }
@@ -84,6 +93,7 @@ public abstract class ExerciseSchema {
                 Objects.equals(name, exercise.name) &&
                 Objects.equals(description, exercise.description) &&
                 Objects.equals(time, exercise.time) &&
+                bodyPart == exercise.bodyPart &&
                 difficulty == exercise.difficulty;
     }
 

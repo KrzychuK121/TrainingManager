@@ -51,6 +51,10 @@ public class Exercise extends ExerciseSchema {
         this.time = time;
     }
 
+    public void setBodyPart(BodyPart bodyPart){
+        this.bodyPart = bodyPart;
+    }
+
     public void setDifficulty(Difficulty difficulty){
         this.difficulty = difficulty;
     }
@@ -72,6 +76,7 @@ public class Exercise extends ExerciseSchema {
         weights = toEdit.weights;
         difficulty = toEdit.difficulty;
         time = toEdit.time;
+        bodyPart = toEdit.bodyPart;
         trainings = toEdit.trainings == null || toEdit.trainings.isEmpty() ?
             null :
             toEdit.trainings;
