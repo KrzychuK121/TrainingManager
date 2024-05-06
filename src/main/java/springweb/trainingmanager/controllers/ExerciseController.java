@@ -13,6 +13,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import springweb.trainingmanager.models.entities.BodyPart;
 import springweb.trainingmanager.models.entities.Difficulty;
 import springweb.trainingmanager.models.entities.Exercise;
 import springweb.trainingmanager.models.entities.Training;
@@ -51,6 +52,10 @@ public class ExerciseController {
         for(Difficulty difficulty : Difficulty.values())
             desc.add(Difficulty.getEnumDesc(difficulty));
         model.addAttribute("difficultyDescArray", desc);
+    }
+
+    private void setBodyPartList(Model model){
+        model.addAttribute("bodyPartArray", BodyPart.values());
     }
 
     @ModelAttribute("title")
@@ -113,6 +118,7 @@ public class ExerciseController {
         model.addAttribute("exercise", new ExerciseWrite());
         model.addAttribute("action", "create");
         setDifficulty(model);
+        setBodyPartList(model);
         prepTrainingSelect(model);
         return "exercise/save";
     }
@@ -134,6 +140,7 @@ public class ExerciseController {
         if(result.hasErrors()){
             model.addAttribute("action", "create");
             setDifficulty(model);
+            setBodyPartList(model);
             prepTrainingSelect(model, trainingIds);
             return "exercise/save";
         }
@@ -147,6 +154,7 @@ public class ExerciseController {
         model.addAttribute("action", "create");
         model.addAttribute("exercise", new ExerciseWrite());
         setDifficulty(model);
+        setBodyPartList(model);
         model.addAttribute("message", "Utworzono nowe ćwiczenie!");
 
         return "exercise/save";
@@ -278,6 +286,7 @@ public class ExerciseController {
         model.addAttribute("action", "edit/" + id);
         model.addAttribute("exercise", toEdit);
         setDifficulty(model);
+        setBodyPartList(model);
         model.addAttribute("id", id);
         return "exercise/save";
     }
@@ -306,6 +315,7 @@ public class ExerciseController {
         if(result.hasErrors()){
             model.addAttribute("action", "edit/" + id);
             setDifficulty(model);
+            setBodyPartList(model);
             prepTrainingSelect(model, trainingIds);
             return "exercise/save";
         }
@@ -323,6 +333,7 @@ public class ExerciseController {
         }
 
         setDifficulty(model);
+        setBodyPartList(model);
         model.addAttribute("messType", "success");
         model.addAttribute("mess", "Edycja przeszła pomyślnie.");
         initIndexModel(page, model);
