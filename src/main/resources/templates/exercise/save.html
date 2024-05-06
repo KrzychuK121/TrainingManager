@@ -34,6 +34,27 @@
                         th:text="${#fields.errors('description')}"
                     ></div>
 
+                    <label class="form-label" for="bodyPart">Trenowana część ciała</label>
+                    <select
+                            class="form-select form-select-lg"
+                            aria-label="label"
+                            id="bodyPart"
+                            th:field="*{bodyPart}"
+                    >
+                        <option value="" selected>---Wybierz część ciała---</option>
+                        <!--/*@thymesVar id="Difficulty" type="springweb.trainingmanager.models.entities.BodyPart"*/-->
+                        <option
+                            th:each="bodyPart, i : ${bodyPartArray}"
+                            th:value="${bodyPart}"
+                            th:text="${T(springweb.trainingmanager.models.entities.BodyPart).getBodyDesc(bodyPart)}"
+                        ></option>
+                    </select>
+                    <div
+                            class="text-danger"
+                            th:if="${#fields.hasErrors('bodyPart')}"
+                            th:text="${#fields.errors('bodyPart')}"
+                    ></div>
+
                     <label class="form-label" for="rounds">Serie</label>
                     <input th:field="*{rounds}" type="number" id="rounds" class="form-control"  />
                     <div
