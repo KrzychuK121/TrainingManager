@@ -18,7 +18,7 @@ public class TrainingRoutine extends TrainingRoutineSchema {
             @JoinColumn(name = "training_id", referencedColumnName = "training_id"),
             @JoinColumn(name = "weekday", referencedColumnName = "weekday")
         },
-        uniqueConstraints = {@UniqueConstraint(columnNames = { "routine_id", "weekday" })}
+        uniqueConstraints = { @UniqueConstraint(columnNames = { "routine_id", "weekday" }) }
     )
     private Set<TrainingSchedule> schedules = new HashSet<>();
     public TrainingRoutine() {
@@ -30,5 +30,9 @@ public class TrainingRoutine extends TrainingRoutineSchema {
 
     public void setActive(boolean active) {
         this.active = active;
+    }
+
+    public void setSchedules(Set<TrainingSchedule> schedules) {
+        this.schedules = schedules;
     }
 }

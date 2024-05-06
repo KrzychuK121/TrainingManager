@@ -12,6 +12,7 @@ public class TrainingSchedule {
     @Id
     @Enumerated(EnumType.STRING)
     private Weekdays weekday;
+    // TODO: Add field responsible for time (when user wants to do his training in specified day)
     @ManyToOne
     @JoinColumn(name = "training_id", referencedColumnName = "id")
     private Training training;
