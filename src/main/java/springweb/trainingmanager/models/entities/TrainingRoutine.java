@@ -32,6 +32,10 @@ public class TrainingRoutine extends TrainingRoutineSchema {
         this.active = active;
     }
 
+    public Set<TrainingSchedule> getSchedules() {
+        return schedules;
+    }
+
     public void setSchedules(Set<TrainingSchedule> schedules) {
         this.schedules = schedules;
     }
