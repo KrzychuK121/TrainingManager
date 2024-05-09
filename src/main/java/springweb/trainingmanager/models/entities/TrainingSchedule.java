@@ -26,6 +26,11 @@ public class TrainingSchedule {
     public TrainingSchedule() {
     }
 
+    public TrainingSchedule(int trainingId, Weekdays weekday){
+        this.trainingId = trainingId;
+        this.weekday = weekday;
+    }
+
     public int getId() {
         return id;
     }
