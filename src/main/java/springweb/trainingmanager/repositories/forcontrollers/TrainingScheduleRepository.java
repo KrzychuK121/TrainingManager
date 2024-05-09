@@ -7,7 +7,7 @@ import java.util.Optional;
 
 public interface TrainingScheduleRepository {
     List<TrainingSchedule> findAll();
-    TrainingSchedule  save(TrainingSchedule entity);
+    TrainingSchedule save(TrainingSchedule entity);
     Optional<TrainingSchedule> findById(Integer id);
     boolean existsById(Integer id);
     void delete(TrainingSchedule entity);
