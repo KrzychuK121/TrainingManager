@@ -9,34 +9,27 @@ import java.util.Set;
 @Entity
 @Table(name = "training_routine")
 public class TrainingRoutine extends TrainingRoutineSchema {
-
-    @ManyToMany
-    @JoinTable(
-        name = "training_routine_schedule",
-        joinColumns = { @JoinColumn(name = "routine_id", referencedColumnName = "id") },
-        inverseJoinColumns = {
-            @JoinColumn(name = "training_id", referencedColumnName = "training_id"),
-            @JoinColumn(name = "weekday", referencedColumnName = "weekday")
-        },
-        uniqueConstraints = { @UniqueConstraint(columnNames = { "routine_id", "weekday" }) }
+    @ManyToOne
+    @JoinColumn(
+        name = "identity_user_id",
+        referencedColumnName = "id",
+        nullable = false
     )
-    private Set<TrainingSchedule> schedules = new HashSet<>();
+    private User owner;
+
     public TrainingRoutine() {
     }
 
     public void setId(int id) {
         this.id = id;
     }
-
     public void setActive(boolean active) {
         this.active = active;
     }
-
-    public Set<TrainingSchedule> getSchedules() {
-        return schedules;
+    public User getOwner() {
+        return owner;
     }
-
-    public void setSchedules(Set<TrainingSchedule> schedules) {
-        this.schedules = schedules;
+    public void setOwner(User owner) {
+        this.owner = owner;
     }
 }
