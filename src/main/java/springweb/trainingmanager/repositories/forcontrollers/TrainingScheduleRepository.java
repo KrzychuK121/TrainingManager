@@ -1,7 +1,6 @@
 package springweb.trainingmanager.repositories.forcontrollers;
 
 import springweb.trainingmanager.models.entities.TrainingSchedule;
-import springweb.trainingmanager.models.entities.TrainingScheduleId;
 
 import java.util.List;
 import java.util.Optional;
@@ -9,7 +8,7 @@ import java.util.Optional;
 public interface TrainingScheduleRepository {
     List<TrainingSchedule> findAll();
     TrainingSchedule  save(TrainingSchedule entity);
-    Optional<TrainingSchedule> findById(TrainingScheduleId trainingScheduleId);
-    boolean existsById(TrainingScheduleId trainingScheduleId);
+    Optional<TrainingSchedule> findById(Integer id);
+    boolean existsById(Integer id);
     void delete(TrainingSchedule entity);
 }
