@@ -2,22 +2,36 @@ package springweb.trainingmanager.models.entities;
 
 import jakarta.persistence.*;
 
+import java.util.Objects;
+
 @Entity
-@IdClass(TrainingScheduleId.class)
 @Table(name = "training_schedule")
 public class TrainingSchedule {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
     @Column(name = "training_id")
     private int trainingId;
-    @Id
     @Enumerated(EnumType.STRING)
     private Weekdays weekday;
-    // TODO: Add field responsible for time (when user wants to do his training in specified day)
     @ManyToOne
-    @JoinColumn(name = "training_id", referencedColumnName = "id")
+    @JoinColumn(
+        name = "training_id",
+        referencedColumnName = "id",
+        insertable = false,
+        updatable = false
+    )
     private Training training;
 
     public TrainingSchedule() {
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public int getTrainingId() {
@@ -44,5 +58,19 @@ public class TrainingSchedule {
         this.weekday = weekday;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        TrainingSchedule that = (TrainingSchedule) o;
+        return id == that.id &&
+                trainingId == that.trainingId &&
+                weekday == that.weekday &&
+                Objects.equals(training, that.training);
+    }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(trainingId, weekday, training);
+    }
 }
