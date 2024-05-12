@@ -1,8 +1,13 @@
+/*
+    Truncates are used because previously there were seeding migrations
+    and they moved after this migration now. So the table can contain rows in the table.
+    Truncate make sure that tables are clean before changing table structure and after that
+    they are seeded again.
+*/
 truncate table TRAINING_ROUTINE_SCHEDULE;
 
 alter table TRAINING_ROUTINE_SCHEDULE
 drop constraint FK_ID_ROUTINE_ID;
-alter table TRAINING_ROUTINE alter column ID restart with 1;
 truncate table TRAINING_ROUTINE;
 alter table TRAINING_ROUTINE_SCHEDULE
 add constraint FK_ID_ROUTINE_ID
