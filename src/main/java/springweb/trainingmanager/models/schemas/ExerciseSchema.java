@@ -1,21 +1,15 @@
 package springweb.trainingmanager.models.schemas;
 
-import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import org.hibernate.annotations.Type;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.Range;
 import org.springframework.format.annotation.DateTimeFormat;
 import springweb.trainingmanager.models.entities.BodyPart;
 import springweb.trainingmanager.models.entities.Difficulty;
-import springweb.trainingmanager.models.entities.Training;
 
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 @MappedSuperclass
@@ -45,6 +39,29 @@ public abstract class ExerciseSchema {
     protected BodyPart bodyPart;
     @Enumerated(EnumType.STRING)
     protected Difficulty difficulty;
+
+    public ExerciseSchema() {
+    }
+
+    public ExerciseSchema(
+        String name,
+        String description,
+        int rounds,
+        int repetition,
+        int weights,
+        LocalTime time,
+        BodyPart bodyPart,
+        Difficulty difficulty
+    ) {
+        this.name = name;
+        this.description = description;
+        this.rounds = rounds;
+        this.repetition = repetition;
+        this.weights = weights;
+        this.time = time;
+        this.bodyPart = bodyPart;
+        this.difficulty = difficulty;
+    }
 
     public int getId() {
         return id;
