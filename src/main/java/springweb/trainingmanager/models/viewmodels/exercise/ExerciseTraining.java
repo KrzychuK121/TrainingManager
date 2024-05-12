@@ -39,20 +39,9 @@ public class ExerciseTraining extends ExerciseSchema {
 
     public static List<Exercise> toExerciseList(final List<ExerciseTraining> list){
         List<Exercise> result = new ArrayList<>(list.size());
-        list.forEach(exerciseTraining -> {
-            var toSave = new Exercise();
-
-            toSave.setId(exerciseTraining.id);
-            toSave.setName(exerciseTraining.name);
-            toSave.setDescription(exerciseTraining.description);
-            toSave.setRounds(exerciseTraining.rounds);
-            toSave.setRepetition(exerciseTraining.repetition);
-            toSave.setWeights(exerciseTraining.weights);
-            toSave.setTime(exerciseTraining.time);
-            toSave.setBodyPart(exerciseTraining.bodyPart);
-
-            result.add(toSave);
-        });
+        list.forEach(exerciseTraining ->
+            result.add(exerciseTraining.toExercise())
+        );
 
         return result;
     }
@@ -94,16 +83,18 @@ public class ExerciseTraining extends ExerciseSchema {
     }
 
     public Exercise toExercise(){
-        var toReturn = new Exercise();
+        var toReturn = new Exercise(
+            name,
+            description,
+            rounds,
+            repetition,
+            weights,
+            time,
+            bodyPart,
+            difficulty
+        );
 
-        toReturn.setName(name);
-        toReturn.setDescription(description);
-        toReturn.setRounds(rounds);
-        toReturn.setRepetition(repetition);
-        toReturn.setWeights(weights);
-        toReturn.setTime(time);
-        toReturn.setBodyPart(bodyPart);
-        toReturn.setDifficulty(difficulty);
+        toReturn.setId(id);
 
         return toReturn;
     }
