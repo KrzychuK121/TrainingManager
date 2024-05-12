@@ -13,7 +13,7 @@ import java.util.List;
 public class V10__insert_exercises extends BaseJavaMigration {
     @Override
     public void migrate(Context context) throws Exception {
-        String sql = "INSERT INTO PUBLIC.EXERCISE (NAME, DESCRIPTION, ROUNDS, REPETITION, TIME) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO PUBLIC.EXERCISE (NAME, DESCRIPTION, ROUNDS, REPETITION, TIME, ID) VALUES (?, ?, ?, ?, ?, ?)";
         var exercises = exercisesToCreate();
 
         try (PreparedStatement statement = context.getConnection().prepareStatement(sql)) {
@@ -24,6 +24,7 @@ public class V10__insert_exercises extends BaseJavaMigration {
                 statement.setInt(3, exercise.getRounds());
                 statement.setInt(4, exercise.getRepetition());
                 statement.setString(5, exercise.getTime() == null ? null : exercise.getTime().toString());
+                statement.setInt(6, exercise.getId());
                 statement.addBatch();
             }
 
