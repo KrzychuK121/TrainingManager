@@ -2,16 +2,11 @@ package springweb.trainingmanager.models.entities;
 
 import jakarta.persistence.*;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.*;
-import org.hibernate.validator.constraints.Length;
-import org.hibernate.validator.constraints.Range;
-import org.springframework.format.annotation.DateTimeFormat;
 import springweb.trainingmanager.models.schemas.ExerciseSchema;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 
 @Entity
@@ -22,6 +17,30 @@ public class Exercise extends ExerciseSchema {
     private List<Training> trainings = new ArrayList<>();
 
     public Exercise(){ }
+
+    public Exercise(
+        String name,
+        String description,
+        int rounds,
+        int repetition,
+        int weights,
+        LocalTime time,
+        BodyPart bodyPart,
+        Difficulty difficulty
+    ) {
+        super(
+            name,
+            description,
+            rounds,
+            repetition,
+            weights,
+            time,
+            bodyPart,
+            difficulty
+        );
+    }
+
+
 
     public void setId(int id) {
         this.id = id;
