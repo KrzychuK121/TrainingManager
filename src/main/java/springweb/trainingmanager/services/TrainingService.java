@@ -1,12 +1,9 @@
 package springweb.trainingmanager.services;
 
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import springweb.trainingmanager.models.entities.Exercise;
 import springweb.trainingmanager.models.entities.Training;
@@ -49,7 +46,7 @@ public class TrainingService {
      *
      * @return prepared list with <code>ExerciseTraining</code> (founded in database or just created)
      */
-    private List<Exercise> prepExercises(List<ExerciseTraining> exercises) {
+    public List<Exercise> prepExercises(List<ExerciseTraining> exercises) {
         if(exercises == null || exercises.isEmpty())
             return null;
 
