@@ -11,4 +11,5 @@ public interface TrainingRoutineRepository {
     Optional<TrainingRoutine> findById(Integer integer);
     boolean existsById(Integer integer);
     void delete(TrainingRoutine entity);
+    Optional<TrainingRoutine> findByOwnerIdAndActiveTrue(String ownerId);
 }
