@@ -130,6 +130,12 @@ public class TrainingService {
         );
     }
 
+    public List<TrainingRead> getAll(){
+        return repository.findAll()
+        .stream().map(TrainingRead::new)
+        .collect(Collectors.toList());
+    }
+
     public Page<TrainingRead> getAll(Pageable page){
         page = PageSortService.validateSort(
             Training.class,
