@@ -185,11 +185,8 @@ public class TrainingController {
         produces = MediaType.APPLICATION_JSON_VALUE
     )
     @ResponseBody
-    ResponseEntity<List<TrainingRead>> getAll(@PageableDefault(size = 2) Pageable page){
-        return ResponseEntity.ok(
-            service.getAll(page)
-            .getContent()
-        );
+    ResponseEntity<List<TrainingRead>> getAll(){
+        return ResponseEntity.ok(service.getAll());
     }
 
     @Secured({RoleSchema.ROLE_ADMIN, RoleSchema.ROLE_USER})
