@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="pl" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org">
+<head th:replace="~{defaulttemplate :: head}"></head>
+<body>
+    <header th:replace="~{defaulttemplate :: header}" id="h_menu" class="container-fluid"></header>
+
+    <div class="container">
+        <main>
+            <!--<div th:replace="~{defaulttemplate :: alert}"></div>-->
+            <h1>Lista wszystkich ćwiczeń</h1>
+            <div th:if="${exercises.isEmpty()}">
+                Brak rutyn treningowych do wyświetlenia
+            </div>
+            <table
+                class="table table-bordered table-success table-striped"
+                th:if="${!exercises.isEmpty()}"
+            >
+                <thead>
+                <tr>
+                    <th>
+                        <a th:replace="~{defaulttemplate :: sort-anchor('exercise', ${newOrder}, 'name', 'Nazwa')}"></a>
+                    </th>
+                    <th>
+                        <a th:replace="~{defaulttemplate :: sort-anchor('exercise', ${newOrder}, 'description', 'Opis')}"></a>
+                    </th>
+                    <th>
+                        <a th:replace="~{defaulttemplate :: sort-anchor('exercise', ${newOrder}, 'rounds', 'Serie')}"></a>
+                    </th>
+                    <th>
+                        <a th:replace="~{defaulttemplate :: sort-anchor('exercise', ${newOrder}, 'repetition', 'Potwórzenia')}"></a>
+                    </th>
+                    <th>
+                        <a th:replace="~{defaulttemplate :: sort-anchor('exercise', ${newOrder}, 'time', 'Czas (do wykonania/przewidywany)')}"></a>
+                    </th>
+                    <th>
+                        <a th:replace="~{defaulttemplate :: sort-anchor('exercise', ${newOrder}, 'difficulty', 'Trudność')}"></a>
+                    </th>
+                    <th>
+                        <a th:replace="~{defaulttemplate :: sort-anchor('exercise', ${newOrder}, 'weights', 'Obciążenie')}"></a>
+                    </th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="exercise, i: ${exercises}">
+                    <td th:text="${exercise.name}"></td>
+                    <td th:text="${exercise.description}"></td>
+                    <td th:text="${exercise.rounds}"></td>
+                    <td th:text="${exercise.repetition}"></td>
+                    <td th:text="${exercise.time}"></td>
+                    <td th:text="${T(springweb.trainingmanager.models.entities.Difficulty).getEnumDesc(exercise.difficulty)}"></td>
+                    <td th:if="${exercise.weights == 0}">brak</td>
+                    <td th:unless="${exercise.weights == 0}" th:text="${exercise.weights}"></td>
+                    <td>
+                        <!--<fieldset>
+                            <form
+                                    method="get"
+                                    action="#"
+                                    th:action="@{/exercise/edit/{id}(id=${exercise.id})}"
+                            >
+                                <button
+                                        type="submit"
+                                        class="btn btn-primary"
+                                >
+                                    Edytuj
+                                </button> |
+                            </form>
+                            <form
+                                    method="get"
+                                    action="#"
+                                    sec:authorize="hasRole('ROLE_ADMIN')"
+                                    th:action="@{/exercise/delete/{id}(id=${exercise.id})}"
+                            >-->
+                                <!-- Modal -->
+                                <!--<div
+                                        th:replace="~{defaulttemplate :: modal-delete('delItem' + ${i.index})}"
+                                ></div>
+                                <button
+                                        type="button"
+                                        class="btn btn-primary"
+                                        data-bs-toggle="modal"
+                                        th:data-bs-target="'#delItem' + ${i.index}"
+                                >
+                                    Usuń
+                                </button> |
+                            </form>
+                        </fieldset>-->
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <!--/*@thymesVar id="exerciseSort" type="java.lang.String"*/-->
+            <form
+                th:insert="~{defaulttemplate :: pages-form(${pages}, ${currOrder})}"
+                action="#"
+                th:action="@{/exercise}"
+                th:object="${pages}"
+            ></form>
+        </main>
+    </div>
+</body>
+</html>
