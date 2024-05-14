@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="pl" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org">
+<head th:replace="~{defaulttemplate :: head}">
+    <meta charset="UTF-8">
+</head>
+<body>
+    <!--/*@thymesVar id="planToDisplay" type="springweb.trainingmanager.models.entities.TrainingPlan"*/-->
+    <!--/*@thymesVar id="altDay" type="springweb.trainingmanager.models.entities.Weekdays"*/-->
+    <div
+        th:fragment="dayDisplay(planToDisplay, altDay)"
+        class="card"
+    >
+        <div class="card-header">
+            <span
+                th:if="${planToDisplay != null}"
+                th:text="|${T(springweb.trainingmanager.models.entities.Weekdays).getWeekdaysDesc(planToDisplay.trainingSchedule.weekday)}: ${planToDisplay.trainingTime}|"
+                class="text-capitalize"
+            ></span>
+            <span
+                th:unless="${planToDisplay != null}"
+                th:text="${T(springweb.trainingmanager.models.entities.Weekdays).getWeekdaysDesc(altDay)}"
+                class="text-capitalize"
+            ></span>
+        </div>
+        <div
+            class="card-body"
+            th:if="${planToDisplay != null}"
+            th:object="${planToDisplay.trainingSchedule.training}"
+        >
+            <h5 class="card-title" th:text="*{title}"></h5>
+            <b>Opis:</b>
+            <p class="card-text" th:text="*{description}"></p>
+            <a href="#" class="btn btn-primary">Zrób trening</a>
+        </div>
+        <div
+            class="card-body"
+            th:unless="${planToDisplay != null}"
+        >
+            <h5 class="card-title">Dzień wolny</h5>
+            <p class="card-text">
+                Wygląda na to, że nie masz nic zaplanowane na dzisiejszy dzień.
+                Wykorzystaj ten czas na odpoczynek. Regeneracja po wysiłku fizycznym
+                jest bardzo ważna w procesie budowy mięśni.
+            </p>
+        </div>
+    </div>
+
+    <!--
+        TODO: Make js file which loads all trainings that user can assign to an array while entering side only once. Then, js creates sub arrays while typing in search fields and updates options of select.
+    -->
+    <!--Display element to select training for the specified day-->
+    <!--/*@thymesVar id="dayToAssign" type="springweb.trainingmanager.models.entities.Weekdays"*/-->
+    <div
+        th:fragment="dayAssign(dayToAssign)"
+        class="card"
+    >
+        <div class="card-header">
+            <span
+                class="text-capitalize"
+                th:text="${T(springweb.trainingmanager.models.entities.Weekdays).getWeekdaysDesc(dayToAssign)}"
+            ></span>
+        </div>
+        <div class="card-body">
+            <h5 class="card-title">Przypisz trening na ten dzień</h5>
+            <p class="card-text">
+                <label th:for="|search${dayToAssign}|">Wyszukaj po nazwie</label>
+                <input
+                    th:id="|search${dayToAssign}|"
+                    th:name="|search${dayToAssign}|"
+                />
+                <label th:for="|training${dayToAssign}|">Wybierz trening</label>
+                <select
+                    th:name="|training${dayToAssign}|"
+                    th:id="|training${dayToAssign}|"
+                >
+                    <option selected>--Wybierz trening--</option>
+                </select>
+            </p>
+            <!--<a href="#" class="btn btn-primary">Zrób trening</a>-->
+        </div>
+    </div>
+</body>
+</html>
