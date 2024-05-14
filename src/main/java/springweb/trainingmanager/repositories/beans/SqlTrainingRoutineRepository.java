@@ -13,4 +13,6 @@ interface SqlTrainingRoutineRepository
     extends TrainingRoutineRepository,
             JpaRepository<TrainingRoutine, Integer> {
 
+    @Override
+    public Optional<TrainingRoutine> findByOwnerIdAndActiveTrue(String ownerId);
 }
