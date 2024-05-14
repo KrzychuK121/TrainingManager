@@ -35,7 +35,7 @@ public class V33__insert_training_routine extends BaseJavaMigration {
         User defaultUser = new User();
         defaultUser.setId("1953e65b-d3a2-48d4-8b34-21e5ae75828a");
 
-        toReturn.add(createNewTrainingRoutine(1, false, defaultUser));
+        toReturn.add(createNewTrainingRoutine(1, true, defaultUser));
         toReturn.add(createNewTrainingRoutine(2, false, defaultUser));
 
         return toReturn;
