@@ -13,10 +13,10 @@
       <div class="row justify-content-center">
         <!--/*@thymesVar id="schedules" type="java.util.HashMap"*/-->
         <div
-          th:each="record: *{schedules.entrySet()}"
+          th:each="weekday: ${weekdays}"
           class="col-3"
         >
-          <div th:replace="~{routine/template :: dayAssign(${record.key}, ${record})}"></div>
+          <div th:replace="~{routine/template :: dayAssign(${weekday})}"></div>
         </div>
       </div>
       <div class="row justify-content-center">
