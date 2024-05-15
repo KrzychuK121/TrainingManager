@@ -55,6 +55,19 @@ public class UserService {
         null;
     }
 
+    /**
+     * Method that gets authentication object, gets MyUserDetails out
+     * of it and then returns user object.
+     *
+     * @param auth Authentication object
+     *
+     * @return Logged user object
+     */
+    public static User getUserByAuth(Authentication auth){
+        MyUserDetails userDetails = (MyUserDetails) auth.getPrincipal();
+        return userDetails.getUser();
+    }
+
     public boolean ifPasswordsMatches(String password, String passwordRepeat){
         return password.equals(passwordRepeat);
     }
