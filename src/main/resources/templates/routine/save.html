@@ -5,21 +5,27 @@
   <header th:replace="~{defaulttemplate :: header}" id="h_menu" class="container-fluid"></header>
 
   <div class="container">
-    <!--${T(springweb.trainingmanager.models.entities.Weekdays).MONDAY}-->
-    <form method="post" th:action="@{/plans/week/create}">
+    <form
+      method="post"
+      th:action="@{/plans/week/create}"
+      th:object="${schedulesList}"
+    >
       <div class="row justify-content-center">
+        <!--/*@thymesVar id="schedules" type="java.util.HashMap"*/-->
         <div
-          th:each="weekday: ${weekdays}"
+          th:each="record: *{schedules.entrySet()}"
           class="col-3"
         >
-          <div th:replace="~{routine/template :: dayAssign(${weekday})}"></div>
+          <div th:replace="~{routine/template :: dayAssign(${record.key}, ${record})}"></div>
         </div>
       </div>
-      <input
-        class="btn btn-primary"
-        type="submit"
-        value="Zapisz"
-      />
+      <div class="row justify-content-center">
+        <input
+          class="btn btn-primary"
+          type="submit"
+          value="Zapisz"
+        />
+      </div>
     </form>
   </div>
   <script src="/script/js/routine/searchTrainings.js"></script>

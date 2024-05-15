@@ -49,31 +49,31 @@
         TODO: Make js file which loads all trainings that user can assign to an array while entering side only once. Then, js creates sub arrays while typing in search fields and updates options of select.
     -->
     <!--Display element to select training for the specified day-->
-    <!--/*@thymesVar id="dayToAssign" type="springweb.trainingmanager.models.entities.Weekdays"*/-->
+    <!--/*@thymesVar id="weekday" type="springweb.trainingmanager.models.entities.Weekdays"*/-->
+    <!--/*@thymesVar id="schedules" type="java.util.HashMap<springweb.trainingmanager.models.entities.Weekdays, java.lang.Integer>"*/-->
     <div
-        th:fragment="dayAssign(dayToAssign)"
+        th:fragment="dayAssign(weekday, record)"
         class="card"
     >
         <div class="card-header">
             <span
                 class="text-capitalize"
-                th:text="${T(springweb.trainingmanager.models.entities.Weekdays).getWeekdaysDesc(dayToAssign)}"
+                th:text="${T(springweb.trainingmanager.models.entities.Weekdays).getWeekdaysDesc(weekday)}"
             ></span>
         </div>
         <div class="card-body">
             <h5 class="card-title">Przypisz trening na ten dzień</h5>
             <p class="card-text">
-                <label th:for="|search${dayToAssign}|">Wyszukaj po nazwie</label>
-                <input
-                    th:id="|search${dayToAssign}|"
-                    th:name="|search${dayToAssign}|"
-                />
-                <label th:for="|training${dayToAssign}|">Wybierz trening</label>
+                <label th:for="|search${weekday}|">Wyszukaj po nazwie:</label>
+                <input th:id="|search${weekday}|"/>
+                <label th:for="|training${weekday}|">Wybierz trening:</label>
+                <!--th:name="|training${dayToAssign}|"-->
+                <!---->
                 <select
-                    th:name="|training${dayToAssign}|"
-                    th:id="|training${dayToAssign}|"
+                    th:field="*{schedules['__${weekday}__']}"
+                    th:id="|training${weekday}|"
                 >
-                    <option selected>--Wybierz trening--</option>
+                    <option value="0" selected>--Dzień wolny--</option>
                 </select>
             </p>
             <!--<a href="#" class="btn btn-primary">Zrób trening</a>-->
