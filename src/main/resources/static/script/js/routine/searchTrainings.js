@@ -53,7 +53,7 @@ function createOption(text, value, selected, parent){
  * Invoked while search bar is empty
  */
 function initSelect(trainings, parent, howManyRows = 20){
-    for(let i = 0; i < howManyRows; i++){
+    for(let i = 0; i < Math.min(trainings.length, howManyRows); i++){
         const training = trainings[i];
         createOption(`id: ${training.id} tytuł: ${training.title}`, training.id, false, parent);
     }
