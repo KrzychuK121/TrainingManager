@@ -84,11 +84,6 @@ public class TrainingPlanController {
         for(var plan : plans){
             var schedule = plan.getTrainingSchedule();
             var routine = plan.getTrainingRoutine();
-            logger.info("plan: ");
-            logger.info("trainingId: " + schedule.getTrainingId());
-            logger.info("weekday: " + schedule.getWeekday());
-            logger.info("user: " + routine.getOwner().getFirstName());
-            logger.info("active: " + routine.isActive());
         }
 
         return new RedirectView("/plans/week/create");
