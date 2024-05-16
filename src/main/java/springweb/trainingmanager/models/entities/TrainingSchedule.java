@@ -1,12 +1,13 @@
 package springweb.trainingmanager.models.entities;
 
 import jakarta.persistence.*;
+import springweb.trainingmanager.models.schemas.Identificable;
 
 import java.util.Objects;
 
 @Entity
 @Table(name = "training_schedule")
-public class TrainingSchedule {
+public class TrainingSchedule implements Identificable<Integer> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
@@ -31,8 +32,14 @@ public class TrainingSchedule {
         this.weekday = weekday;
     }
 
-    public int getId() {
+    @Override
+    public Integer getId() {
         return id;
+    }
+
+    @Override
+    public Integer getDefaultId() {
+        return 0;
     }
 
     public void setId(int id) {
