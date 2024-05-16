@@ -29,4 +29,8 @@ public class TrainingRoutineService {
         return repository.findByOwnerIdAndActiveTrue(userId)
         .orElseThrow(() -> new IllegalStateException("Użytkownik nie posiada aktywnej rutyny treningowej."));
     }
+
+    public TrainingRoutine createNew(TrainingRoutine toSave){
+        return repository.save(toSave);
+    }
 }
