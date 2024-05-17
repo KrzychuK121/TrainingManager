@@ -2,14 +2,11 @@ package springweb.trainingmanager.services;
 
 import org.springframework.stereotype.Service;
 import springweb.trainingmanager.models.entities.TrainingPlan;
-import springweb.trainingmanager.models.entities.TrainingSchedule;
 import springweb.trainingmanager.models.entities.Weekdays;
-import springweb.trainingmanager.repositories.forcontrollers.Saveable;
 import springweb.trainingmanager.repositories.forcontrollers.TrainingPlanRepository;
 import springweb.trainingmanager.repositories.forcontrollers.TrainingScheduleRepository;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -65,6 +62,7 @@ public class TrainingPlanService {
                 created.add(repository.save(plan));
             }
         );
+
         return created;
     }
 
