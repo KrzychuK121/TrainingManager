@@ -114,6 +114,38 @@ class TrainingScheduleRepositoryIntegrationTest {
     }
 
     @Test
+    void findDuplicationShouldFindMatchedTrainingSchedule() {
+        // given
+        var toSave = new TrainingSchedule(1, Weekdays.SATURDAY);
+
+        // when
+        TrainingSchedule saved = entityManager.persist(toSave);
+        TrainingSchedule found = repository.findDuplication(toSave)
+            .orElse(toSave);
+
+        // then
+        assertEquals(saved, found);
+    }
+
+    @Test
+    void findDuplicationShouldNotFindMatchedTrainingSchedule() {
+        // given
+        var toFind = new TrainingSchedule(1, Weekdays.SATURDAY);
+        var otherWeekday = new TrainingSchedule(1, Weekdays.FRIDAY);
+        var otherTrainingId = new TrainingSchedule(2, Weekdays.SATURDAY);
+
+
+        // when
+        TrainingSchedule savedOtherWeekday = entityManager.persist(otherWeekday);
+        TrainingSchedule savedOtherTrainingId = entityManager.persist(otherTrainingId);
+        TrainingSchedule found = repository.findDuplication(toFind)
+            .orElse(toFind);
+
+        // then
+        assertEquals(toFind, found);
+    }
+
+    @Test
     void existsById() {
 
     }
