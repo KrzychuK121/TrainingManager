@@ -11,10 +11,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.view.RedirectView;
 import springweb.trainingmanager.models.entities.TrainingPlan;
+import springweb.trainingmanager.models.entities.TrainingRoutine;
 import springweb.trainingmanager.models.entities.TrainingSchedule;
 import springweb.trainingmanager.models.entities.Weekdays;
 import springweb.trainingmanager.models.viewmodels.trainingPlan.TrainingPlansWrite;
 import springweb.trainingmanager.services.TrainingPlanService;
+import springweb.trainingmanager.services.TrainingRoutineService;
 import springweb.trainingmanager.services.UserService;
 
 import java.util.ArrayList;
@@ -25,12 +27,15 @@ import java.util.Map;
 @RequestMapping("/plans")
 public class TrainingPlanController {
     private final TrainingPlanService service;
+    private final TrainingRoutineService routineService;
     private final Logger logger = LoggerFactory.getLogger(TrainingPlanController.class);
 
     public TrainingPlanController(
-        final TrainingPlanService service
+        final TrainingPlanService service,
+        final TrainingRoutineService routineService
     ) {
         this.service = service;
+        this.routineService = routineService;
     }
 
     @GetMapping("/week")
@@ -70,21 +75,22 @@ public class TrainingPlanController {
         @ModelAttribute("schedulesList") TrainingPlansWrite schedulesList,
         Authentication auth
     ){
+        // TODO: Test this action
         var weekdays = Weekdays.values();
         List<TrainingPlan> plans = new ArrayList<>(weekdays.length);
+        TrainingRoutine routine = routineService.createNewByUser(
+                UserService.getUserByAuth(auth)
+            );
         for(var weekday : weekdays) {
             var trainingId = schedulesList.getSchedules().get(weekday);
             var toAdd = new TrainingPlan(
-                UserService.getUserByAuth(auth),
+                routine,
                 new TrainingSchedule(trainingId, weekday)
             );
             plans.add(toAdd);
         }
 
-        for(var plan : plans){
-            var schedule = plan.getTrainingSchedule();
-            var routine = plan.getTrainingRoutine();
-        }
+        List<TrainingPlan> created = service.createNewPlans(plans);
 
         return new RedirectView("/plans/week/create");
     }
