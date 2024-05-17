@@ -2,6 +2,7 @@ package springweb.trainingmanager.services;
 
 import org.springframework.stereotype.Service;
 import springweb.trainingmanager.models.entities.TrainingRoutine;
+import springweb.trainingmanager.models.entities.User;
 import springweb.trainingmanager.models.viewmodels.trainingRoutine.TrainingRoutineRead;
 import springweb.trainingmanager.repositories.forcontrollers.TrainingRoutineRepository;
 
@@ -32,5 +33,10 @@ public class TrainingRoutineService {
 
     public TrainingRoutine createNew(TrainingRoutine toSave){
         return repository.save(toSave);
+    }
+
+    public TrainingRoutine createNewByUser(User user){
+        var routine = new TrainingRoutine(user);
+        return createNew(routine);
     }
 }
