@@ -39,6 +39,16 @@ public class TrainingPlan extends TrainingPlanSchema {
         trainingSchedule = schedule;
     }
 
+    public TrainingPlan(
+        final TrainingRoutine routine,
+        final TrainingSchedule schedule
+    ){
+        trainingRoutine = routine;
+        trainingSchedule = schedule;
+    }
+
+
+
     public void setId(TrainingPlanId id){
         trainingRoutineId = id.getTrainingRoutineId();
         trainingScheduleId = id.getTrainingScheduleId();
