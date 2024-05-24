@@ -34,9 +34,12 @@ public class TrainingRoutineService {
     public TrainingRoutine createNew(TrainingRoutine toSave){
         return repository.save(toSave);
     }
-
     public TrainingRoutine createNewByUser(User user){
         var routine = new TrainingRoutine(user);
         return createNew(routine);
+    }
+
+    public void delete(TrainingRoutine toDelete){
+        repository.delete(toDelete);
     }
 }
