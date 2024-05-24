@@ -31,20 +31,24 @@ public class TrainingPlan extends TrainingPlanSchema {
 
     public TrainingPlan(
         final User owner,
-        final TrainingSchedule schedule
+        final TrainingSchedule schedule,
+        final LocalTime trainingTime
     ){
         trainingRoutine = new TrainingRoutine();
         trainingRoutine.setOwner(owner);
 
         trainingSchedule = schedule;
+        this.trainingTime = trainingTime;
     }
 
     public TrainingPlan(
         final TrainingRoutine routine,
-        final TrainingSchedule schedule
+        final TrainingSchedule schedule,
+        final LocalTime trainingTime
     ){
         trainingRoutine = routine;
         trainingSchedule = schedule;
+        this.trainingTime = trainingTime;
     }
 
 
