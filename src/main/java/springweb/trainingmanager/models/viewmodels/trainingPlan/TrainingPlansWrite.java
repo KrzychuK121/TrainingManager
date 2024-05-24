@@ -1,35 +1,33 @@
 package springweb.trainingmanager.models.viewmodels.trainingPlan;
 
-import springweb.trainingmanager.models.entities.TrainingPlan;
 import springweb.trainingmanager.models.entities.Weekdays;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class TrainingPlansWrite {
-    private Map<Weekdays, Integer> schedules;
+    private Map<Weekdays, TrainingPlanWrite> planWriteMap;
 
     public TrainingPlansWrite() {
-        schedules = new HashMap<>();
+        planWriteMap = new HashMap<>();
     }
-    public TrainingPlansWrite(Map<Weekdays, Integer> schedules) {
-        this.schedules = schedules;
-    }
-
-    public void setSchedules(Map<Weekdays, Integer> schedules) {
-        this.schedules = schedules;
+    public TrainingPlansWrite(Map<Weekdays, TrainingPlanWrite> planWriteMap) {
+        this.planWriteMap = planWriteMap;
     }
 
-    public Map<Weekdays, Integer> getSchedules() {
-        return schedules;
+    public void setPlanWriteMap(Map<Weekdays, TrainingPlanWrite> planWriteMap) {
+        this.planWriteMap = planWriteMap;
+    }
+    public Map<Weekdays, TrainingPlanWrite> getPlanWriteMap() {
+        return planWriteMap;
     }
 
-    public void add(Weekdays weekday, int trainingId){
-        schedules.put(weekday, trainingId);
+    public void add(Weekdays weekday, int trainingId, String trainingTime){
+        var trainingPlan = new TrainingPlanWrite(trainingId, trainingTime);
+        planWriteMap.put(weekday, trainingPlan);
     }
     public void add(Weekdays weekday){
-        schedules.put(weekday, 0);
+        var trainingPlan = new TrainingPlanWrite(0, null);
+        planWriteMap.put(weekday, trainingPlan);
     }
 }
