@@ -69,11 +69,17 @@
                 <!--th:name="|training${dayToAssign}|"-->
                 <!---->
                 <select
-                    th:field="*{schedules['__${weekday}__']}"
+                    th:field="*{planWriteMap['__${weekday}__'].trainingId}"
                     th:id="|training${weekday}|"
                 >
                     <option value="0" selected>--Dzień wolny--</option>
                 </select>
+                <label th:for="|trainingTime${weekday}|">Godzina treningu:</label>
+                <input
+                    th:id="|trainingTime${weekday}|"
+                    th:field="*{planWriteMap['__${weekday}__'].trainingTime}"
+                    pattern="[0-9]{2}:[0-9]{2}"
+                />
             </p>
             <!--<a href="#" class="btn btn-primary">Zrób trening</a>-->
         </div>
