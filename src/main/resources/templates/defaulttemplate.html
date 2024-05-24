@@ -1,18 +1,11 @@
 <!doctype html>
 <html lang="pl" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org">
-<head th:fragment="head">
+<th:block th:fragment="head">
     <meta charset="UTF-8">
     <meta
         name="viewport"
         content="width=device-width, initial-scale=1.0"
     >
-    <!--<link rel="icon" type="image/png" href="../../static/img/fav/favicon2.png">
-    <link rel="stylesheet" type="text/css" href="../../static/script/css/lib/bootstrap.min.css">
-    <link rel="stylesheet" type="text/css" href="../../static/script/css/style.css">
-    <link rel="preconnect" href="https://fonts.gstatic.com">
-    <link href="https://fonts.googleapis.com/css2?family=Sansita+Swashed:wght@700&display=swap" rel="stylesheet">
-    <script src="../../static/script/js/trening.js">
-    </script>-->
     <link rel="icon" type="image/png" href="/img/icon-scaled.png">
 
     <link rel="stylesheet" type="text/css" href="/script/css/lib/bootstrap.min.css">
@@ -21,7 +14,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Sansita+Swashed:wght@700&display=swap" rel="stylesheet">
     <!--/*@thymesVar id="title" type="java.lang.String"*/-->
     <title th:text="${title}"></title>
-</head>
+</th:block>
 <body>
     <header th:fragment="header" id="h_menu" class="container-fluid">
         <nav id="menu">
