@@ -61,6 +61,12 @@ public class TrainingPlan extends TrainingPlanSchema {
     public void setTrainingTime(LocalTime trainingTime) {
         this.trainingTime = trainingTime;
     }
+    public void setTrainingRoutineId(int trainingRoutineId) {
+        this.trainingRoutineId = trainingRoutineId;
+    }
+    public void setTrainingScheduleId(int trainingScheduleId) {
+        this.trainingScheduleId = trainingScheduleId;
+    }
     public TrainingSchedule getTrainingSchedule() {
         return trainingSchedule;
     }
@@ -73,4 +79,5 @@ public class TrainingPlan extends TrainingPlanSchema {
     public void setTrainingRoutine(TrainingRoutine trainingRoutine) {
         this.trainingRoutine = trainingRoutine;
     }
+
 }
