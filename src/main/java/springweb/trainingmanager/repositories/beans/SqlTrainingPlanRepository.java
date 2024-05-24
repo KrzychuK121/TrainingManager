@@ -4,6 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import springweb.trainingmanager.models.entities.TrainingPlan;
 import springweb.trainingmanager.models.entities.TrainingRoutine;
+import springweb.trainingmanager.models.entities.User;
 import springweb.trainingmanager.models.schemas.TrainingPlanId;
 import springweb.trainingmanager.repositories.forcontrollers.TrainingPlanRepository;
 
@@ -17,4 +18,6 @@ interface SqlTrainingPlanRepository
 
     @Override
     Optional<List<TrainingPlan>> findByTrainingRoutineId(int trainingRoutineId);
+    @Override
+    Optional<List<TrainingPlan>> findByTrainingRoutineOwner(User owner);
 }
