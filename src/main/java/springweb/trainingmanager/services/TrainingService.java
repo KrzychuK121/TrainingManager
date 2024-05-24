@@ -190,6 +190,10 @@ public class TrainingService {
         return usersTrainings;
     }
 
+    public boolean existsById(int trainingId){
+        return repository.existsById(trainingId);
+    }
+
     public void edit(TrainingWrite toEdit, int id, String userId){
         List<Exercise> preparedExerciseList = prepExercises(toEdit.getExercises());
         toEdit.setExercises(ExerciseTraining.toExerciseTrainingList(preparedExerciseList));
@@ -201,6 +205,7 @@ public class TrainingService {
         var saved = repository.save(toSave);
         editTrainingInExercises(saved, saved.getExercises(), true);
     }
+
     public void delete(int id, String userId){
         var toDelete = getById(id, userId);
         editTrainingInExercises(toDelete, toDelete.getExercises(), false);
