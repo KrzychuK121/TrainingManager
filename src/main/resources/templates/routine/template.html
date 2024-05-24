@@ -45,14 +45,11 @@
         </div>
     </div>
 
-    <!--
-        TODO: Make js file which loads all trainings that user can assign to an array while entering side only once. Then, js creates sub arrays while typing in search fields and updates options of select.
-    -->
     <!--Display element to select training for the specified day-->
     <!--/*@thymesVar id="weekday" type="springweb.trainingmanager.models.entities.Weekdays"*/-->
     <div
         th:fragment="dayAssign(weekday)"
-        class="card"
+        class="card dayAssignCard"
     >
         <div class="card-header">
             <span
