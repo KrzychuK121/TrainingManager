@@ -58,13 +58,13 @@ public class TrainingPlanController {
         Model model
     ){
         String userId = UserService.getUserIdByAuth(auth);
+        Map<Weekdays, TrainingPlan> plans = null;
         try {
-            Map<Weekdays, TrainingPlan> plans = service.getUserActivePlans(userId);
+            plans = service.getUserActivePlans(userId);
+        } catch(IllegalStateException ex){
+            model.addAttribute("noActiveRoutineMess", ex.getMessage());
+        } finally {
             model.addAttribute("plans", plans);
-        } catch(IllegalStateException ex) {
-            ex.printStackTrace();
-        } catch(IllegalArgumentException ex) {
-            ex.printStackTrace();
         }
 
         return "routine/week";
