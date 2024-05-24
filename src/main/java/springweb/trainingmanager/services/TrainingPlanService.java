@@ -2,6 +2,7 @@ package springweb.trainingmanager.services;
 
 import org.springframework.stereotype.Service;
 import springweb.trainingmanager.models.entities.*;
+import springweb.trainingmanager.models.schemas.TrainingPlanId;
 import springweb.trainingmanager.models.viewmodels.trainingPlan.TrainingPlanWrite;
 import springweb.trainingmanager.models.viewmodels.trainingPlan.TrainingPlansWrite;
 import springweb.trainingmanager.models.viewmodels.trainingRoutine.TrainingRoutineReadIndex;
@@ -102,11 +103,20 @@ public class TrainingPlanService {
     }
 
     public List<TrainingPlan> createNewPlans(List<TrainingPlan> plans){
-        // TODO: Finish this method and test it
         List<TrainingPlan> created = new ArrayList<>(plans.size());
         plans.forEach(
             plan ->{
-                plan.setTrainingSchedule(prepTrainingSchedule(plan));
+                TrainingSchedule prepared = prepTrainingSchedule(plan);
+                int scheduleId = prepared.getId();
+
+                TrainingPlanId planId = new TrainingPlanId(
+                    plan.getTrainingRoutine().getId(),
+                    scheduleId
+                );
+
+                plan.setId(planId);
+                plan.setTrainingSchedule(prepared);
+
                 created.add(repository.save(plan));
             }
         );
