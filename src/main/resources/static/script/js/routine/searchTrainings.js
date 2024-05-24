@@ -16,7 +16,7 @@
 
                 while(select.firstChild)
                     select.firstChild.remove();
-                createOption("--Wybierz trening--", -1, true, select);
+                createOption("--Dzień wolny--", -1, true, select);
 
                 const inputValue = e.currentTarget.value.toLowerCase();
 
@@ -24,8 +24,6 @@
                     initSelect(allTrainings, select);
                     return;
                 }
-
-                console.log('wykonuje sie');
 
                 allTrainings.forEach(
                     training => {
