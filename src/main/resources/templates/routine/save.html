@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html lang="pl" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org">
-<head th:replace="~{defaulttemplate :: head}"></head>
+<head>
+  <th:block th:replace="~{defaulttemplate :: head}"></th:block>
+  <link rel="stylesheet" type="text/css" href="/script/css/routine/style.css"/>
+</head>
 <body>
   <header th:replace="~{defaulttemplate :: header}" id="h_menu" class="container-fluid"></header>
 
