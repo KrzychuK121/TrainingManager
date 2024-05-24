@@ -2,6 +2,7 @@ package springweb.trainingmanager.controllers;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -9,17 +10,17 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
 import springweb.trainingmanager.models.entities.TrainingPlan;
-import springweb.trainingmanager.models.entities.TrainingRoutine;
-import springweb.trainingmanager.models.entities.TrainingSchedule;
 import springweb.trainingmanager.models.entities.Weekdays;
+import springweb.trainingmanager.models.schemas.RoleSchema;
 import springweb.trainingmanager.models.viewmodels.trainingPlan.TrainingPlansWrite;
+import springweb.trainingmanager.models.viewmodels.trainingRoutine.TrainingRoutineReadIndex;
 import springweb.trainingmanager.services.TrainingPlanService;
 import springweb.trainingmanager.services.TrainingRoutineService;
 import springweb.trainingmanager.services.UserService;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -38,6 +39,19 @@ public class TrainingPlanController {
         this.routineService = routineService;
     }
 
+    @Secured({RoleSchema.ROLE_ADMIN, RoleSchema.ROLE_USER})
+    @GetMapping
+    public String getAll(Authentication auth, Model model){
+        var loggedUser = UserService.getUserByAuth(auth);
+
+        List<TrainingRoutineReadIndex> plans = service.getAllByUser(loggedUser);
+
+        model.addAttribute("plans", plans);
+        model.addAttribute("weekdays", Weekdays.values());
+        return "routine/index";
+    }
+
+    @Secured({RoleSchema.ROLE_ADMIN, RoleSchema.ROLE_USER})
     @GetMapping("/week")
     public String getWeek(
         Authentication auth,
@@ -65,7 +79,7 @@ public class TrainingPlanController {
         for(var weekday : weekdays)
             toWrite.add(weekday);
 
-        model.addAttribute("schedulesList", toWrite);
+        model.addAttribute("plansWrite", toWrite);
         model.addAttribute("weekdays", weekdays);
         return "routine/save";
     }
@@ -73,24 +87,22 @@ public class TrainingPlanController {
     @PostMapping("/week/create")
     public RedirectView weekCreate(
         @ModelAttribute("schedulesList") TrainingPlansWrite schedulesList,
-        Authentication auth
+        Authentication auth,
+        RedirectAttributes attributes
     ){
-        // TODO: Test this action
-        var weekdays = Weekdays.values();
-        List<TrainingPlan> plans = new ArrayList<>(weekdays.length);
-        TrainingRoutine routine = routineService.createNewByUser(
+        // TODO: Test this action with acc: TestPlansCreate and pass as user
+        try {
+            List<TrainingPlan> created = service.createNewPlans(
+                schedulesList,
                 UserService.getUserByAuth(auth)
             );
-        for(var weekday : weekdays) {
-            var trainingId = schedulesList.getSchedules().get(weekday);
-            var toAdd = new TrainingPlan(
-                routine,
-                new TrainingSchedule(trainingId, weekday)
-            );
-            plans.add(toAdd);
+        } catch(IllegalStateException ex) {
+            attributes.addFlashAttribute("messType", "danger");
+            attributes.addFlashAttribute("mess", ex.getMessage());
         }
 
-        List<TrainingPlan> created = service.createNewPlans(plans);
+        attributes.addFlashAttribute("messType", "success");
+        attributes.addFlashAttribute("mess", "Stworzono nowy plan treningowy.");
 
         return new RedirectView("/plans/week/create");
     }
