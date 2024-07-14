@@ -32,3 +32,27 @@ There are few default accounts. These accounts allows you to test full potential
 **User**
 **login:** Uzytkownik<br>
 **password:** UserP@ssw0rd<br>
+
+## Plan for application:
+* ~~Adding forms responsible for creating:~~
+    - ~~exercises~~
+    - ~~trainings~~
+    - ~~training schedule~~
+    - ~~training routine~~
+    - ~~training plan~~
+    - ~~new user account (register action)~~
+* Displaying training plans:
+  - active (with done/upcomming info)
+  - ~~all~~
+  - history:
+    - weekly
+    - monthly
+* Filtering training plans by:
+  - difficulty
+  - practising body part
+* PostgreSQL database
+* React and ~~Thymeleaf~~ full responsible frontend
+* BMI and BMR calculators
+* Mobile version of the app with functionality:
+  - current week infomration with "do todays training" option
+  - notification about upcoming workout while app is working in the background
