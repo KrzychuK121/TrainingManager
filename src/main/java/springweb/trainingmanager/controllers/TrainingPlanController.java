@@ -96,13 +96,13 @@ public class TrainingPlanController {
                 schedulesList,
                 UserService.getUserByAuth(auth)
             );
+
+            attributes.addFlashAttribute("messType", "success");
+            attributes.addFlashAttribute("mess", "Stworzono nowy plan treningowy.");
         } catch(IllegalStateException ex) {
             attributes.addFlashAttribute("messType", "danger");
             attributes.addFlashAttribute("mess", ex.getMessage());
         }
-
-        attributes.addFlashAttribute("messType", "success");
-        attributes.addFlashAttribute("mess", "Stworzono nowy plan treningowy.");
 
         return new RedirectView("/plans/week/create");
     }
