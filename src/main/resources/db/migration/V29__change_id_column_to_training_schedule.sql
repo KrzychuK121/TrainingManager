@@ -1,8 +1,8 @@
 alter table TRAINING_SCHEDULE
-add column ID INTEGER auto_increment;
+add column ID SERIAL;
 
 alter table TRAINING_SCHEDULE
-drop primary key;
+drop constraint training_schedule_pkey;
 alter table TRAINING_SCHEDULE
 add primary key (id);
 

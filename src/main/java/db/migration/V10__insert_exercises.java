@@ -6,6 +6,8 @@ import springweb.trainingmanager.models.entities.Exercise;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Time;
+import java.sql.Types;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +25,10 @@ public class V10__insert_exercises extends BaseJavaMigration {
                 statement.setString(2, exercise.getDescription());
                 statement.setInt(3, exercise.getRounds());
                 statement.setInt(4, exercise.getRepetition());
-                statement.setString(5, exercise.getTime() == null ? null : exercise.getTime().toString());
+                if(exercise.getTime() == null)
+                    statement.setNull(5, Types.TIME);
+                else
+                    statement.setTime(5, Time.valueOf(exercise.getTime()));
                 statement.setInt(6, exercise.getId());
                 statement.addBatch();
             }

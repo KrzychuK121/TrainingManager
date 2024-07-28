@@ -7,6 +7,7 @@ import springweb.trainingmanager.models.schemas.TrainingPlanId;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Time;
 import java.time.LocalTime;
 import java.util.ArrayList;
 
@@ -19,7 +20,10 @@ public class V35__insert_training_plan extends BaseJavaMigration {
             for (var trainingPlan : trainingPlans) {
                 statement.setInt(1, trainingPlan.getTrainingRoutineId());
                 statement.setInt(2, trainingPlan.getTrainingScheduleId());
-                statement.setString(3, trainingPlan.getTrainingTime().toString());
+                statement.setTime(
+                    3,
+                    Time.valueOf(trainingPlan.getTrainingTime())
+                );
                 statement.addBatch();
             }
 

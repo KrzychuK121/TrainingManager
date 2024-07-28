@@ -1,6 +1,6 @@
 create table ROLES
 (
-    ID   INTEGER auto_increment
+    ID   SERIAL
         primary key,
     NAME CHARACTER VARYING(255)
 );

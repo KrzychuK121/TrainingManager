@@ -1,5 +1,5 @@
 create table TRAINING_ROUTINE(
-    ID INTEGER auto_increment
+    ID SERIAL
     primary key,
     ACTIVE BOOLEAN
 );
