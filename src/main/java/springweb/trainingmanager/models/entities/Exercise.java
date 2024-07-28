@@ -23,7 +23,7 @@ public class Exercise extends ExerciseSchema {
         String description,
         int rounds,
         int repetition,
-        int weights,
+        short weights,
         LocalTime time,
         BodyPart bodyPart,
         Difficulty difficulty
@@ -62,7 +62,7 @@ public class Exercise extends ExerciseSchema {
         this.repetition = repetition;
     }
 
-    public void setWeights(int weights){
+    public void setWeights(short weights){
         this.weights = weights;
     }
 

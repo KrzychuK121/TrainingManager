@@ -31,7 +31,7 @@ public abstract class ExerciseSchema {
     protected int repetition;
     @Column(columnDefinition = "SMALLINT")
     @Range(min = 0, max = 300, message = "Ilość obciążenia musi mieścić się między 0 a 300")
-    protected int weights;
+    protected short weights;
     @DateTimeFormat(pattern = "mm:ss")
     protected LocalTime time;
     @NotNull
@@ -48,7 +48,7 @@ public abstract class ExerciseSchema {
         String description,
         int rounds,
         int repetition,
-        int weights,
+        short weights,
         LocalTime time,
         BodyPart bodyPart,
         Difficulty difficulty
@@ -83,7 +83,7 @@ public abstract class ExerciseSchema {
         return repetition;
     }
 
-    public int getWeights() {
+    public short getWeights() {
         return weights;
     }
 

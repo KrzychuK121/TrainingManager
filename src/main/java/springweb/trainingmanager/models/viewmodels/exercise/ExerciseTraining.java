@@ -66,7 +66,7 @@ public class ExerciseTraining extends ExerciseSchema {
         this.repetition = repetition;
     }
 
-    public void setWeights(int weights){
+    public void setWeights(short weights){
         this.weights = weights;
     }
 
