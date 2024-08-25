@@ -9,7 +9,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 <span th:if="${message != null}" th:text="${message}"></span>
             </div>
-            <!--/*@thymesVar id="exercise" type="springweb.trainingmanager.models.viewmodels.exercise.ExerciseRead"*/-->
+            <!--/*@thymesVar id="exercise" type="springweb.training_manager.models.viewmodels.exercise.ExerciseRead"*/-->
             <form
                 action=""
                 method="post"
@@ -42,11 +42,11 @@
                             th:field="*{bodyPart}"
                     >
                         <option value="" selected>---Wybierz część ciała---</option>
-                        <!--/*@thymesVar id="Difficulty" type="springweb.trainingmanager.models.entities.BodyPart"*/-->
+                        <!--/*@thymesVar id="Difficulty" type="springweb.training_manager.models.entities.BodyPart"*/-->
                         <option
                             th:each="bodyPart, i : ${bodyPartArray}"
                             th:value="${bodyPart}"
-                            th:text="${T(springweb.trainingmanager.models.entities.BodyPart).getBodyDesc(bodyPart)}"
+                            th:text="${T(springweb.training_manager.models.entities.BodyPart).getBodyDesc(bodyPart)}"
                         ></option>
                     </select>
                     <div
@@ -117,7 +117,7 @@
                         th:field="*{difficulty}"
                     >
                         <option value="" selected>---Wybierz poziom trudności---</option>
-                        <!--/*@thymesVar id="Difficulty" type="springweb.trainingmanager.models.entities.Difficulty"*/-->
+                        <!--/*@thymesVar id="Difficulty" type="springweb.training_manager.models.entities.Difficulty"*/-->
                         <option
                             th:each="difficulty, i : ${difficultyArray}"
                             th:value="${difficulty}"

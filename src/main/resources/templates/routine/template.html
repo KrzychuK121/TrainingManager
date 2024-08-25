@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
 </head>
 <body>
-    <!--/*@thymesVar id="planToDisplay" type="springweb.trainingmanager.models.entities.TrainingPlan"*/-->
-    <!--/*@thymesVar id="altDay" type="springweb.trainingmanager.models.entities.Weekdays"*/-->
+<!--/*@thymesVar id="planToDisplay" type="springweb.training_manager.models.entities.TrainingPlan"*/-->
+<!--/*@thymesVar id="altDay" type="springweb.training_manager.models.entities.Weekdays"*/-->
     <div
         th:fragment="dayDisplay(planToDisplay, altDay)"
         class="card"
@@ -13,12 +13,12 @@
         <div class="card-header">
             <span
                 th:if="${planToDisplay != null}"
-                th:text="|${T(springweb.trainingmanager.models.entities.Weekdays).getWeekdaysDesc(planToDisplay.trainingSchedule.weekday)}: ${planToDisplay.trainingTime}|"
+                th:text="|${T(springweb.training_manager.models.entities.Weekdays).getWeekdaysDesc(planToDisplay.trainingSchedule.weekday)}: ${planToDisplay.trainingTime}|"
                 class="text-capitalize"
             ></span>
             <span
                 th:unless="${planToDisplay != null}"
-                th:text="${T(springweb.trainingmanager.models.entities.Weekdays).getWeekdaysDesc(altDay)}"
+                th:text="${T(springweb.training_manager.models.entities.Weekdays).getWeekdaysDesc(altDay)}"
                 class="text-capitalize"
             ></span>
         </div>
@@ -46,7 +46,7 @@
     </div>
 
     <!--Display element to select training for the specified day-->
-    <!--/*@thymesVar id="weekday" type="springweb.trainingmanager.models.entities.Weekdays"*/-->
+<!--/*@thymesVar id="weekday" type="springweb.training_manager.models.entities.Weekdays"*/-->
     <div
         th:fragment="dayAssign(weekday)"
         class="card dayAssignCard"
@@ -54,7 +54,7 @@
         <div class="card-header">
             <span
                 class="text-capitalize"
-                th:text="${T(springweb.trainingmanager.models.entities.Weekdays).getWeekdaysDesc(weekday)}"
+                th:text="${T(springweb.training_manager.models.entities.Weekdays).getWeekdaysDesc(weekday)}"
             ></span>
         </div>
         <div class="card-body">

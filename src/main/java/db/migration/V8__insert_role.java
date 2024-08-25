@@ -2,7 +2,7 @@ package db.migration;
 
 import org.flywaydb.core.api.migration.BaseJavaMigration;
 import org.flywaydb.core.api.migration.Context;
-import springweb.trainingmanager.models.entities.Role;
+import springweb.training_manager.models.entities.Role;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;

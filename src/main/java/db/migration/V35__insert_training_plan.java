@@ -2,8 +2,8 @@ package db.migration;
 
 import org.flywaydb.core.api.migration.BaseJavaMigration;
 import org.flywaydb.core.api.migration.Context;
-import springweb.trainingmanager.models.entities.TrainingPlan;
-import springweb.trainingmanager.models.schemas.TrainingPlanId;
+import springweb.training_manager.models.entities.TrainingPlan;
+import springweb.training_manager.models.schemas.TrainingPlanId;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;

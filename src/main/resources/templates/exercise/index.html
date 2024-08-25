@@ -47,7 +47,7 @@
                         <td th:text="${exercise.rounds}"></td>
                         <td th:text="${exercise.repetition}"></td>
                         <td th:text="${exercise.time}"></td>
-                        <td th:text="${T(springweb.trainingmanager.models.entities.Difficulty).getEnumDesc(exercise.difficulty)}"></td>
+                        <td th:text="${T(springweb.training_manager.models.entities.Difficulty).getEnumDesc(exercise.difficulty)}"></td>
                         <td th:if="${exercise.weights == 0}">brak</td>
                         <td th:unless="${exercise.weights == 0}" th:text="${exercise.weights}"></td>
                         <td>
