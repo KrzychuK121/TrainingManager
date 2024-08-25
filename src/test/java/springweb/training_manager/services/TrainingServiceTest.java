@@ -67,7 +67,7 @@ class TrainingServiceTest {
             "zwykłe pompki",
             3,
             20,
-            0,
+            (short) 0,
             LocalTime.of(0, 0, 0),
             BodyPart.CHEST,
             Difficulty.FOR_BEGINNERS
@@ -78,7 +78,7 @@ class TrainingServiceTest {
             "brzuszki z obciążeniem 4,5kg na rękę",
             3,
             20,
-            4,
+            (short) 4,
             LocalTime.of(0, 0, 0),
             BodyPart.UPPER_ABS,
             Difficulty.MEDIUM

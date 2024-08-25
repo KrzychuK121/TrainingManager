@@ -25,7 +25,7 @@ class ExerciseRepositoryIntegrationTest {
             "Ćwiczenie z testu integracyjnego",
             3,
             0,
-            0,
+            (short) 0,
             LocalTime.of(0, 0, 45),
             BodyPart.UPPER_ABS,
             Difficulty.MEDIUM
@@ -50,7 +50,7 @@ class ExerciseRepositoryIntegrationTest {
             "Ćw na brzuch, udawane przeciąganie liny",
             3,
             0,
-            0,
+            (short) 0,
             LocalTime.of(0, 0, 45),
             BodyPart.UPPER_ABS,
             Difficulty.MEDIUM
@@ -72,7 +72,7 @@ class ExerciseRepositoryIntegrationTest {
             "Ćw na brzuch, udawane przeciąganie liny",
             3,
             0,
-            0,
+            (short) 0,
             LocalTime.of(0, 0, 45),
             BodyPart.UPPER_ABS,
             Difficulty.MEDIUM
@@ -83,7 +83,7 @@ class ExerciseRepositoryIntegrationTest {
             "Ćw które zostanie zwrócone w optional",
             2,
             1,
-            6,
+            (short) 6,
             null,
             BodyPart.HAMS,
             Difficulty.FOR_BEGINNERS
