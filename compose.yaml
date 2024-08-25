@@ -1,0 +1,10 @@
+services:
+  postgres_database:
+    image: 'postgres:latest'
+    container_name: 'PostgresCont'
+    env_file: '.env'
+    environment:
+      - 'POSTGRES_PASSWORD=qwerty'
+      - 'POSTGRES_USER=postgres'
+    ports:
+      - '5432:5432'

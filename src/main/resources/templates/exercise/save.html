@@ -9,7 +9,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 <span th:if="${message != null}" th:text="${message}"></span>
             </div>
-            <!--/*@thymesVar id="exercise" type="springweb.trainingmanager.models.viewmodels.exercise.ExerciseRead"*/-->
+            <!--/*@thymesVar id="exercise" type="springweb.training_manager.models.viewmodels.exercise.ExerciseRead"*/-->
             <form
                 action=""
                 method="post"
@@ -32,6 +32,27 @@
                         class="text-danger"
                         th:if="${#fields.hasErrors('description')}"
                         th:text="${#fields.errors('description')}"
+                    ></div>
+
+                    <label class="form-label" for="bodyPart">Trenowana część ciała</label>
+                    <select
+                            class="form-select form-select-lg"
+                            aria-label="label"
+                            id="bodyPart"
+                            th:field="*{bodyPart}"
+                    >
+                        <option value="" selected>---Wybierz część ciała---</option>
+                        <!--/*@thymesVar id="Difficulty" type="springweb.training_manager.models.entities.BodyPart"*/-->
+                        <option
+                            th:each="bodyPart, i : ${bodyPartArray}"
+                            th:value="${bodyPart}"
+                            th:text="${T(springweb.training_manager.models.entities.BodyPart).getBodyDesc(bodyPart)}"
+                        ></option>
+                    </select>
+                    <div
+                            class="text-danger"
+                            th:if="${#fields.hasErrors('bodyPart')}"
+                            th:text="${#fields.errors('bodyPart')}"
                     ></div>
 
                     <label class="form-label" for="rounds">Serie</label>
@@ -73,6 +94,42 @@
                         Jeśli ćwiczenia polegają na ilości powtórzeń, możesz zostawić
                         to pole puste (lub wpisz przewidywaną długość treningu)
                     </div>
+
+                    <label class="form-label" for="weights">Obciążenie</label>
+                    <input
+                        th:field="*{weights}"
+                        type="number"
+                        id="weights"
+                        class="form-control"
+                        aria-describedby="repetitionHelp"
+                    />
+                    <div
+                        class="text-danger"
+                        th:if="${#fields.hasErrors('weights')}"
+                        th:text="${#fields.errors('weights')}"
+                    ></div>
+
+                    <label class="form-label" for="difficulty">Poziom trudności</label>
+                    <select
+                        class="form-select form-select-lg"
+                        aria-label="label"
+                        id="difficulty"
+                        th:field="*{difficulty}"
+                    >
+                        <option value="" selected>---Wybierz poziom trudności---</option>
+                        <!--/*@thymesVar id="Difficulty" type="springweb.training_manager.models.entities.Difficulty"*/-->
+                        <option
+                            th:each="difficulty, i : ${difficultyArray}"
+                            th:value="${difficulty}"
+                            th:text="${difficultyDescArray.get(__${i.index}__)}"
+                        ></option>
+                    </select>
+                    <div
+                        class="text-danger"
+                        th:if="${#fields.hasErrors('difficulty')}"
+                        th:text="${#fields.errors('difficulty')}"
+                    ></div>
+
                     <label class="form-label" for="trainings">Lista treningów do przypisania</label>
                     <select
                         class="form-select form-select-lg"

@@ -36,33 +36,36 @@ Trening:
 function StartBlock(obj){
     //Rozwinięcie listy i ustawienie koloru guzika (nagłówka listy) na kolor żółty, znak, że teraz robimy ten trening
     if(obj.trainingNumber < obj.secExcTab.length){
+        let currExercise = obj.secExcTab[obj.trainingNumber];
+        currExercise.tempRounds--;
+
         document.getElementById("b" + obj.trainingNumber).style.backgroundColor = "#FFD700";
         document.getElementById("b" + obj.trainingNumber).setAttribute("class", "accordion-button naglowek-listy");
         document.getElementById("b" + obj.trainingNumber).setAttribute("aria-expanded", "true");
         document.getElementById("id" + obj.trainingNumber).setAttribute("class", "accordion-collapse collapse show");
         //ustawiamy panel kontrolny w zależności od typu treningu, który teraz będzie się wykonywać
-        document.getElementById("buttons").innerHTML = obj.secExcTab[obj.trainingNumber].AddOptions();
-        
-        switch(obj.secExcTab[obj.trainingNumber].mode) {
+        document.getElementById("buttons").innerHTML = currExercise.addOptions();
+
+        switch(currExercise.mode) {
             case 0: //timer
                 document.getElementById("opt1").onclick = function () {
-                    obj.PauseOrResume();
+                    obj.pauseOrResume();
                 };
                 document.getElementById("opt2").onclick = function(){
-                    obj.Stop();
+                    obj.stop();
                 }
                 
-                obj.RepeatExc();
+                obj.repeatExc();
                 break;
             case 1: //amount
                 document.getElementById("opt1").onclick = function() {
-                    obj.RepeatExc();
+                    obj.repeatExc();
                 }
                 break;
         }
         
         document.getElementById("opt3").onclick = function () {
-            obj.Skip();
+            obj.skip();
         }
     } else{
         document.getElementById("buttons").innerHTML = '<button class="col-md-6 opt" id="opt0">START</button>';
@@ -84,9 +87,9 @@ async function DoTraining(trainingId){
     const train = new Training(trainingId, 1);
     train.init().then(
         () => {
-            // TODO: Repair this so when the exception occurs, next methods will not do anything
+            // TODO: Repair this so when the exception occurs, next methods wont  do anything
             //console.log(train);
-            train.ShowList();
+            train.showList();
             StartBlock(train);
         }
     ).catch(
@@ -116,7 +119,7 @@ class Training {
 
     async getSecExcTab(trainingId){
         const secExcTab = [
-            new Excersise("", "", 0, 0, 0)
+            new Excersise("", "", 0, 0, 0, 0)
         ]
 
         const response = await fetch(`/training/api/${trainingId}`);
@@ -131,8 +134,8 @@ class Training {
                 let howManyReps = [0, 0];
                 if(exercise.repetition === 0){
                     const date = new Date('1970-01-01T' + exercise.time);
-                    howManyReps[0] = date.getHours();
-                    howManyReps[1] = date.getMinutes();
+                    howManyReps[0] = date.getMinutes();
+                    howManyReps[1] = date.getSeconds();
                 }else
                     howManyReps[0] = exercise.repetition;
 
@@ -141,6 +144,7 @@ class Training {
                         exercise.name,
                         exercise.description,
                         exercise.repetition === 0  ? 0 : 1,
+                        exercise.rounds,
                         howManyReps,
                         ++counter
                     )
@@ -151,12 +155,7 @@ class Training {
         return secExcTab;
     }
 
-    SetTrainingNumber(trainingNumber){
-        console.log(this);
-        this.trainingNumber = trainingNumber;
-    }
-
-    Skip(){
+    skip(){
         //console.log(that);
         //ustawianie niewykonania ćwiczenia
         //console.log(that.trainingNumber);
@@ -172,7 +171,7 @@ class Training {
         StartBlock(this);
     }
     
-    PauseOrResume(){
+    pauseOrResume(){
         switch(document.getElementById("opt1").innerText){
             case 'WSTRZYMAJ':
                 document.getElementById("opt1").innerHTML = 'START';
@@ -186,53 +185,66 @@ class Training {
         }
     }
     
-    Stop(){
+    stop(){
         clearTimeout(this.timer);
         this.secExcTab[this.trainingNumber].tempAmount[0] = this.secExcTab[this.trainingNumber].amount[0];
         this.secExcTab[this.trainingNumber].tempAmount[1] = this.secExcTab[this.trainingNumber].amount[1];
         StartBlock(this);
     }
     
-    ShowList(){
-        let panel = this.secExcTab[0].AddControlPanel();
+    showList(){
+        let panel = this.secExcTab[0].addControlPanel();
         for(let i = 1; i < this.secExcTab.length; i++){
-            panel += this.secExcTab[i].AddList();
+            panel += this.secExcTab[i].addList();
         }
         document.getElementById("listaCwiczen").innerHTML =  panel;
     }
     
     //funkcja, która w pętli powtarza ćwiczenia na czas i/lub sprawdza
-    RepeatExc(){
-        switch(this.secExcTab[this.trainingNumber].mode){
+    repeatExc(){
+        let currentExercise = this.secExcTab[this.trainingNumber];
+        switch(currentExercise.mode){
             case 0: //timer
-                if(this.secExcTab[this.trainingNumber].tempAmount[0] == 0 && this.secExcTab[this.trainingNumber].tempAmount[1] == 0){
+                if(
+                    currentExercise.tempAmount[0] === 0 &&
+                    currentExercise.tempAmount[1] === 0 &&
+                    currentExercise.tempRounds === 0
+                ){
                     this.setAttributes();
                     var zeroMin = ""; //zero ustawiane dla minut
                     var zeroSec = ""; //zero ustawiane dla sekund
-                    if(this.secExcTab[this.trainingNumber].amount[0] < 10)
+                    if(currentExercise.amount[0] < 10)
                         zeroMin = "0";
-                    if(this.secExcTab[this.trainingNumber].amount[1] < 10)
+                    if(currentExercise.amount[1] < 10)
                         zeroSec = "0";
-                    var timeSum = zeroMin + this.secExcTab[this.trainingNumber].amount[0] + ":" + zeroSec + this.secExcTab[this.trainingNumber].amount[1];
-                    document.getElementById("b" + this.secExcTab[this.trainingNumber].which).innerHTML = this.secExcTab[this.trainingNumber].name +': '+ timeSum + this.secExcTab[this.trainingNumber].getHowMany();
+                    var timeSum = zeroMin + currentExercise.amount[0] + ":" + zeroSec + currentExercise.amount[1];
+                    document.getElementById(
+                        "b" + currentExercise.which
+                    ).innerHTML = currentExercise.getExerciseCountSummary(currentExercise.rounds, timeSum);
                     clearTimeout(this.timer);
                     //startowanie kolejnego treningu na liście
                     this.trainingNumber++;
                     StartBlock(this);
                 }else{
-                    this.secExcTab[this.trainingNumber].DoExcersise();
+                    currentExercise.doExcersise();
 
                     let that = this;
                     this.setTimer(that);
                 }
                 break;
             case 1: //amount
-                if(this.secExcTab[this.trainingNumber].tempAmount[0] != 1)
-                   this.secExcTab[this.trainingNumber].DoExcersise();
+
+                if(currentExercise.tempAmount[0] !== 1 || currentExercise.tempRounds !== 0)
+                   currentExercise.doExcersise();
                 else{
                     this.setAttributes();
-                    document.getElementById("b" + this.secExcTab[this.trainingNumber].which).innerHTML = this.secExcTab[this.trainingNumber].name +': '+ this.secExcTab[this.trainingNumber].amount[0] + this.secExcTab[this.trainingNumber].getHowMany();
-                    
+                    document.getElementById(
+                        "b" + currentExercise.which
+                    ).innerHTML = currentExercise.getExerciseCountSummary(
+                            currentExercise.rounds,
+                            currentExercise.amount[0]
+                        );
+
                     //startowanie kolejnego treningu na liście
                     this.trainingNumber++;
                     StartBlock(this);
@@ -245,7 +257,7 @@ class Training {
     setTimer(that) {
         this.timer = setTimeout(
             function () {
-                that.RepeatExc();
+                that.repeatExc();
             },
             1000
         );
@@ -266,17 +278,22 @@ class Excersise {
     mode = null; //0 - timer | 1 - amount
     //ilość czasu/powtórzeń
     which = null; //ktory to trening z kolei | which == 0 -> AddControlPanel (panel z opcjami typu start/stop etc)
-    
+
+    //ilość serii
+    rounds = null;
+    tempRounds = null;
     //0 - minutes/how many repeats | 1 - secounds
     amount = [];
     tempAmount = [];
 
-    constructor(name, desc, mode, amount, which) {
+    constructor(name, desc, mode, rounds, amount, which) {
         this.name = name;
         this.desc = desc;
         this.mode = mode;
         this.which = which;
 
+        this.rounds = rounds;
+        this.tempRounds = rounds;
         this.amount = new Array(amount.length);
         this.tempAmount = new Array(amount.length);
 
@@ -293,18 +310,32 @@ class Excersise {
                 toReturn = "minut";
                 break;
             case 1:
-                toReturn = "serii";
+                toReturn = "powtórzeń";
                 break;
         }
 
         return toReturn;
     }
-    
+
+    getExerciseCountSummary(roundsToDisplay, counter){
+        return this.name +': '+  roundsToDisplay + ' serii, ' + counter + this.getHowMany();
+    }
+
     //wykonanie ćwiczenia
-    DoExcersise(){
+    doExcersise(){
         switch(this.mode){
             case 0://timer
-                if(this.tempAmount[1] == 0){
+                if(
+                    this.tempAmount[0] === 0 &&
+                    this.tempAmount[1] === 0 &&
+                    this.tempRounds !== 0
+                ){
+                    this.tempAmount[0] = this.amount[0];
+                    this.tempAmount[1] = this.amount[1];
+                    this.tempRounds--;
+                }
+
+                if(this.tempAmount[1] === 0){
                     this.tempAmount[0]--; 
                     this.tempAmount[1] = 59;
                 }else
@@ -316,25 +347,36 @@ class Excersise {
                 if(this.tempAmount[1] < 10)
                     zeroSec = "0";
                 var timeSum = zeroMin + this.tempAmount[0] + ":" + zeroSec + this.tempAmount[1];
-                document.getElementById("b" + this.which).innerHTML = this.name +': '+ timeSum + this.getHowMany();
+                document.getElementById("b" + this.which).innerHTML = this.getExerciseCountSummary(
+                        this.tempRounds, timeSum
+                    );
                 break;
             case 1://amount
+                if(
+                    this.tempAmount[0] === 0 &&
+                    this.tempRounds !== 0
+                ){
+                    this.tempAmount[0] = this.amount[0];
+                    this.tempRounds--;
+                }
                 this.tempAmount[0]--;
-                document.getElementById("b" + this.which).innerHTML = this.name +': '+ this.tempAmount[0] + this.getHowMany();
+                document.getElementById("b" + this.which).innerHTML = this.getExerciseCountSummary(
+                        this.tempRounds, this.tempAmount[0]
+                    );
                 break;
         }
 
     }  
         
     //dodaje guziki do panelu kontrolnego w zależności od trybu
-    AddOptions(){
+    addOptions(){
         if(this.mode === 0)
             return '<button class="col-md-6 col-lg-3 opt" id="opt1">WSTRZYMAJ</button><button class="col-md-6 col-lg-3 opt" id="opt2">STOP</button><button class="col-md-6 col-lg-3 opt" id="opt3">POMIŃ</button>';
         else
             return '<button class="col-md-6 col-lg-3 opt" id="opt1">NASTEPNE POWTORZENIE</button><button class="col-md-6 col-lg-3 opt" id="opt3">POMIŃ</button>';
     }
 
-    AddControlPanel(){
+    addControlPanel(){
         return `
             <div class="accordion-item cialo-listy">
                 <h2 class="accordion-header h2" id="ha0"></h2>
@@ -354,7 +396,7 @@ class Excersise {
     }
 
     //W zależności od przebiegu zwraca albo opcje kontroli treningu albo listę ćwiczeń
-    AddList(){
+    addList(){
         let tempAmount = 0;
         if(this.mode === 0){   //oba w przypadku kiedy
             let zeroMin = ""; //zero ustawiane dla minut
@@ -379,7 +421,7 @@ class Excersise {
                         aria-expanded="false" 
                         aria-controls="id${this.which}"
                     >
-                        ${this.name}: ${tempAmount} ${this.getHowMany()} 
+                        ${this.getExerciseCountSummary(this.rounds, tempAmount)}
                     </button>
                 </h2>
                 <div 

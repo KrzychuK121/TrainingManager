@@ -1,0 +1,2 @@
+alter table TRAINING_ROUTINE_SCHEDULE
+rename to TRAINING_PLAN;

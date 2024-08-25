@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="pl" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org">
+<head>
+  <th:block th:replace="~{defaulttemplate :: head}"></th:block>
+  <link rel="stylesheet" type="text/css" href="/script/css/routine/style.css"/>
+</head>
+<body>
+  <header th:replace="~{defaulttemplate :: header}" id="h_menu" class="container-fluid"></header>
+
+  <div class="container">
+    <div th:replace="~{defaulttemplate :: alert}"></div>
+    <form
+      method="post"
+      th:action="@{/plans/week/create}"
+      th:object="${plansWrite}"
+    >
+      <div class="row justify-content-center">
+        <!--/*@thymesVar id="schedules" type="java.util.HashMap"*/-->
+        <div
+          th:each="weekday: ${weekdays}"
+          class="col-3"
+        >
+          <div th:replace="~{routine/template :: dayAssign(${weekday})}"></div>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <input
+          class="btn btn-primary"
+          type="submit"
+          value="Zapisz"
+        />
+      </div>
+    </form>
+  </div>
+  <script src="/script/js/routine/searchTrainings.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js" integrity="sha384-7+zCNj/IqJ95wo16oMtfsKbZ9ccEh31eOz1HGyDuCQ6wgnyJNSYdrPa03rtR1zdB" crossorigin="anonymous"></script>
+  <script src="/script/js/lib/bootstrap.min.js"></script>
+</body>
+</html>

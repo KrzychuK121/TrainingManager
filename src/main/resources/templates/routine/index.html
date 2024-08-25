@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="pl" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org">
+<head th:replace="~{defaulttemplate :: head}"></head>
+<body>
+    <header th:replace="~{defaulttemplate :: header}" id="h_menu" class="container-fluid"></header>
+
+    <div class="container">
+        <main>
+            <!--<div th:replace="~{defaulttemplate :: alert}"></div>-->
+            <h1>Lista wszystkich planów treningowych</h1>
+            <!--<div th:if="${exercises.isEmpty()}">
+                Brak rutyn treningowych do wyświetlenia
+            </div>-->
+            <!--th:if="${!exercises.isEmpty()}"-->
+            <table
+                class="table table-bordered table-success table-striped"
+            >
+                <thead>
+                <tr>
+                    <th
+                        th:each="weekday : ${weekdays}"
+                        th:text="${T(springweb.training_manager.models.entities.Weekdays).getWeekdaysDesc(weekday)}"
+                    ></th>
+                    <th>
+                        Aktywny?
+                    </th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="routine : ${plans}">
+                    <td th:each="weekday : ${weekdays}">
+                        <p th:if="${routine.containsKey('__${weekday}__')}">
+                            <span th:text="|Tytuł: ${routine.getSchedule('__${weekday}__').trainingTitle}|"></span><br>
+                            <span th:text="|Opis: ${routine.getSchedule('__${weekday}__').trainingDescription}|"></span>
+                        </p>
+                        <p th:unless="${routine.containsKey('__${weekday}__')}">
+                            Dzień wolny
+                        </p>
+                    </td>
+                    <td th:text="${routine.isActive() ? 'Tak' : 'Nie'}"></td>
+                    <td>
+                        <!--<fieldset>
+                            <form
+                                    method="get"
+                                    action="#"
+                                    th:action="@{/exercise/edit/{id}(id=${exercise.id})}"
+                            >
+                                <button
+                                        type="submit"
+                                        class="btn btn-primary"
+                                >
+                                    Edytuj
+                                </button> |
+                            </form>
+                            <form
+                                    method="get"
+                                    action="#"
+                                    sec:authorize="hasRole('ROLE_ADMIN')"
+                                    th:action="@{/exercise/delete/{id}(id=${exercise.id})}"
+                            >-->
+                                <!-- Modal -->
+                                <!--<div
+                                        th:replace="~{defaulttemplate :: modal-delete('delItem' + ${i.index})}"
+                                ></div>
+                                <button
+                                        type="button"
+                                        class="btn btn-primary"
+                                        data-bs-toggle="modal"
+                                        th:data-bs-target="'#delItem' + ${i.index}"
+                                >
+                                    Usuń
+                                </button> |
+                            </form>
+                        </fieldset>-->
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <!--/*@thymesVar id="exerciseSort" type="java.lang.String"*/-->
+            <form
+                th:insert="~{defaulttemplate :: pages-form(${pages}, ${currOrder})}"
+                action="#"
+                th:action="@{/exercise}"
+                th:object="${pages}"
+            ></form>
+        </main>
+    </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js" integrity="sha384-7+zCNj/IqJ95wo16oMtfsKbZ9ccEh31eOz1HGyDuCQ6wgnyJNSYdrPa03rtR1zdB" crossorigin="anonymous"></script>
+    <script src="/script/js/lib/bootstrap.min.js"></script>
+</body>
+</html>
