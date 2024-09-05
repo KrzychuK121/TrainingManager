@@ -6,7 +6,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import springweb.training_manager.controllers.TrainingController;
 import springweb.training_manager.models.entities.Training;
 import springweb.training_manager.models.viewmodels.training.TrainingRead;
 import springweb.training_manager.models.viewmodels.training.TrainingWrite;
@@ -25,7 +24,7 @@ import java.util.List;
 public class TrainingControllerAPI {
     private final TrainingService service;
     private final ExerciseRepository exerciseRepo;
-    private static final Logger logger = LoggerFactory.getLogger(TrainingController.class);
+    private static final Logger logger = LoggerFactory.getLogger(TrainingControllerAPI.class);
 
     public TrainingControllerAPI(
             final TrainingService service,
