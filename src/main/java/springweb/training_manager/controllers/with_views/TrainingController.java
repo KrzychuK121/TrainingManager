@@ -65,20 +65,6 @@ public class TrainingController {
         pagedList.getContent();
     }
 
-    @PostMapping(
-        value = "/api",
-        produces = MediaType.APPLICATION_JSON_VALUE,
-        consumes = MediaType.APPLICATION_JSON_VALUE
-    )
-    @ResponseBody
-    ResponseEntity<TrainingRead> create(@RequestBody @Valid TrainingWrite toCreate){
-        Training created = service.create(toCreate, null);
-        var trainingRead = new TrainingRead(created);
-        return ResponseEntity.created(
-            URI.create("/training/" + created.getId())
-        ).body(trainingRead);
-    }
-
     private void prepExerciseSelect(Model model){
         prepExerciseSelect(model, new  String[]{});
     }
@@ -177,15 +163,6 @@ public class TrainingController {
         List<ExerciseTraining> currExercises = toSave.getExercises();
         currExercises.addAll(exercisesToSave);
         toSave.setExercises(currExercises);
-    }
-
-    @GetMapping(
-        value = "/api",
-        produces = MediaType.APPLICATION_JSON_VALUE
-    )
-    @ResponseBody
-    ResponseEntity<List<TrainingRead>> getAll(){
-        return ResponseEntity.ok(service.getAll());
     }
 
     @Secured({RoleSchema.ROLE_ADMIN, RoleSchema.ROLE_USER})
