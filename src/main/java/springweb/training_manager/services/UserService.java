@@ -1,14 +1,18 @@
 package springweb.training_manager.services;
 
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import springweb.training_manager.models.entities.Role;
 import springweb.training_manager.models.entities.User;
 import springweb.training_manager.models.schemas.RoleSchema;
 import springweb.training_manager.models.viewmodels.user.MyUserDetails;
+import springweb.training_manager.models.viewmodels.user.UserCredentials;
 import springweb.training_manager.models.viewmodels.user.UserWrite;
 import springweb.training_manager.repositories.for_controllers.UserRepository;
+import springweb.training_manager.security.SecurityConfig;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -90,6 +94,14 @@ public class UserService {
         );
         userDetailsService.createUser(new MyUserDetails(userToSave));
 
+    }
+
+    public boolean login(UserCredentials credentials) throws UsernameNotFoundException{
+        // TODO: Make it return token
+        UserDetails details = userDetailsService.loadUserByUsername(credentials.username());
+        User foundUser = ((MyUserDetails) details).getUser();
+        var foundPassword = foundUser.getPasswordHashed();
+        return encoder.matches(credentials.password(), foundPassword);
     }
 
     private Set<Role> prepRoles(Set<Role> roles){

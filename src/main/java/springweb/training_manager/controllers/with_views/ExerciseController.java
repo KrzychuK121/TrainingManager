@@ -1,4 +1,4 @@
-package springweb.training_manager.controllers;
+package springweb.training_manager.controllers.with_views;
 
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
@@ -68,21 +68,6 @@ public class ExerciseController {
         Page<ExerciseRead> pagedList =  service.getAll(page);
         model.addAttribute("pages", pagedList);
         return pagedList.getContent();
-    }
-
-    @PostMapping(
-        value = "/api",
-        produces = MediaType.APPLICATION_JSON_VALUE,
-        consumes = MediaType.APPLICATION_JSON_VALUE
-    )
-    @ResponseBody
-    public ResponseEntity<ExerciseRead> create(@RequestBody @Valid ExerciseWrite toSave){
-        Exercise created = service.create(toSave);
-
-        var exerciseRead = new ExerciseRead(created);
-        return ResponseEntity.created(
-            URI.create("/exercise/" + created.getId())
-        ).body(exerciseRead);
     }
 
     private void prepTrainingSelect(Model model){
@@ -179,8 +164,8 @@ public class ExerciseController {
                     continue;
                 int id = Integer.parseInt(trainingID);
                 Training found = trainingRepo.findById(id).get();
-                TrainingExercise viewmodel = new TrainingExercise(found, found.getId());
-                trainingsToSave.add(viewmodel);
+                TrainingExercise viewModel = new TrainingExercise(found, found.getId());
+                trainingsToSave.add(viewModel);
             }
             toSave.setTrainings(trainingsToSave);
         }
@@ -201,37 +186,6 @@ public class ExerciseController {
         PageSortService.setSortModels(page, model, "id");
     }
 
-    @GetMapping(
-        value = "/api",
-        produces = MediaType.APPLICATION_JSON_VALUE
-    )
-    @ResponseBody
-    public ResponseEntity<List<ExerciseRead>> getAll(
-        Pageable page
-    ){
-        return ResponseEntity.ok(
-            service.getAll(page)
-            .getContent()
-        );
-    }
-
-    @GetMapping(
-        value = "/api/{id}",
-        produces = MediaType.APPLICATION_JSON_VALUE
-    )
-    @ResponseBody
-    public ResponseEntity<Exercise> getById(@PathVariable int id){
-        Exercise found = null;
-        try {
-            found = service.getById(id);
-        } catch(IllegalArgumentException e) {
-            logger.error("Wystąpił wyjątek: " + e.getMessage());
-            return ResponseEntity.notFound().build();
-        }
-
-        return ResponseEntity.ok(found);
-    }
-
     // TODO: Make implementation of this method
     /*@GetMapping(
         value = "/api/{userId}",
@@ -241,26 +195,6 @@ public class ExerciseController {
     public ResponseEntity<List<ExerciseRead>> getByUserId(@PathVariable String userId){
         return ResponseEntity.noContent().build();
     }*/
-
-    @PutMapping(
-        value = "/api/{id}",
-        produces = MediaType.APPLICATION_JSON_VALUE,
-        consumes = MediaType.APPLICATION_JSON_VALUE
-    )
-    @ResponseBody
-    public ResponseEntity<?> edit(
-        @RequestBody @Valid ExerciseWrite toEdit,
-        @PathVariable int id
-    ){
-        try {
-            service.edit(toEdit, id);
-        } catch(IllegalArgumentException e) {
-            logger.error("Wystąpił wyjątek: " + e.getMessage());
-            return ResponseEntity.notFound().build();
-        }
-
-        return ResponseEntity.noContent().build();
-    }
 
     @Secured({RoleSchema.ROLE_ADMIN, RoleSchema.ROLE_USER})
     @GetMapping("/edit/{id}")
@@ -336,22 +270,6 @@ public class ExerciseController {
         model.addAttribute("mess", "Edycja przeszła pomyślnie.");
         initIndexModel(page, model);
         return "exercise/index";
-    }
-
-    @DeleteMapping(
-        value = "/api/{id}",
-        produces = MediaType.APPLICATION_JSON_VALUE
-    )
-    @ResponseBody
-    public ResponseEntity<?> delete(@PathVariable int id){
-        try {
-            service.delete(id);
-        } catch(IllegalArgumentException e) {
-            logger.error("Wystąpił wyjątek: " + e.getMessage());
-            return ResponseEntity.notFound().build();
-        }
-
-        return ResponseEntity.noContent().build();
     }
 
     @Secured(RoleSchema.ROLE_ADMIN)

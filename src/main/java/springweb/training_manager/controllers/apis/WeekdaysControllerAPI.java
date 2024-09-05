@@ -8,7 +8,7 @@ import springweb.training_manager.models.entities.Weekdays;
 
 @RestController
 @RequestMapping("/weekdays")
-public class ApiWeekdaysController {
+public class WeekdaysControllerAPI {
     @GetMapping
     public ResponseEntity<Weekdays[]> getWeekdays(){
         return ResponseEntity.ok(Weekdays.values());

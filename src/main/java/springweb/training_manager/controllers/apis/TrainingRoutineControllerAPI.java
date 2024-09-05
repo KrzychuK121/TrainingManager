@@ -11,11 +11,11 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/routines/api")
-public class ApiTrainingRoutineController {
+public class TrainingRoutineControllerAPI {
 
     private final TrainingRoutineService service;
 
-    public ApiTrainingRoutineController(
+    public TrainingRoutineControllerAPI(
         final TrainingRoutineService service
     ) {
         this.service = service;

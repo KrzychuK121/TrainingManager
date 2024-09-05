@@ -1,4 +1,4 @@
-package springweb.training_manager.controllers;
+package springweb.training_manager.controllers.with_views;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -46,6 +46,13 @@ public class UserManagerController {
     
     @GetMapping("/login")
     String login(Authentication auth){
+        if(auth != null && auth.isAuthenticated())
+            return "../static/index";
+        return "user_manager/login";
+    }
+
+    @GetMapping("/glowna/login")
+    String mainLogin(Authentication auth){
         if(auth != null && auth.isAuthenticated())
             return "../static/index";
         return "user_manager/login";

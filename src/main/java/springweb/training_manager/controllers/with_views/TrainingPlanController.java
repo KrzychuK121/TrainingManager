@@ -1,4 +1,4 @@
-package springweb.training_manager.controllers;
+package springweb.training_manager.controllers.with_views;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
