@@ -43,9 +43,7 @@ public class ExerciseControllerAPI {
 
     @GetMapping( "/api")
     @ResponseBody
-    public ResponseEntity<List<ExerciseRead>> getAll(
-        Pageable page
-    ){
+    public ResponseEntity<List<ExerciseRead>> getAll(Pageable page){
         return ResponseEntity.ok(
             service.getAll(page)
                 .getContent()

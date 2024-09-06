@@ -1,5 +1,6 @@
 package springweb.training_manager.controllers.apis;
 
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
@@ -11,14 +12,11 @@ import springweb.training_manager.services.UserService;
 
 @RestController
 @RequestMapping("/api/auth")
+@RequiredArgsConstructor
 public class UserManagerControllerAPI {
 
     private final UserService userService;
     private static final Logger logger = LoggerFactory.getLogger(UserManagerControllerAPI.class);
-
-    public UserManagerControllerAPI(UserService userService) {
-        this.userService = userService;
-    }
 
     @PostMapping(
         value = "/login",

@@ -1,6 +1,6 @@
 (async function (){
-    const trainingsResponse = await fetch("/training/api");
-    const weekdaysResponse = await fetch("/weekdays");
+    const trainingsResponse = await fetch("/api/training");
+    const weekdaysResponse = await fetch("/api/weekdays");
     const allTrainings = await trainingsResponse.json();
     const weekdays = await weekdaysResponse.json();
 

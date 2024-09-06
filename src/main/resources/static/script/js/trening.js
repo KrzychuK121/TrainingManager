@@ -122,7 +122,7 @@ class Training {
             new Excersise("", "", 0, 0, 0, 0)
         ]
 
-        const response = await fetch(`/training/api/${trainingId}`);
+        const response = await fetch(`/api/training/${trainingId}`);
         if(!response.ok)
             throw new Error("Coś poszło nie tak!");
 

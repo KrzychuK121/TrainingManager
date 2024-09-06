@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 import springweb.training_manager.models.entities.Weekdays;
 
 @RestController
-@RequestMapping("/weekdays")
+@RequestMapping("/api/weekdays")
 public class WeekdaysControllerAPI {
     @GetMapping
     public ResponseEntity<Weekdays[]> getWeekdays(){

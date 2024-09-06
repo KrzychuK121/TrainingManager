@@ -1,5 +1,6 @@
 package springweb.training_manager.controllers.apis;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -10,16 +11,11 @@ import springweb.training_manager.services.TrainingRoutineService;
 import java.util.List;
 
 @RestController
-@RequestMapping("/routines/api")
+@RequestMapping("/api/routines")
+@RequiredArgsConstructor
 public class TrainingRoutineControllerAPI {
 
     private final TrainingRoutineService service;
-
-    public TrainingRoutineControllerAPI(
-        final TrainingRoutineService service
-    ) {
-        this.service = service;
-    }
 
     @GetMapping
     public ResponseEntity<List<TrainingRoutineRead>> getAll(){
