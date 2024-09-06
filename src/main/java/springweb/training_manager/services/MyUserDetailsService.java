@@ -1,5 +1,6 @@
 package springweb.training_manager.services;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -12,18 +13,11 @@ import springweb.training_manager.models.viewmodels.user.MyUserDetails;
 import springweb.training_manager.repositories.for_controllers.UserRepository;
 
 @Service
+@RequiredArgsConstructor
 public class MyUserDetailsService implements UserDetailsManager {
 
     private final UserRepository repository;
     private final PasswordEncoder encoder;
-
-    public MyUserDetailsService(
-        final UserRepository repository,
-        final PasswordEncoder encoder
-    ) {
-        this.repository = repository;
-        this.encoder = encoder;
-    }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {

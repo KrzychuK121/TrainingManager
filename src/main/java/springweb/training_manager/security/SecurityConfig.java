@@ -1,5 +1,6 @@
 package springweb.training_manager.security;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -26,20 +27,14 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
     securedEnabled = true,
     prePostEnabled = true
 )
+@RequiredArgsConstructor
 public class SecurityConfig {
     public static final String WELCOME_FIRST_NAME = "welcomeFirstName";
     public static final String WELCOME_LAST_NAME = "welcomeLastName";
 
     private final MyUserDetailsService userDetailsService;
     private final JwtAuthFilter jwtAuthFilter;
-
-    public SecurityConfig(
-        MyUserDetailsService userDetailsService,
-        JwtAuthFilter jwtAuthFilter
-    ) {
-        this.userDetailsService = userDetailsService;
-        this.jwtAuthFilter = jwtAuthFilter;
-    }
+    private final PasswordEncoder passwordEncoder;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -79,15 +74,10 @@ public class SecurityConfig {
     }
 
     @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-
-    @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
         authProvider.setUserDetailsService(userDetailsService);
-        authProvider.setPasswordEncoder(passwordEncoder());
+        authProvider.setPasswordEncoder(passwordEncoder);
         return authProvider;
     }
 
