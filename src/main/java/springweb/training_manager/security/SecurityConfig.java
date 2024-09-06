@@ -48,7 +48,7 @@ public class SecurityConfig {
                     .requestMatchers("/logout").authenticated()
                     .anyRequest().permitAll()
             )
-            .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
+//            .sessionManagement(session -> session.sessionCreationPolicy(STATELESS)) FIXME: It should be for API but not for views controllers
             .authenticationProvider(authenticationProvider())
             .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
             .formLogin(
