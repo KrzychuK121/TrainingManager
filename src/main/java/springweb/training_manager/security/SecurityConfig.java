@@ -45,6 +45,7 @@ public class SecurityConfig {
                     .requestMatchers("/").permitAll()
                     .requestMatchers("/glowna").permitAll()
                     .requestMatchers("/logout").authenticated()
+                    .requestMatchers("/api/auth/logout").authenticated()
                     .anyRequest().permitAll()
             )
 //            .sessionManagement(session -> session.sessionCreationPolicy(STATELESS)) FIXME: It should be for API but not for views controllers
