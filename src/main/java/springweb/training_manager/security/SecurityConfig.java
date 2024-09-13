@@ -1,6 +1,7 @@
 package springweb.training_manager.security;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -12,13 +13,10 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import springweb.training_manager.services.MyUserDetailsService;
-
-import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
 @Configuration
 @EnableWebSecurity
@@ -36,6 +34,9 @@ public class SecurityConfig {
     private final JwtAuthFilter jwtAuthFilter;
     private final PasswordEncoder passwordEncoder;
 
+    @Value("${security.remember-me.random-key}")
+    private String rememberMeKey;
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
@@ -43,8 +44,6 @@ public class SecurityConfig {
                 authz -> authz
                     .requestMatchers("/").permitAll()
                     .requestMatchers("/glowna").permitAll()
-                    .requestMatchers("/exercise/api").permitAll()
-                    .requestMatchers("/training/api").permitAll()
                     .requestMatchers("/logout").authenticated()
                     .anyRequest().permitAll()
             )
@@ -57,7 +56,7 @@ public class SecurityConfig {
                     .failureForwardUrl("/loginErr")
             )
             .rememberMe(
-                customize -> customize.key("K8s#gs*3js(*3jsf89SadaJS*#@")
+                customize -> customize.key(rememberMeKey)
             )
             .logout(
                 logout -> logout.logoutSuccessUrl("/logout-success")
