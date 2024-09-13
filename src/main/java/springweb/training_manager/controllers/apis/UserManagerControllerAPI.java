@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 import springweb.training_manager.models.viewmodels.authentication.AuthResponse;
@@ -34,5 +35,12 @@ public class UserManagerControllerAPI {
         } catch (UsernameNotFoundException ex) {
             return ResponseEntity.status(404).body("User " + userCredentials.username() + " does not exist.");
         }
+    }
+
+    @PostMapping(value = "/logout")
+    @ResponseBody
+    ResponseEntity<?> logout() {
+        SecurityContextHolder.clearContext();
+        return ResponseEntity.noContent().build();
     }
 }
