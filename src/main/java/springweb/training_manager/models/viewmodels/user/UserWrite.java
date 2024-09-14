@@ -2,25 +2,21 @@ package springweb.training_manager.models.viewmodels.user;
 
 import jakarta.persistence.Transient;
 import jakarta.validation.constraints.NotBlank;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import springweb.training_manager.models.entities.User;
 import springweb.training_manager.models.schemas.UserSchema;
 
+@Setter
+@Getter
+@NoArgsConstructor
 public class UserWrite extends UserSchema {
     @Transient
     @NotBlank(message = "Powtórz hasło.")
     private String passwordRepeat;
 
-    public UserWrite() { }
-
-    public String getPasswordRepeat() {
-        return passwordRepeat;
-    }
-
-    public void setPasswordRepeat(String passwordRepeat) {
-        this.passwordRepeat = passwordRepeat;
-    }
-
-    public User toUser(){
+    public User toUser() {
         User toReturn = new User();
 
         toReturn.setUsername(username);
