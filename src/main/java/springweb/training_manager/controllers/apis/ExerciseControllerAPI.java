@@ -4,7 +4,9 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,7 +17,6 @@ import springweb.training_manager.models.viewmodels.exercise.ExerciseWrite;
 import springweb.training_manager.services.ExerciseService;
 
 import java.net.URI;
-import java.util.List;
 
 @RestController
 @RequestMapping(
@@ -28,31 +29,28 @@ public class ExerciseControllerAPI {
     private final ExerciseService service;
     private static final Logger logger = LoggerFactory.getLogger(ExerciseController.class);
 
-    @GetMapping("/api/{id}")
+    @GetMapping()
     @ResponseBody
-    public ResponseEntity<ExerciseRead> getById(@PathVariable int id){
+    public ResponseEntity<Page<ExerciseRead>> getAll(@PageableDefault(size = 2) Pageable page) {
+        return ResponseEntity.ok(service.getAll(page));
+    }
+
+    @GetMapping("/{id}")
+    @ResponseBody
+    public ResponseEntity<ExerciseRead> getById(@PathVariable int id) {
         try {
             Exercise found = service.getById(id);
             var foundRead = new ExerciseRead(found);
             return ResponseEntity.ok(foundRead);
-        } catch(IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             logger.error("Wystąpił wyjątek: " + e.getMessage());
             return ResponseEntity.notFound().build();
         }
     }
 
-    @GetMapping( "/api")
+    @PostMapping()
     @ResponseBody
-    public ResponseEntity<List<ExerciseRead>> getAll(Pageable page){
-        return ResponseEntity.ok(
-            service.getAll(page)
-                .getContent()
-        );
-    }
-
-    @PostMapping(value = "/api")
-    @ResponseBody
-    public ResponseEntity<ExerciseRead> create(@RequestBody @Valid ExerciseWrite toSave){
+    public ResponseEntity<ExerciseRead> create(@RequestBody @Valid ExerciseWrite toSave) {
         Exercise created = service.create(toSave);
 
         var exerciseRead = new ExerciseRead(created);
@@ -61,15 +59,15 @@ public class ExerciseControllerAPI {
         ).body(exerciseRead);
     }
 
-    @PutMapping("/api/{id}")
+    @PutMapping("/{id}")
     @ResponseBody
     public ResponseEntity<?> edit(
         @RequestBody @Valid ExerciseWrite toEdit,
         @PathVariable int id
-    ){
+    ) {
         try {
             service.edit(toEdit, id);
-        } catch(IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             logger.error("Wystąpił wyjątek: " + e.getMessage());
             return ResponseEntity.notFound().build();
         }
@@ -77,12 +75,12 @@ public class ExerciseControllerAPI {
         return ResponseEntity.noContent().build();
     }
 
-    @DeleteMapping( "/api/{id}")
+    @DeleteMapping("/{id}")
     @ResponseBody
-    public ResponseEntity<?> delete(@PathVariable int id){
+    public ResponseEntity<?> delete(@PathVariable int id) {
         try {
             service.delete(id);
-        } catch(IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             logger.error("Wystąpił wyjątek: " + e.getMessage());
             return ResponseEntity.notFound().build();
         }
