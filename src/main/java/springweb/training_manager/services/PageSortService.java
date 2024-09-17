@@ -13,7 +13,7 @@ import java.util.List;
 
 @Service
 public class PageSortService {
-    public static <PagedObj> int getPageNumber(Page<PagedObj> pages){
+    public static <PagedObj> int getPageNumber(Page<PagedObj> pages) {
         return Math.max(pages.getTotalPages() - 2, 0);
     }
 
@@ -22,32 +22,30 @@ public class PageSortService {
      * contains fields sent as <code>Order</code> by checking if getters exists.
      * If it does not contain field, then the <code>Order</code> is ignored.
      *
-     * @param exerciseClass class that is supposed to have fields like one in <code>Order</code>
-     * @param page pageable object containing <code>Sort</code> with orders
-     * @param logger for displaying warning about not corresponding field to order
-     *
-     * @return new Pageable with validated order or <code>Pageable page</code> sent by user
-     *
+     * @param entityClass class that is supposed to have fields like one in <code>Order</code>
+     * @param page        pageable object containing <code>Sort</code> with orders
+     * @param logger      for displaying warning about not corresponding field to order
      * @param <ClassType> Class to check if contains fields
+     * @return new Pageable with validated order or <code>Pageable page</code> sent by user
      */
     public static <ClassType> Pageable validateSort(
-        Class<ClassType> exerciseClass,
+        Class<ClassType> entityClass,
         Pageable page,
         Logger logger
-    ){
-        if(page.getSort().isEmpty())
+    ) {
+        if (page.getSort().isEmpty())
             return page;
 
         List<Sort.Order> orders = page.getSort().get().toList();
         List<Sort.Order> orderToSave = new ArrayList<>(orders.size());
-        for(Sort.Order order : orders){
+        for (Sort.Order order : orders) {
             try {
-                exerciseClass.getMethod("get" + capitalize(order.getProperty()));
+                entityClass.getMethod("get" + capitalize(order.getProperty()));
                 orderToSave.add(order);
             } catch (NoSuchMethodException e) {
                 logger.warn(
                     "No such field '" + order.getProperty() +
-                    "' in class '" + exerciseClass.getName() + "'"
+                        "' in class '" + entityClass.getName() + "'"
                 );
             }
         }
@@ -59,11 +57,14 @@ public class PageSortService {
         );
     }
 
-    public static void setSortModels(
+    public static Sort.Order getSortModel(final Pageable page) {
+        return getSortModel(page, "id");
+    }
+
+    public static Sort.Order getSortModel(
         final Pageable page,
-        final Model model,
         final String defaultSortField
-    ){
+    ) {
         var order = page.getSort().get()
             .findFirst()
             .orElse(
@@ -72,11 +73,21 @@ public class PageSortService {
                     defaultSortField
                 )
             );
+
+        return order;
+    }
+
+    public static void setSortModels(
+        final Pageable page,
+        final Model model,
+        final String defaultSortField
+    ) {
+        var order = getSortModel(page, defaultSortField);
         model.addAttribute("currOrder", order);
         model.addAttribute("newOrder", order.reverse());
     }
 
-    private static String capitalize(String toCapitalize){
+    private static String capitalize(String toCapitalize) {
         return toCapitalize.substring(0, 1).toUpperCase() + toCapitalize.substring(1);
     }
 }
