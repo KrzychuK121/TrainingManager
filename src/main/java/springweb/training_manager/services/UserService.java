@@ -63,7 +63,7 @@ public class UserService {
     }
 
     public void register(UserWrite toSave, Set<Role> roles) {
-        if (userDetailsService.userExists(toSave.getUsername()))
+        if (userDetailsService.userExists(toSave.getUsername().toLowerCase()))
             throw new IllegalArgumentException("Istnieje już użytkownik o takiej nazwie. Może to Ty?");
         if (!ifPasswordsMatches(toSave.getPassword(), toSave.getPasswordRepeat()))
             throw new IllegalArgumentException(PASSWORDS_NOT_EQUAL_MESSAGE);
