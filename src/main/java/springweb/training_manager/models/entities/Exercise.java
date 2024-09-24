@@ -1,6 +1,8 @@
 package springweb.training_manager.models.entities;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.Table;
 import jakarta.validation.Valid;
 import springweb.training_manager.models.schemas.ExerciseSchema;
 
@@ -16,7 +18,8 @@ public class Exercise extends ExerciseSchema {
     @Valid
     private List<Training> trainings = new ArrayList<>();
 
-    public Exercise(){ }
+    public Exercise() {
+    }
 
     public Exercise(
         String name,
@@ -29,6 +32,7 @@ public class Exercise extends ExerciseSchema {
         Difficulty difficulty
     ) {
         super(
+            0,
             name,
             description,
             rounds,
@@ -39,7 +43,6 @@ public class Exercise extends ExerciseSchema {
             difficulty
         );
     }
-
 
 
     public void setId(int id) {
@@ -62,7 +65,7 @@ public class Exercise extends ExerciseSchema {
         this.repetition = repetition;
     }
 
-    public void setWeights(short weights){
+    public void setWeights(short weights) {
         this.weights = weights;
     }
 
@@ -70,11 +73,11 @@ public class Exercise extends ExerciseSchema {
         this.time = time;
     }
 
-    public void setBodyPart(BodyPart bodyPart){
+    public void setBodyPart(BodyPart bodyPart) {
         this.bodyPart = bodyPart;
     }
 
-    public void setDifficulty(Difficulty difficulty){
+    public void setDifficulty(Difficulty difficulty) {
         this.difficulty = difficulty;
     }
 
