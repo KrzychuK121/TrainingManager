@@ -1,12 +1,12 @@
 package springweb.training_manager.controllers.with_views;
 
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -14,7 +14,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import springweb.training_manager.models.entities.BodyPart;
 import springweb.training_manager.models.entities.Difficulty;
-import springweb.training_manager.models.entities.Exercise;
 import springweb.training_manager.models.entities.Training;
 import springweb.training_manager.models.schemas.RoleSchema;
 import springweb.training_manager.models.viewmodels.exercise.ExerciseRead;
@@ -24,66 +23,58 @@ import springweb.training_manager.repositories.for_controllers.TrainingRepositor
 import springweb.training_manager.services.ExerciseService;
 import springweb.training_manager.services.PageSortService;
 
-import java.net.URI;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @Controller
+@RequiredArgsConstructor
 @RequestMapping("/exercise")
 public class ExerciseController {
     private final ExerciseService service;
     private final TrainingRepository trainingRepo;
     private static final Logger logger = LoggerFactory.getLogger(ExerciseController.class);
 
-    public ExerciseController(
-        final ExerciseService service,
-        final TrainingRepository trainingRepo
-    ) {
-        this.service = service;
-        this.trainingRepo = trainingRepo;
-    }
-
-    private void setDifficulty(Model model){
+    private void setDifficulty(Model model) {
         model.addAttribute("difficultyArray", Difficulty.values());
         ArrayList<String> desc = new ArrayList<>(Difficulty.values().length);
-        for(Difficulty difficulty : Difficulty.values())
+        for (Difficulty difficulty : Difficulty.values())
             desc.add(Difficulty.getEnumDesc(difficulty));
         model.addAttribute("difficultyDescArray", desc);
     }
 
-    private void setBodyPartList(Model model){
+    private void setBodyPartList(Model model) {
         model.addAttribute("bodyPartArray", BodyPart.values());
     }
 
     @ModelAttribute("title")
-    String getTitle(){
+    String getTitle() {
         return "TrainingM - Ćwiczenia";
     }
 
     List<ExerciseRead> getExercises(
         Pageable page,
         Model model
-    ){
-        Page<ExerciseRead> pagedList =  service.getAll(page);
+    ) {
+        Page<ExerciseRead> pagedList = service.getAll(page);
         model.addAttribute("pages", pagedList);
         return pagedList.getContent();
     }
 
-    private void prepTrainingSelect(Model model){
-        prepTrainingSelect(model, new  String[]{});
+    private void prepTrainingSelect(Model model) {
+        prepTrainingSelect(model, new String[]{});
     }
 
-    private void prepTrainingSelect(Model model, String[] selected){
+    private void prepTrainingSelect(Model model, String[] selected) {
         List<TrainingExercise> trainingSelectList = TrainingExercise.toTrainingExerciseList(trainingRepo.findAll());
 
-        if(selected.length > trainingSelectList.size())
+        if (selected.length > trainingSelectList.size())
             throw new IllegalStateException("Lista zaznaczonych elementów nie może być większa jak lista wszystkich elementów.");
         model.addAttribute("allTrainings", trainingSelectList);
-        if(selected.length != 0){
+        if (selected.length != 0) {
             List<Integer> selectedInt = new ArrayList<>();
-            for(String sel : selected){
-                if(sel.isBlank())
+            for (String sel : selected) {
+                if (sel.isBlank())
                     continue;
                 selectedInt.add(Integer.parseInt(sel));
             }
@@ -97,7 +88,7 @@ public class ExerciseController {
         value = "/create",
         produces = MediaType.TEXT_HTML_VALUE
     )
-    public String createView(Model model){
+    public String createView(Model model) {
         model.addAttribute("exercise", new ExerciseWrite());
         model.addAttribute("action", "create");
         setDifficulty(model);
@@ -118,9 +109,9 @@ public class ExerciseController {
         String time,
         String[] trainingIds,
         Model model
-    ){
+    ) {
 
-        if(result.hasErrors()){
+        if (result.hasErrors()) {
             model.addAttribute("action", "create");
             setDifficulty(model);
             setBodyPartList(model);
@@ -144,7 +135,7 @@ public class ExerciseController {
     }
 
     private static void setTime(ExerciseWrite toSave, String time) {
-        if(time != null && !time.isEmpty()){
+        if (time != null && !time.isEmpty()) {
             String[] times = time.split(":");
             LocalTime timeToSave = LocalTime.of(
                 0,
@@ -157,14 +148,14 @@ public class ExerciseController {
     }
 
     private void setTrainingsById(ExerciseWrite toSave, String[] trainingIds) {
-        if(trainingIds != null && trainingIds.length != 0){
+        if (trainingIds != null && trainingIds.length != 0) {
             List<TrainingExercise> trainingsToSave = new ArrayList<>(trainingIds.length);
-            for(String trainingID : trainingIds){
-                if(trainingID.isEmpty())
+            for (String trainingID : trainingIds) {
+                if (trainingID.isEmpty())
                     continue;
                 int id = Integer.parseInt(trainingID);
                 Training found = trainingRepo.findById(id).get();
-                TrainingExercise viewModel = new TrainingExercise(found, found.getId());
+                TrainingExercise viewModel = new TrainingExercise(found);
                 trainingsToSave.add(viewModel);
             }
             toSave.setTrainings(trainingsToSave);
@@ -176,7 +167,7 @@ public class ExerciseController {
     public String getAllView(
         Pageable page,
         Model model
-    ){
+    ) {
         initIndexModel(page, model);
         return "exercise/index";
     }
@@ -201,11 +192,11 @@ public class ExerciseController {
     public String editView(
         @PathVariable int id,
         Model model
-    ){
+    ) {
         ExerciseRead toEdit = null;
         try {
             toEdit = new ExerciseRead(service.getById(id));
-        } catch(IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             logger.error("Wystąpił wyjątek: " + e.getMessage());
             model.addAttribute("messType", "danger");
             model.addAttribute("mess", "Nie można edytować. " + e.getMessage());
@@ -226,7 +217,7 @@ public class ExerciseController {
     private static String[] getToEditTrainingIds(ExerciseRead toEdit) {
         List<TrainingExercise> toEditList = toEdit.getTrainings();
         String[] selected = new String[toEditList.size()];
-        for(int i = 0; i < toEditList.size(); i++){
+        for (int i = 0; i < toEditList.size(); i++) {
             selected[i] = toEditList.get(i).getId() + "";
         }
         return selected;
@@ -243,8 +234,8 @@ public class ExerciseController {
         String[] trainingIds,
         Pageable page,
         Model model
-    ){
-        if(result.hasErrors()){
+    ) {
+        if (result.hasErrors()) {
             model.addAttribute("action", "edit/" + id);
             setDifficulty(model);
             setBodyPartList(model);
@@ -257,7 +248,7 @@ public class ExerciseController {
 
         try {
             service.edit(toEdit, id);
-        } catch(IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             logger.error("Wystąpił wyjątek: " + e.getMessage());
             model.addAttribute("exercises", getExercises(page, model));
             model.addAttribute("message", "Wystąpił problem przy edycji. " + e.getMessage());
@@ -281,10 +272,10 @@ public class ExerciseController {
         @PathVariable int id,
         Pageable page,
         Model model
-    ){
+    ) {
         try {
             service.delete(id);
-        } catch(IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             logger.error("Wystąpił wyjątek: " + e.getMessage());
             model.addAttribute("messType", "danger");
             model.addAttribute("mess", "Nie można usunąć. " + e.getMessage());
