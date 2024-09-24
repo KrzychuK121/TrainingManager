@@ -3,6 +3,9 @@ package springweb.training_manager.models.schemas;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.Range;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -13,6 +16,9 @@ import java.time.LocalTime;
 import java.util.Objects;
 
 @MappedSuperclass
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
 public abstract class ExerciseSchema {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -40,78 +46,19 @@ public abstract class ExerciseSchema {
     @Enumerated(EnumType.STRING)
     protected Difficulty difficulty;
 
-    public ExerciseSchema() {
-    }
-
-    public ExerciseSchema(
-        String name,
-        String description,
-        int rounds,
-        int repetition,
-        short weights,
-        LocalTime time,
-        BodyPart bodyPart,
-        Difficulty difficulty
-    ) {
-        this.name = name;
-        this.description = description;
-        this.rounds = rounds;
-        this.repetition = repetition;
-        this.weights = weights;
-        this.time = time;
-        this.bodyPart = bodyPart;
-        this.difficulty = difficulty;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public int getRounds() {
-        return rounds;
-    }
-
-    public int getRepetition() {
-        return repetition;
-    }
-
-    public short getWeights() {
-        return weights;
-    }
-
-    public LocalTime getTime() {
-        return time;
-    }
-
-    public BodyPart getBodyPart(){
-        return bodyPart;
-    }
-
-    public Difficulty getDifficulty() {
-        return difficulty;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ExerciseSchema exercise = (ExerciseSchema) o;
         return id == exercise.id &&
-                rounds == exercise.rounds &&
-                repetition == exercise.repetition &&
-                Objects.equals(name, exercise.name) &&
-                Objects.equals(description, exercise.description) &&
-                Objects.equals(time, exercise.time) &&
-                bodyPart == exercise.bodyPart &&
-                difficulty == exercise.difficulty;
+            rounds == exercise.rounds &&
+            repetition == exercise.repetition &&
+            Objects.equals(name, exercise.name) &&
+            Objects.equals(description, exercise.description) &&
+            Objects.equals(time, exercise.time) &&
+            bodyPart == exercise.bodyPart &&
+            difficulty == exercise.difficulty;
     }
 
 }
