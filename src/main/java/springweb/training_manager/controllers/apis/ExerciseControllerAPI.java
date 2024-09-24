@@ -10,8 +10,8 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import springweb.training_manager.controllers.with_views.ExerciseController;
 import springweb.training_manager.models.entities.Exercise;
+import springweb.training_manager.models.viewmodels.exercise.ExerciseCreate;
 import springweb.training_manager.models.viewmodels.exercise.ExerciseRead;
 import springweb.training_manager.models.viewmodels.exercise.ExerciseWrite;
 import springweb.training_manager.services.ExerciseService;
@@ -27,7 +27,7 @@ import java.net.URI;
 @RequiredArgsConstructor
 public class ExerciseControllerAPI {
     private final ExerciseService service;
-    private static final Logger logger = LoggerFactory.getLogger(ExerciseController.class);
+    private static final Logger logger = LoggerFactory.getLogger(ExerciseControllerAPI.class);
 
     @GetMapping()
     @ResponseBody
@@ -47,6 +47,12 @@ public class ExerciseControllerAPI {
             return ResponseEntity.notFound().build();
         }
     }
+
+    @GetMapping(value = {"/createModel", "/createModel/{id}"})
+    public ResponseEntity<ExerciseCreate> getCreateModel(@PathVariable(required = false) Integer id) {
+        return ResponseEntity.ok(service.getCreateModel(id));
+    }
+
 
     @PostMapping()
     @ResponseBody
