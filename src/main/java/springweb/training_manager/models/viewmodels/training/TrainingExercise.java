@@ -8,25 +8,25 @@ import java.util.List;
 
 public class TrainingExercise extends TrainingSchema {
 
-    public TrainingExercise(){
+    public TrainingExercise() {
         id = 0;
     }
 
-    public TrainingExercise(Training training, int id) {
-        this.id = id;
+    public TrainingExercise(Training training) {
+        this.id = training.getId();
         this.title = training.getTitle();
         this.description = training.getDescription();
     }
 
-    public static List<TrainingExercise> toTrainingExerciseList(final List<Training> list){
-        if(list == null)
+    public static List<TrainingExercise> toTrainingExerciseList(final List<Training> list) {
+        if (list == null)
             return null;
         List<TrainingExercise> result = new ArrayList<>(list.size());
-        list.forEach(training -> result.add(new TrainingExercise(training, training.getId())));
+        list.forEach(training -> result.add(new TrainingExercise(training)));
         return result;
     }
 
-    public static List<Training> toTrainingList(final List<TrainingExercise> list){
+    public static List<Training> toTrainingList(final List<TrainingExercise> list) {
         List<Training> result = new ArrayList<>(list.size());
         list.forEach(trainingExercise -> {
             var toSave = new Training();
@@ -50,7 +50,7 @@ public class TrainingExercise extends TrainingSchema {
         this.description = description;
     }
 
-    public Training toTraining(){
+    public Training toTraining() {
         var toReturn = new Training();
 
         toReturn.setTitle(title);
