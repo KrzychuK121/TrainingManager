@@ -1,5 +1,6 @@
 package springweb.training_manager.services;
 
+import lombok.RequiredArgsConstructor;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -18,23 +19,15 @@ import springweb.training_manager.repositories.for_controllers.UserRepository;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class TrainingService {
     private final ExerciseRepository exerciseRepository;
     private final TrainingRepository repository;
     private final UserRepository userRepository;
-
-    public TrainingService(
-        final ExerciseRepository exerciseRepository,
-        final TrainingRepository repository,
-        final UserRepository userRepository
-    ) {
-        this.exerciseRepository = exerciseRepository;
-        this.repository = repository;
-        this.userRepository = userRepository;
-    }
 
     /**
      * This method is used to find existing exercises in database or creating new one
@@ -43,11 +36,10 @@ public class TrainingService {
      *
      * @param exercises list of <code>ExerciseTraining</code> from <code>TrainingWrite</code> object.
      *                  Can be used e.g. in <code>create(TrainingWrite toSave)</code> method.
-     *
      * @return prepared list with <code>ExerciseTraining</code> (founded in database or just created)
      */
     public List<Exercise> prepExercises(List<ExerciseTraining> exercises) {
-        if(exercises == null || exercises.isEmpty())
+        if (exercises == null || exercises.isEmpty())
             return null;
 
         List<Exercise> exerciseToSave = new ArrayList<>(exercises.size());
@@ -56,10 +48,10 @@ public class TrainingService {
                 Exercise found = exerciseRepository.findByExercise(exerciseTraining.toExercise())
                     .orElse(exerciseTraining.toExercise());
 
-                if(found.getId() == 0){
+                if (found.getId() == 0) {
                     var savedExercise = exerciseRepository.save(found);
                     exerciseToSave.add(savedExercise);
-                }else
+                } else
                     exerciseToSave.add(found);
 
             }
@@ -67,14 +59,14 @@ public class TrainingService {
         return exerciseToSave;
     }
 
-    public Training create(TrainingWrite toSave, String userId){
+    public Training create(TrainingWrite toSave, String userId) {
         List<Exercise> preparedExerciseList = prepExercises(toSave.getExercises());
-        if(preparedExerciseList != null)
+        if (preparedExerciseList != null)
             toSave.setExercises(ExerciseTraining.toExerciseTrainingList(preparedExerciseList));
 
         var created = repository.save(toSave.toTraining());
 
-        if(userId != null){
+        if (userId != null) {
             User loggedUser = userRepository.findById(userId)
                 .orElseThrow(
                     () -> new IllegalArgumentException("Nie istnieje użytkownik o takim numerze ID.")
@@ -85,7 +77,7 @@ public class TrainingService {
             userRepository.save(loggedUser);
         }
 
-        if(preparedExerciseList != null)
+        if (preparedExerciseList != null)
             editTrainingInExercises(created, preparedExerciseList, true);
 
         return created;
@@ -98,16 +90,16 @@ public class TrainingService {
      * many to many row between <code>Exercise</code> and <code>Training</code>
      *
      * @param toAddOrRemove <code>Training</code> with id which should be connected with <code>Exercise</code>
-     * @param toEdit list of <code>Exercise</code> objects which should be connected with <code>Training</code>
-     * @param ifAdd when true, it will add <code>toAddOrRemove</code> to <code>toEdit</code>, otherwise it will
-     *              remove <code>toAddOrRemove</code> from <code>toEdit</code>.
+     * @param toEdit        list of <code>Exercise</code> objects which should be connected with <code>Training</code>
+     * @param ifAdd         when true, it will add <code>toAddOrRemove</code> to <code>toEdit</code>, otherwise it will
+     *                      remove <code>toAddOrRemove</code> from <code>toEdit</code>.
      */
-    private void editTrainingInExercises(Training toAddOrRemove, List<Exercise> toEdit, boolean ifAdd){
-        if(toEdit == null)
+    private void editTrainingInExercises(Training toAddOrRemove, List<Exercise> toEdit, boolean ifAdd) {
+        if (toEdit == null)
             return;
         toEdit.forEach(
             exercise -> {
-                if(ifAdd)
+                if (ifAdd)
                     exercise.getTrainings().add(toAddOrRemove);
                 else
                     exercise.getTrainings().remove(toAddOrRemove);
@@ -116,12 +108,12 @@ public class TrainingService {
         );
     }
 
-    private void editTrainingInUsers(Training toAddOrRemove, Set<User> toEdit, boolean ifAdd){
-        if(toEdit == null)
+    private void editTrainingInUsers(Training toAddOrRemove, Set<User> toEdit, boolean ifAdd) {
+        if (toEdit == null)
             return;
         toEdit.forEach(
             user -> {
-                if(ifAdd)
+                if (ifAdd)
                     user.getTrainings().add(toAddOrRemove);
                 else
                     user.getTrainings().remove(toAddOrRemove);
@@ -130,13 +122,17 @@ public class TrainingService {
         );
     }
 
-    public List<TrainingRead> getAll(){
+    public <TR> List<TR> getAll(Function<Training, TR> mapper) {
         return repository.findAll()
-        .stream().map(TrainingRead::new)
-        .collect(Collectors.toList());
+            .stream().map(mapper)
+            .collect(Collectors.toList());
     }
 
-    public Page<TrainingRead> getAll(Pageable page){
+    public List<TrainingRead> getAll() {
+        return getAll(TrainingRead::new);
+    }
+
+    public Page<TrainingRead> getAll(Pageable page) {
         page = PageSortService.validateSort(
             Training.class,
             page,
@@ -144,7 +140,7 @@ public class TrainingService {
         );
 
         Page<TrainingRead> toReturn = repository.findAll(page).map(TrainingRead::new);
-        if(toReturn.getContent().isEmpty())
+        if (toReturn.getContent().isEmpty())
             toReturn = repository.findAll(
                 PageRequest.of(
                     PageSortService.getPageNumber(toReturn),
@@ -156,20 +152,20 @@ public class TrainingService {
         return toReturn;
     }
 
-    public Training getById(int id, String userId){
+    public Training getById(int id, String userId) {
         Training found = repository.findById(id)
             .orElseThrow(
                 () -> new IllegalArgumentException("Nie znaleziono treningu o podanym numerze id.")
             );
 
-        if(userId == null)
+        if (userId == null)
             return found;
 
-        if(
+        if (
             found.getUsers().stream()
-            .anyMatch(
-                user -> user.getId().equals(userId)
-            )
+                .anyMatch(
+                    user -> user.getId().equals(userId)
+                )
         )
             return found;
         else
@@ -177,7 +173,7 @@ public class TrainingService {
     }
 
     // TODO: Use it in controller when ROLE_USER registered, otherwise normal getAll
-    public List<TrainingRead> getByUserId(String userId){
+    public List<TrainingRead> getByUserId(String userId) {
         List<TrainingRead> usersTrainings = userRepository.findById(userId)
             .orElseThrow(
                 () -> new IllegalArgumentException("Użytkownik o takim numerze id nie istnieje.")
@@ -190,11 +186,11 @@ public class TrainingService {
         return usersTrainings;
     }
 
-    public boolean existsById(int trainingId){
+    public boolean existsById(int trainingId) {
         return repository.existsById(trainingId);
     }
 
-    public void edit(TrainingWrite toEdit, int id, String userId){
+    public void edit(TrainingWrite toEdit, int id, String userId) {
         List<Exercise> preparedExerciseList = prepExercises(toEdit.getExercises());
         toEdit.setExercises(ExerciseTraining.toExerciseTrainingList(preparedExerciseList));
 
@@ -206,7 +202,7 @@ public class TrainingService {
         editTrainingInExercises(saved, saved.getExercises(), true);
     }
 
-    public void delete(int id, String userId){
+    public void delete(int id, String userId) {
         var toDelete = getById(id, userId);
         editTrainingInExercises(toDelete, toDelete.getExercises(), false);
         editTrainingInUsers(toDelete, toDelete.getUsers(), false);
