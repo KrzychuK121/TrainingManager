@@ -16,12 +16,24 @@ import java.util.Map;
 public class ValidationErrors {
     private Map<String, List<String>> errors;
 
-    public static ValidationErrors createFrom(BindingResult result) {
+    public static ValidationErrors createFrom(
+        BindingResult result
+    ) {
+        return createFrom(result, null);
+    }
+
+    public static ValidationErrors createFrom(
+        BindingResult result,
+        final String prefixToRemove
+    ) {
         Map<String, List<String>> errors = new HashMap<>();
 
         result.getFieldErrors().forEach(
             error -> {
                 var field = error.getField();
+                if (prefixToRemove != null && !prefixToRemove.isEmpty())
+                    field = field.substring(prefixToRemove.length());
+
                 var message = error.getDefaultMessage();
                 if (message == null)
                     message = "Pole nie spełnia wymagań.";
@@ -32,7 +44,7 @@ public class ValidationErrors {
                 }
 
                 var messages = new ArrayList<>(List.of(message));
-                errors.put(error.getField(), messages);
+                errors.put(field, messages);
             }
         );
 
