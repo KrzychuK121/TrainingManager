@@ -4,22 +4,27 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.Valid;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 import springweb.training_manager.models.schemas.ExerciseSchema;
+import springweb.training_manager.services.CopyEntityService;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
-
+@ToString
+@Setter
+@Getter
+@NoArgsConstructor
 @Entity
 @Table(name = "exercise")
 public class Exercise extends ExerciseSchema {
     @ManyToMany(mappedBy = "exercises")
     @Valid
     private List<Training> trainings = new ArrayList<>();
-
-    public Exercise() {
-    }
 
     public Exercise(
         String name,
@@ -43,7 +48,6 @@ public class Exercise extends ExerciseSchema {
             difficulty
         );
     }
-
 
     public void setId(int id) {
         this.id = id;
@@ -81,26 +85,8 @@ public class Exercise extends ExerciseSchema {
         this.difficulty = difficulty;
     }
 
-    public List<Training> getTrainings() {
-        return trainings;
-    }
-
-    public void setTrainings(List<Training> training) {
-        this.trainings = training;
-    }
-
     // Might be used in PUT but NOT PATCH!!
     public void copy(Exercise toEdit) {
-        name = toEdit.name;
-        description = toEdit.description;
-        rounds = toEdit.rounds;
-        repetition = toEdit.repetition;
-        weights = toEdit.weights;
-        difficulty = toEdit.difficulty;
-        time = toEdit.time;
-        bodyPart = toEdit.bodyPart;
-        trainings = toEdit.trainings == null || toEdit.trainings.isEmpty() ?
-            null :
-            toEdit.trainings;
+        CopyEntityService.copy(toEdit, this, List.of("id"));
     }
 }
