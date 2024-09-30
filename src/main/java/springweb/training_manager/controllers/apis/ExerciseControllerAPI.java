@@ -9,11 +9,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import springweb.training_manager.models.entities.Exercise;
 import springweb.training_manager.models.viewmodels.exercise.ExerciseCreate;
 import springweb.training_manager.models.viewmodels.exercise.ExerciseRead;
 import springweb.training_manager.models.viewmodels.exercise.ExerciseWrite;
+import springweb.training_manager.models.viewmodels.exercise.ExerciseWriteAPI;
 import springweb.training_manager.services.ExerciseService;
 
 import java.net.URI;
@@ -53,11 +55,17 @@ public class ExerciseControllerAPI {
         return ResponseEntity.ok(service.getCreateModel(id));
     }
 
-
     @PostMapping()
     @ResponseBody
-    public ResponseEntity<ExerciseRead> create(@RequestBody @Valid ExerciseWrite toSave) {
-        Exercise created = service.create(toSave);
+    public ResponseEntity<?> create(
+        @RequestBody @Valid ExerciseWriteAPI data,
+        BindingResult result
+    ) {
+        var validationErrors = service.validateAndPrepareExercise(data, result);
+        if (validationErrors != null)
+            return ResponseEntity.badRequest().body(validationErrors);
+
+        Exercise created = service.create(data.getToSave());
 
         var exerciseRead = new ExerciseRead(created);
         return ResponseEntity.created(
