@@ -40,7 +40,7 @@ public abstract class ExerciseSchema {
     protected short weights;
     @DateTimeFormat(pattern = "mm:ss")
     protected LocalTime time;
-    @NotNull
+    @NotNull(message = "Wybierz wartość z listy")
     @Enumerated(EnumType.STRING)
     protected BodyPart bodyPart;
     @Enumerated(EnumType.STRING)
