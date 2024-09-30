@@ -12,7 +12,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 import springweb.training_manager.models.entities.Role;
-import springweb.training_manager.models.viewmodels.authentication.AuthResponse;
 import springweb.training_manager.models.viewmodels.authentication.NotValidRegister;
 import springweb.training_manager.models.viewmodels.user.UserCredentials;
 import springweb.training_manager.models.viewmodels.user.UserWrite;
@@ -29,8 +28,6 @@ import java.util.Set;
 )
 @RequiredArgsConstructor
 public class UserManagerControllerAPI {
-
-    private final UserService userService;
     private final UserService service;
     private static final Logger logger = LoggerFactory.getLogger(UserManagerControllerAPI.class);
 
@@ -38,9 +35,9 @@ public class UserManagerControllerAPI {
     @ResponseBody
     ResponseEntity<?> login(@RequestBody UserCredentials userCredentials) {
         try {
-            var token = userService.login(userCredentials);
-            return token != null
-                ? ResponseEntity.ok(new AuthResponse(token))
+            var authResponse = service.login(userCredentials);
+            return authResponse != null
+                ? ResponseEntity.ok(authResponse)
                 : ResponseEntity.status(401).body("Wrong login or password.");
         } catch (UsernameNotFoundException ex) {
             return ResponseEntity.status(404).body("User " + userCredentials.username() + " does not exist.");
@@ -55,7 +52,7 @@ public class UserManagerControllerAPI {
     ) {
         if (!service.ifPasswordsMatches(current.getPassword(), current.getPasswordRepeat()))
             result.addError(new FieldError("current", "passwordRepeat", UserService.PASSWORDS_NOT_EQUAL_MESSAGE));
-        
+
         if (result.hasErrors()) {
             var validation = ValidationErrors.createFrom(result);
             return ResponseEntity.badRequest().body(validation.getErrors());

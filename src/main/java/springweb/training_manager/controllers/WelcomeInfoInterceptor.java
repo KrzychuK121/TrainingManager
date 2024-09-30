@@ -19,7 +19,7 @@ public class WelcomeInfoInterceptor implements HandlerInterceptor {
 
     public WelcomeInfoInterceptor(
         final MyUserDetailsService userDetailsService
-    ){
+    ) {
         this.userDetailsService = userDetailsService;
     }
 
@@ -30,7 +30,10 @@ public class WelcomeInfoInterceptor implements HandlerInterceptor {
         Object handler
     ) throws Exception {
         Logger logger = LoggerFactory.getLogger(WelcomeInfoInterceptor.class);
-        if(request.getUserPrincipal() == null)
+        if (
+            request.getUserPrincipal() == null ||
+                request.getServletPath().contains("/api")
+        )
             return HandlerInterceptor.super.preHandle(request, response, handler);
 
         User loggedUser = ((MyUserDetails) userDetailsService.loadUserByUsername(
@@ -40,18 +43,18 @@ public class WelcomeInfoInterceptor implements HandlerInterceptor {
         var session = request.getSession();
         final String WELCOME_INFO = "welcomeInfo";
 
-        if(session.getAttribute(WELCOME_INFO) != null)
+        if (session.getAttribute(WELCOME_INFO) != null)
             return HandlerInterceptor.super.preHandle(request, response, handler);
-        logger.info("Setting session '" + WELCOME_INFO +  "' attribute from logged user.");
+        logger.info("Setting session '" + WELCOME_INFO + "' attribute from logged user.");
 
-        session.setAttribute(WELCOME_INFO, new String[]{ loggedUser.getFirstName(), loggedUser.getLastName() });
+        session.setAttribute(WELCOME_INFO, new String[]{loggedUser.getFirstName(), loggedUser.getLastName()});
         return HandlerInterceptor.super.preHandle(request, response, handler);
     }
 
-    private static Cookie getCookieByName(String name, List<Cookie> cookies){
+    private static Cookie getCookieByName(String name, List<Cookie> cookies) {
         return cookies.stream().filter(
-            cookie -> cookie.getName().equals(name)
-        ).findAny()
-        .orElseThrow(() -> new IllegalArgumentException("Nie istnieje ciasteczko o nazwie: '" + name + "'."));
+                cookie -> cookie.getName().equals(name)
+            ).findAny()
+            .orElseThrow(() -> new IllegalArgumentException("Nie istnieje ciasteczko o nazwie: '" + name + "'."));
     }
 }

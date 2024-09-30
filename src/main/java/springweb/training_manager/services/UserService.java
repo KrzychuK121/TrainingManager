@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import springweb.training_manager.models.entities.Role;
 import springweb.training_manager.models.entities.User;
 import springweb.training_manager.models.schemas.RoleSchema;
+import springweb.training_manager.models.viewmodels.authentication.AuthResponse;
 import springweb.training_manager.models.viewmodels.user.MyUserDetails;
 import springweb.training_manager.models.viewmodels.user.UserCredentials;
 import springweb.training_manager.models.viewmodels.user.UserWrite;
@@ -28,7 +29,6 @@ public class UserService {
     private final PasswordEncoder encoder;
 
     public static final String PASSWORDS_NOT_EQUAL_MESSAGE = "Hasła się różnią. Sprawdź poprawność haseł";
-
 
     /**
      * Method that gets authentication object, gets MyUserDetails out
@@ -90,7 +90,7 @@ public class UserService {
 
     }
 
-    public String login(UserCredentials credentials) throws UsernameNotFoundException {
+    public AuthResponse login(UserCredentials credentials) throws UsernameNotFoundException {
         UserDetails details = userDetailsService.loadUserByUsername(
             credentials.username().toLowerCase()
         );
@@ -99,7 +99,13 @@ public class UserService {
         if (!encoder.matches(credentials.password(), foundPassword))
             return null;
 
-        return jwtService.generateToken(details);
+        var token = jwtService.generateToken(details);
+
+        return new AuthResponse(
+            token,
+            foundUser.getFirstName(),
+            foundUser.getLastName()
+        );
     }
 
     private Set<Role> prepRoles(Set<Role> roles) {
