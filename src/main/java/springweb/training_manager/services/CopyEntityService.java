@@ -69,7 +69,6 @@ public class CopyEntityService {
                 var onlyFieldName = field.getName()
                     .substring(lastDotIndex + 1)
                     .toLowerCase();
-                System.out.println(onlyFieldName);
                 return filterhashSet.contains(
                     onlyFieldName
                 );
