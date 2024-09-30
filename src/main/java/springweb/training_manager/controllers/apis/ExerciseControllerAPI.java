@@ -9,18 +9,20 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import springweb.training_manager.models.entities.Exercise;
+import springweb.training_manager.models.schemas.RoleSchema;
 import springweb.training_manager.models.viewmodels.exercise.ExerciseCreate;
 import springweb.training_manager.models.viewmodels.exercise.ExerciseRead;
-import springweb.training_manager.models.viewmodels.exercise.ExerciseWrite;
 import springweb.training_manager.models.viewmodels.exercise.ExerciseWriteAPI;
 import springweb.training_manager.services.ExerciseService;
 
 import java.net.URI;
 
 @RestController
+@Secured({RoleSchema.ROLE_ADMIN, RoleSchema.ROLE_USER})
 @RequestMapping(
     value = "/api/exercise",
     produces = MediaType.APPLICATION_JSON_VALUE,
@@ -76,10 +78,15 @@ public class ExerciseControllerAPI {
     @PutMapping("/{id}")
     @ResponseBody
     public ResponseEntity<?> edit(
-        @RequestBody @Valid ExerciseWrite toEdit,
+        @RequestBody @Valid ExerciseWriteAPI data,
+        BindingResult result,
         @PathVariable int id
     ) {
+        var validationErrors = service.validateAndPrepareExercise(data, result);
+        if (validationErrors != null)
+            return ResponseEntity.badRequest().body(validationErrors);
         try {
+            var toEdit = data.getToSave();
             service.edit(toEdit, id);
         } catch (IllegalArgumentException e) {
             logger.error("Wystąpił wyjątek: " + e.getMessage());
