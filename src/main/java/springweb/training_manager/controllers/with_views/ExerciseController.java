@@ -14,7 +14,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import springweb.training_manager.models.entities.BodyPart;
 import springweb.training_manager.models.entities.Difficulty;
-import springweb.training_manager.models.entities.Training;
 import springweb.training_manager.models.schemas.RoleSchema;
 import springweb.training_manager.models.viewmodels.exercise.ExerciseRead;
 import springweb.training_manager.models.viewmodels.exercise.ExerciseWrite;
@@ -119,7 +118,7 @@ public class ExerciseController {
             return "exercise/save";
         }
 
-        setTrainingsById(toSave, trainingIds);
+        service.setTrainingsById(toSave, trainingIds);
 
         setTime(toSave, time);
 
@@ -144,21 +143,6 @@ public class ExerciseController {
             );
 
             toSave.setTime(timeToSave);
-        }
-    }
-
-    private void setTrainingsById(ExerciseWrite toSave, String[] trainingIds) {
-        if (trainingIds != null && trainingIds.length != 0) {
-            List<TrainingExercise> trainingsToSave = new ArrayList<>(trainingIds.length);
-            for (String trainingID : trainingIds) {
-                if (trainingID.isEmpty())
-                    continue;
-                int id = Integer.parseInt(trainingID);
-                Training found = trainingRepo.findById(id).get();
-                TrainingExercise viewModel = new TrainingExercise(found);
-                trainingsToSave.add(viewModel);
-            }
-            toSave.setTrainings(trainingsToSave);
         }
     }
 
@@ -203,7 +187,7 @@ public class ExerciseController {
             return "exercise/index";
         }
 
-        String[] selected = getToEditTrainingIds(toEdit);
+        String[] selected = ExerciseService.getToEditTrainingIds(toEdit);
 
         prepTrainingSelect(model, selected);
         model.addAttribute("action", "edit/" + id);
@@ -213,16 +197,6 @@ public class ExerciseController {
         model.addAttribute("id", id);
         return "exercise/save";
     }
-
-    private static String[] getToEditTrainingIds(ExerciseRead toEdit) {
-        List<TrainingExercise> toEditList = toEdit.getTrainings();
-        String[] selected = new String[toEditList.size()];
-        for (int i = 0; i < toEditList.size(); i++) {
-            selected[i] = toEditList.get(i).getId() + "";
-        }
-        return selected;
-    }
-
 
     @Secured({RoleSchema.ROLE_ADMIN, RoleSchema.ROLE_USER})
     @PostMapping("/edit/{id}")
@@ -243,7 +217,7 @@ public class ExerciseController {
             return "exercise/save";
         }
 
-        setTrainingsById(toEdit, trainingIds);
+        service.setTrainingsById(toEdit, trainingIds);
         setTime(toEdit, time);
 
         try {
