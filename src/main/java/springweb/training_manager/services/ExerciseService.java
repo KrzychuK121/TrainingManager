@@ -20,6 +20,7 @@ import springweb.training_manager.models.viewmodels.validation.ValidationErrors;
 import springweb.training_manager.repositories.for_controllers.ExerciseRepository;
 import springweb.training_manager.repositories.for_controllers.TrainingRepository;
 
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -77,6 +78,26 @@ public class ExerciseService {
         }
     }
 
+    public static void setTime(ExerciseWrite toSave) {
+        var validTime = toSave.getTime() != null
+            ? toSave.getTime().toString()
+            : null;
+        setTime(toSave, validTime);
+    }
+
+    public static void setTime(ExerciseWrite toSave, String time) {
+        if (time != null && !time.isEmpty()) {
+            String[] times = time.split(":");
+            LocalTime timeToSave = LocalTime.of(
+                0,
+                Integer.parseInt(times[0]),
+                Integer.parseInt(times[1])
+            );
+
+            toSave.setTime(timeToSave);
+        }
+    }
+
     public static String[] getToEditTrainingIds(ExerciseRead toEdit) {
         List<TrainingExercise> toEditList = toEdit.getTrainings();
         String[] selected = new String[toEditList.size()];
@@ -104,6 +125,7 @@ public class ExerciseService {
         }
 
         setTrainingsById(toSave, data.getSelectedTrainings());
+        setTime(toSave);
         return null;
     }
 

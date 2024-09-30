@@ -22,7 +22,6 @@ import springweb.training_manager.repositories.for_controllers.TrainingRepositor
 import springweb.training_manager.services.ExerciseService;
 import springweb.training_manager.services.PageSortService;
 
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -120,7 +119,7 @@ public class ExerciseController {
 
         service.setTrainingsById(toSave, trainingIds);
 
-        setTime(toSave, time);
+        ExerciseService.setTime(toSave, time);
 
         service.create(toSave);
         prepTrainingSelect(model);
@@ -131,19 +130,6 @@ public class ExerciseController {
         model.addAttribute("message", "Utworzono nowe ćwiczenie!");
 
         return "exercise/save";
-    }
-
-    private static void setTime(ExerciseWrite toSave, String time) {
-        if (time != null && !time.isEmpty()) {
-            String[] times = time.split(":");
-            LocalTime timeToSave = LocalTime.of(
-                0,
-                Integer.parseInt(times[0]),
-                Integer.parseInt(times[1])
-            );
-
-            toSave.setTime(timeToSave);
-        }
     }
 
     @Secured({RoleSchema.ROLE_ADMIN, RoleSchema.ROLE_USER})
@@ -218,7 +204,7 @@ public class ExerciseController {
         }
 
         service.setTrainingsById(toEdit, trainingIds);
-        setTime(toEdit, time);
+        ExerciseService.setTime(toEdit, time);
 
         try {
             service.edit(toEdit, id);
