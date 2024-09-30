@@ -59,6 +59,8 @@ public class UserService {
     }
 
     public boolean ifPasswordsMatches(String password, String passwordRepeat) {
+        if (password == null || passwordRepeat == null)
+            return false;
         return password.equals(passwordRepeat);
     }
 
