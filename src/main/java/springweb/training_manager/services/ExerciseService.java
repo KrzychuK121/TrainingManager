@@ -7,17 +7,22 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import springweb.training_manager.models.entities.Exercise;
 import springweb.training_manager.models.entities.Training;
 import springweb.training_manager.models.viewmodels.exercise.ExerciseCreate;
 import springweb.training_manager.models.viewmodels.exercise.ExerciseRead;
 import springweb.training_manager.models.viewmodels.exercise.ExerciseWrite;
+import springweb.training_manager.models.viewmodels.exercise.ExerciseWriteAPI;
 import springweb.training_manager.models.viewmodels.training.TrainingExercise;
+import springweb.training_manager.models.viewmodels.validation.ValidationErrors;
 import springweb.training_manager.repositories.for_controllers.ExerciseRepository;
 import springweb.training_manager.repositories.for_controllers.TrainingRepository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -55,6 +60,51 @@ public class ExerciseService {
             }
         );
         return trainingToSave;
+    }
+
+    public void setTrainingsById(ExerciseWrite toSave, String[] trainingIds) {
+        if (trainingIds != null && trainingIds.length != 0) {
+            List<TrainingExercise> trainingsToSave = new ArrayList<>(trainingIds.length);
+            for (String trainingID : trainingIds) {
+                if (trainingID.isEmpty())
+                    continue;
+                int id = Integer.parseInt(trainingID);
+                Training found = trainingRepository.findById(id).get();
+                TrainingExercise viewModel = new TrainingExercise(found);
+                trainingsToSave.add(viewModel);
+            }
+            toSave.setTrainings(trainingsToSave);
+        }
+    }
+
+    public static String[] getToEditTrainingIds(ExerciseRead toEdit) {
+        List<TrainingExercise> toEditList = toEdit.getTrainings();
+        String[] selected = new String[toEditList.size()];
+        for (int i = 0; i < toEditList.size(); i++) {
+            selected[i] = toEditList.get(i).getId() + "";
+        }
+        return selected;
+    }
+
+    public Map<String, List<String>> validateAndPrepareExercise(
+        ExerciseWriteAPI data,
+        BindingResult result
+    ) {
+        var toSave = data.getToSave();
+
+        if (toSave.getRepetition() == 0 && toSave.getTime() == null) {
+            var message = "Wpisz wartość w polu 'Powtórzenia' lub 'Czas wykonania'";
+            result.addError(new FieldError("data", "toSave.repetition", message));
+            result.addError(new FieldError("data", "toSave.time", message));
+        }
+
+        if (result.hasErrors()) {
+            var validation = ValidationErrors.createFrom(result, "toSave.");
+            return validation.getErrors();
+        }
+
+        setTrainingsById(toSave, data.getSelectedTrainings());
+        return null;
     }
 
     public Exercise create(ExerciseWrite toSave) {
