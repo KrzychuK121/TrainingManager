@@ -4,13 +4,17 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Id;
 import jakarta.persistence.IdClass;
 import jakarta.persistence.MappedSuperclass;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalTime;
 
+@Getter
+@NoArgsConstructor
 @IdClass(TrainingPlanId.class)
 @MappedSuperclass
-public class TrainingPlanSchema {
+public class TrainingPlanSchema implements Identificable<TrainingPlanId> {
     @Id
     @Column(name = "routine_id")
     protected int trainingRoutineId;
@@ -20,22 +24,13 @@ public class TrainingPlanSchema {
     @DateTimeFormat(pattern = "hh:mm")
     protected LocalTime trainingTime;
 
-    public TrainingPlanSchema() {
-    }
-
-
-    public int getTrainingRoutineId() {
-        return trainingRoutineId;
-    }
-    public int getTrainingScheduleId() {
-        return trainingScheduleId;
-    }
-    public TrainingPlanId getId(){
+    @Override
+    public TrainingPlanId getId() {
         return new TrainingPlanId(trainingRoutineId, trainingScheduleId);
     }
-    public LocalTime getTrainingTime() {
-        return trainingTime;
+
+    @Override
+    public TrainingPlanId defaultId() {
+        return null;
     }
-
-
 }

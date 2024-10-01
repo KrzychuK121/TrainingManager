@@ -1,18 +1,22 @@
 package springweb.training_manager.models.viewmodels.training;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import springweb.training_manager.models.entities.Training;
 import springweb.training_manager.models.schemas.TrainingSchema;
+import springweb.training_manager.models.viewmodels.Castable;
 import springweb.training_manager.models.viewmodels.exercise.ExerciseTraining;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class TrainingWrite extends TrainingSchema {
+@Getter
+@Setter
+@NoArgsConstructor
+public class TrainingWrite extends TrainingSchema implements Castable<Training> {
     private List<ExerciseTraining> exercises = new ArrayList<>();
 
-    public TrainingWrite() {
-
-    }
     public void setTitle(String title) {
         this.title = title;
     }
@@ -21,20 +25,13 @@ public class TrainingWrite extends TrainingSchema {
         this.description = description;
     }
 
-    public List<ExerciseTraining> getExercises() {
-        return exercises;
-    }
-
-    public void setExercises(List<ExerciseTraining> exercises) {
-        this.exercises = exercises;
-    }
-
-    public Training toTraining(){
+    @Override
+    public Training toEntity() {
         var toReturn = new Training();
 
         toReturn.setTitle(title);
         toReturn.setDescription(description);
-        if(exercises != null)
+        if (exercises != null)
             toReturn.setExercises(ExerciseTraining.toExerciseList(exercises));
 
         return toReturn;

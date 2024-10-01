@@ -1,17 +1,18 @@
 package springweb.training_manager.models.viewmodels.exercise;
 
+import lombok.NoArgsConstructor;
 import springweb.training_manager.models.entities.BodyPart;
 import springweb.training_manager.models.entities.Difficulty;
 import springweb.training_manager.models.entities.Exercise;
 import springweb.training_manager.models.schemas.ExerciseSchema;
+import springweb.training_manager.models.viewmodels.Castable;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ExerciseTraining extends ExerciseSchema {
-
-    public ExerciseTraining(){ }
+@NoArgsConstructor
+public class ExerciseTraining extends ExerciseSchema implements Castable<Exercise> {
 
     public ExerciseTraining(Exercise exercise) {
         this.id = exercise.getId();
@@ -25,18 +26,18 @@ public class ExerciseTraining extends ExerciseSchema {
         this.difficulty = exercise.getDifficulty();
     }
 
-    public static List<ExerciseTraining> toExerciseTrainingList(final List<Exercise> list){
-        if(list == null)
+    public static List<ExerciseTraining> toExerciseTrainingList(final List<Exercise> list) {
+        if (list == null)
             return null;
         List<ExerciseTraining> result = new ArrayList<>(list.size());
         list.forEach(exercise -> result.add(new ExerciseTraining(exercise)));
         return result;
     }
 
-    public static List<Exercise> toExerciseList(final List<ExerciseTraining> list){
+    public static List<Exercise> toExerciseList(final List<ExerciseTraining> list) {
         List<Exercise> result = new ArrayList<>(list.size());
         list.forEach(exerciseTraining ->
-            result.add(exerciseTraining.toExercise())
+            result.add(exerciseTraining.toEntity())
         );
 
         return result;
@@ -46,7 +47,7 @@ public class ExerciseTraining extends ExerciseSchema {
         this.id = id;
     }
 
-    public void setName(String name){
+    public void setName(String name) {
         this.name = name;
     }
 
@@ -62,7 +63,7 @@ public class ExerciseTraining extends ExerciseSchema {
         this.repetition = repetition;
     }
 
-    public void setWeights(short weights){
+    public void setWeights(short weights) {
         this.weights = weights;
     }
 
@@ -70,15 +71,16 @@ public class ExerciseTraining extends ExerciseSchema {
         this.time = time;
     }
 
-    public void setBodyPart(BodyPart bodyPart){
+    public void setBodyPart(BodyPart bodyPart) {
         this.bodyPart = bodyPart;
     }
 
-    public void setDifficulty(Difficulty difficulty){
+    public void setDifficulty(Difficulty difficulty) {
         this.difficulty = difficulty;
     }
 
-    public Exercise toExercise(){
+    @Override
+    public Exercise toEntity() {
         var toReturn = new Exercise(
             name,
             description,

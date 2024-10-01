@@ -9,15 +9,14 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import springweb.training_manager.models.schemas.ExerciseSchema;
-import springweb.training_manager.services.CopyEntityService;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @ToString
-@Setter
 @Getter
+@Setter
 @NoArgsConstructor
 @Entity
 @Table(name = "exercise")
@@ -87,6 +86,16 @@ public class Exercise extends ExerciseSchema {
 
     // Might be used in PUT but NOT PATCH!!
     public void copy(Exercise toEdit) {
-        CopyEntityService.copy(toEdit, this, List.of("id"));
+        name = toEdit.name;
+        description = toEdit.description;
+        rounds = toEdit.rounds;
+        repetition = toEdit.repetition;
+        weights = toEdit.weights;
+        difficulty = toEdit.difficulty;
+        time = toEdit.time;
+        bodyPart = toEdit.bodyPart;
+        trainings = toEdit.trainings == null || toEdit.trainings.isEmpty() ?
+            null :
+            toEdit.trainings;
     }
 }

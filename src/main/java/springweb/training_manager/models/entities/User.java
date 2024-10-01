@@ -1,11 +1,17 @@
 package springweb.training_manager.models.entities;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import springweb.training_manager.models.schemas.UserSchema;
 
 import java.util.HashSet;
 import java.util.Set;
 
+@Setter
+@Getter
+@NoArgsConstructor
 @Entity
 @Table(name = "identity_user")
 public class User extends UserSchema {
@@ -34,40 +40,4 @@ public class User extends UserSchema {
         inverseJoinColumns = @JoinColumn(name = "exercise_id", referencedColumnName = "id")
     )
     private Set<Exercise> exercises = new HashSet<>();
-
-    public User() { }
-
-    public String getPasswordHashed() {
-        return passwordHashed;
-    }
-
-    public void setPasswordHashed(String passwordHashed) {
-        this.passwordHashed = passwordHashed;
-    }
-
-    public Set<Role> getRoles() {
-        return roles;
-    }
-
-    public void setRoles(Set<Role> roles) {
-        this.roles = roles;
-    }
-
-    public Set<Training> getTrainings() {
-        return trainings;
-    }
-
-    public void setTrainings(Set<Training> trainings) {
-        this.trainings = trainings;
-    }
-
-    public Set<Exercise> getExercises() {
-        return exercises;
-    }
-
-    public void setExercises(Set<Exercise> exercises) {
-        this.exercises = exercises;
-    }
 }
-
-

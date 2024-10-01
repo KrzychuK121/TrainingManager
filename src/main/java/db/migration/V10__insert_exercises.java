@@ -25,7 +25,7 @@ public class V10__insert_exercises extends BaseJavaMigration {
                 statement.setString(2, exercise.getDescription());
                 statement.setInt(3, exercise.getRounds());
                 statement.setInt(4, exercise.getRepetition());
-                if(exercise.getTime() == null)
+                if (exercise.getTime() == null)
                     statement.setNull(5, Types.TIME);
                 else
                     statement.setTime(5, Time.valueOf(exercise.getTime()));
@@ -34,12 +34,12 @@ public class V10__insert_exercises extends BaseJavaMigration {
             }
 
             statement.executeBatch();
-        } catch(SQLException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    private List<Exercise> exercisesToCreate(){
+    private List<Exercise> exercisesToCreate() {
         List<Exercise> toReturn = new ArrayList<>(4);
 
         createNewExercise(
@@ -94,14 +94,17 @@ public class V10__insert_exercises extends BaseJavaMigration {
         LocalTime time,
         List<Exercise> toReturn
     ) {
-        Exercise ex = new Exercise();
-
+        Exercise ex = new Exercise(
+            name,
+            description,
+            rounds,
+            repetition,
+            (short) 0,
+            time,
+            null,
+            null
+        );
         ex.setId(id);
-        ex.setName(name);
-        ex.setDescription(description);
-        ex.setRounds(rounds);
-        ex.setRepetition(repetition);
-        ex.setTime(time);
 
         toReturn.add(ex);
     }

@@ -7,16 +7,18 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import springweb.training_manager.models.entities.User;
 import springweb.training_manager.models.schemas.UserSchema;
+import springweb.training_manager.models.viewmodels.Castable;
 
 @Setter
 @Getter
 @NoArgsConstructor
-public class UserWrite extends UserSchema {
+public class UserWrite extends UserSchema implements Castable<User> {
     @Transient
     @NotBlank(message = "Powtórz hasło.")
     private String passwordRepeat;
 
-    public User toUser() {
+    @Override
+    public User toEntity() {
         User toReturn = new User();
 
         toReturn.setUsername(username);

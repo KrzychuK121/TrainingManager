@@ -2,10 +2,19 @@ package springweb.training_manager.models.entities;
 
 import jakarta.persistence.*;
 import jakarta.validation.Valid;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import springweb.training_manager.models.schemas.TrainingSchema;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
+@Setter
+@Getter
+@NoArgsConstructor
 @Entity
 @Table(name = "training")
 public class Training extends TrainingSchema {
@@ -21,8 +30,6 @@ public class Training extends TrainingSchema {
     @ManyToMany(mappedBy = "trainings")
     private Set<User> users = new HashSet<>();
 
-    public Training(){ }
-
     public void setId(int id) {
         this.id = id;
     }
@@ -35,24 +42,8 @@ public class Training extends TrainingSchema {
         this.description = description;
     }
 
-    public List<Exercise> getExercises() {
-        return exercises;
-    }
-
-    public void setExercises(List<Exercise> exercises) {
-        this.exercises = exercises;
-    }
-
-    public Set<User> getUsers() {
-        return users;
-    }
-
-    public void setUsers(Set<User> users) {
-        this.users = users;
-    }
-
     // Might be used in PUT but NOT PATCH!!
-    public void copy(Training toCopy){
+    public void copy(Training toCopy) {
         this.title = toCopy.title;
         this.description = toCopy.description;
         this.exercises = toCopy.exercises == null || toCopy.exercises.isEmpty() ?

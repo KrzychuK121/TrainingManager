@@ -1,35 +1,15 @@
 package springweb.training_manager.models.schemas;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
 import java.io.Serializable;
 
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
 public class TrainingPlanId implements Serializable {
     private int trainingRoutineId;
     private int trainingScheduleId;
-
-    public TrainingPlanId() {
-    }
-
-    public TrainingPlanId(
-        final int trainingRoutineId,
-        final int trainingScheduleId
-    ) {
-        this.trainingRoutineId = trainingRoutineId;
-        this.trainingScheduleId = trainingScheduleId;
-    }
-
-    public int getTrainingRoutineId() {
-        return trainingRoutineId;
-    }
-
-    public void setTrainingRoutineId(int trainingRoutineId) {
-        this.trainingRoutineId = trainingRoutineId;
-    }
-
-    public int getTrainingScheduleId() {
-        return trainingScheduleId;
-    }
-
-    public void setTrainingScheduleId(int trainingScheduleId) {
-        this.trainingScheduleId = trainingScheduleId;
-    }
 }

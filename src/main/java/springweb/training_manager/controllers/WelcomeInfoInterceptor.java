@@ -3,6 +3,7 @@ package springweb.training_manager.controllers;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -14,14 +15,9 @@ import springweb.training_manager.services.MyUserDetailsService;
 import java.util.List;
 
 @Component
+@RequiredArgsConstructor
 public class WelcomeInfoInterceptor implements HandlerInterceptor {
     private final MyUserDetailsService userDetailsService;
-
-    public WelcomeInfoInterceptor(
-        final MyUserDetailsService userDetailsService
-    ) {
-        this.userDetailsService = userDetailsService;
-    }
 
     @Override
     public boolean preHandle(

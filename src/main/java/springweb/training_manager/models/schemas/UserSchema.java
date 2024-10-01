@@ -9,25 +9,32 @@ import org.hibernate.validator.constraints.Length;
 @Getter
 @NoArgsConstructor
 @MappedSuperclass
-public abstract class UserSchema {
+public abstract class UserSchema implements Identificable<String> {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     protected String id;
-
     @NotBlank(message = "Imie użytkownika nie może być puste.")
     @Length(max = 25)
     protected String firstName;
     @NotBlank(message = "Nazwisko użytkownika nie może być puste.")
     @Length(max = 30)
     protected String lastName;
-
     @Column(nullable = false, unique = true)
     @Length(min = 8, max = 20, message = "Nazwa użytkownika musi mieć od 8 do 20 znaków.")
     protected String username;
-
     @Transient
     @Length(min = 8, max = 30, message = "Hasło musi mieć od 8 do 30 znaków.")
     protected String password;
+
+    @Override
+    public String getId() {
+        return id;
+    }
+
+    @Override
+    public String defaultId() {
+        return "";
+    }
 
     public void setId(String id) {
         this.id = id;

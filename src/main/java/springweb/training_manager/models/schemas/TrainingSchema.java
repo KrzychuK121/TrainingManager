@@ -5,12 +5,14 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.MappedSuperclass;
 import jakarta.validation.constraints.NotBlank;
+import lombok.Getter;
 import org.hibernate.validator.constraints.Length;
 
 import java.util.Objects;
 
 @MappedSuperclass
-public abstract class TrainingSchema {
+@Getter
+public abstract class TrainingSchema implements Identificable<Integer> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     protected int id;
@@ -21,16 +23,14 @@ public abstract class TrainingSchema {
     @Length(min = 3, max = 300, message = "Opis musi mieścić się między 3 a 300 znaków")
     protected String description;
 
-    public int getId() {
+    @Override
+    public Integer getId() {
         return id;
     }
 
-    public String getTitle() {
-        return title;
-    }
-
-    public String getDescription() {
-        return description;
+    @Override
+    public Integer defaultId() {
+        return 0;
     }
 
     @Override
@@ -39,7 +39,7 @@ public abstract class TrainingSchema {
         if (o == null || getClass() != o.getClass()) return false;
         TrainingSchema training = (TrainingSchema) o;
         return id == training.id &&
-                Objects.equals(title, training.title) &&
-                Objects.equals(description, training.description);
+            Objects.equals(title, training.title) &&
+            Objects.equals(description, training.description);
     }
 }

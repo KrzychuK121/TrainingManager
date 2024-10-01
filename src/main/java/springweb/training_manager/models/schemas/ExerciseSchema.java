@@ -15,11 +15,11 @@ import springweb.training_manager.models.entities.Difficulty;
 import java.time.LocalTime;
 import java.util.Objects;
 
-@MappedSuperclass
+@Getter
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter
-public abstract class ExerciseSchema {
+@MappedSuperclass
+public abstract class ExerciseSchema implements Identificable<Integer> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     protected int id;
@@ -45,6 +45,16 @@ public abstract class ExerciseSchema {
     protected BodyPart bodyPart;
     @Enumerated(EnumType.STRING)
     protected Difficulty difficulty;
+
+    @Override
+    public Integer getId() {
+        return id;
+    }
+
+    @Override
+    public Integer defaultId() {
+        return 0;
+    }
 
     @Override
     public boolean equals(Object o) {

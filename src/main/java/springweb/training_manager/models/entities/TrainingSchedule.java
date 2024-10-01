@@ -1,10 +1,16 @@
 package springweb.training_manager.models.entities;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import springweb.training_manager.models.schemas.Identificable;
 
 import java.util.Objects;
 
+@Getter
+@Setter
+@NoArgsConstructor
 @Entity
 @Table(name = "training_schedule")
 public class TrainingSchedule implements Identificable<Integer> {
@@ -24,10 +30,7 @@ public class TrainingSchedule implements Identificable<Integer> {
     )
     private Training training;
 
-    public TrainingSchedule() {
-    }
-
-    public TrainingSchedule(int trainingId, Weekdays weekday){
+    public TrainingSchedule(int trainingId, Weekdays weekday) {
         this.trainingId = trainingId;
         this.weekday = weekday;
     }
@@ -38,36 +41,8 @@ public class TrainingSchedule implements Identificable<Integer> {
     }
 
     @Override
-    public Integer getDefaultId() {
+    public Integer defaultId() {
         return 0;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public int getTrainingId() {
-        return trainingId;
-    }
-
-    public void setTrainingId(int trainingId) {
-        this.trainingId = trainingId;
-    }
-
-    public Training getTraining() {
-        return training;
-    }
-
-    public void setTraining(Training training) {
-        this.training = training;
-    }
-
-    public Weekdays getWeekday() {
-        return weekday;
-    }
-
-    public void setWeekday(Weekdays weekday) {
-        this.weekday = weekday;
     }
 
     @Override
@@ -76,9 +51,9 @@ public class TrainingSchedule implements Identificable<Integer> {
         if (o == null || getClass() != o.getClass()) return false;
         TrainingSchedule that = (TrainingSchedule) o;
         return id == that.id &&
-                trainingId == that.trainingId &&
-                weekday == that.weekday &&
-                Objects.equals(training, that.training);
+            trainingId == that.trainingId &&
+            weekday == that.weekday &&
+            Objects.equals(training, that.training);
     }
 
     @Override

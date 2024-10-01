@@ -4,9 +4,15 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.MappedSuperclass;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@Setter
+@Getter
+@NoArgsConstructor
 @MappedSuperclass
-public class RoleSchema {
+public class RoleSchema implements Identificable<Integer> {
     public static final String ROLE_USER = "ROLE_USER";
     public static final String ROLE_ADMIN = "ROLE_ADMIN";
 
@@ -15,21 +21,13 @@ public class RoleSchema {
     protected int id;
     protected String name;
 
-    public RoleSchema() { }
-
-    public int getId() {
+    @Override
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
+    @Override
+    public Integer defaultId() {
+        return 0;
     }
 }

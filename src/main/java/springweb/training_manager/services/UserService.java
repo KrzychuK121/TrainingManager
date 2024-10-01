@@ -73,7 +73,7 @@ public class UserService {
         Set<Role> rolesToSave = prepRoles(roles);
 
         toSave.setUsername(toSave.getUsername().toLowerCase());
-        User userToSave = toSave.toUser();
+        User userToSave = toSave.toEntity();
         userToSave.setPasswordHashed(encoder.encode(toSave.getPassword()));
         userToSave.setRoles(rolesToSave);
 

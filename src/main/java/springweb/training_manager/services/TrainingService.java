@@ -45,8 +45,8 @@ public class TrainingService {
         List<Exercise> exerciseToSave = new ArrayList<>(exercises.size());
         exercises.forEach(
             exerciseTraining -> {
-                Exercise found = exerciseRepository.findByExercise(exerciseTraining.toExercise())
-                    .orElse(exerciseTraining.toExercise());
+                Exercise found = exerciseRepository.findByExercise(exerciseTraining.toEntity())
+                    .orElse(exerciseTraining.toEntity());
 
                 if (found.getId() == 0) {
                     var savedExercise = exerciseRepository.save(found);
@@ -64,7 +64,7 @@ public class TrainingService {
         if (preparedExerciseList != null)
             toSave.setExercises(ExerciseTraining.toExerciseTrainingList(preparedExerciseList));
 
-        var created = repository.save(toSave.toTraining());
+        var created = repository.save(toSave.toEntity());
 
         if (userId != null) {
             User loggedUser = userRepository.findById(userId)
@@ -197,7 +197,7 @@ public class TrainingService {
         Training toSave = getById(id, userId);
         editTrainingInExercises(toSave, toSave.getExercises(), false);
 
-        toSave.copy(toEdit.toTraining());
+        toSave.copy(toEdit.toEntity());
         var saved = repository.save(toSave);
         editTrainingInExercises(saved, saved.getExercises(), true);
     }

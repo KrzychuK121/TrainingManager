@@ -1,17 +1,15 @@
 package springweb.training_manager.models.viewmodels.training;
 
+import lombok.NoArgsConstructor;
 import springweb.training_manager.models.entities.Training;
 import springweb.training_manager.models.schemas.TrainingSchema;
+import springweb.training_manager.models.viewmodels.Castable;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
-public class TrainingExercise extends TrainingSchema {
-
-    public TrainingExercise() {
-        id = 0;
-    }
-
+@NoArgsConstructor
+public class TrainingExercise extends TrainingSchema implements Castable<Training> {
     public TrainingExercise(Training training) {
         this.id = training.getId();
         this.title = training.getTitle();
@@ -19,27 +17,15 @@ public class TrainingExercise extends TrainingSchema {
     }
 
     public static List<TrainingExercise> toTrainingExerciseList(final List<Training> list) {
-        if (list == null)
-            return null;
-        List<TrainingExercise> result = new ArrayList<>(list.size());
-        list.forEach(training -> result.add(new TrainingExercise(training)));
-        return result;
+        return list.stream().map(
+            TrainingExercise::new
+        ).collect(Collectors.toList());
     }
 
     public static List<Training> toTrainingList(final List<TrainingExercise> list) {
-        List<Training> result = new ArrayList<>(list.size());
-        list.forEach(trainingExercise -> {
-            var toSave = new Training();
-
-            toSave.setId(trainingExercise.getId());
-            toSave.setId(trainingExercise.getId());
-            toSave.setTitle(trainingExercise.title);
-            toSave.setDescription(trainingExercise.description);
-
-            result.add(toSave);
-        });
-
-        return result;
+        return list.stream().map(
+            TrainingExercise::toEntity
+        ).collect(Collectors.toList());
     }
 
     public void setTitle(String title) {
@@ -50,7 +36,8 @@ public class TrainingExercise extends TrainingSchema {
         this.description = description;
     }
 
-    public Training toTraining() {
+    @Override
+    public Training toEntity() {
         var toReturn = new Training();
 
         toReturn.setTitle(title);
