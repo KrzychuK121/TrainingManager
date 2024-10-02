@@ -11,9 +11,11 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 public class TrainingExercise extends TrainingSchema implements Castable<Training> {
     public TrainingExercise(Training training) {
-        this.id = training.getId();
-        this.title = training.getTitle();
-        this.description = training.getDescription();
+        super(
+            training.getId(),
+            training.getTitle(),
+            training.getDescription()
+        );
     }
 
     public static List<TrainingExercise> toTrainingExerciseList(final List<Training> list) {
@@ -38,10 +40,10 @@ public class TrainingExercise extends TrainingSchema implements Castable<Trainin
 
     @Override
     public Training toEntity() {
-        var toReturn = new Training();
-
-        toReturn.setTitle(title);
-        toReturn.setDescription(description);
+        var toReturn = new Training(
+            title,
+            description
+        );
 
         return toReturn;
     }

@@ -15,15 +15,17 @@ import java.util.List;
 public class ExerciseTraining extends ExerciseSchema implements Castable<Exercise> {
 
     public ExerciseTraining(Exercise exercise) {
-        this.id = exercise.getId();
-        this.name = exercise.getName();
-        this.description = exercise.getDescription();
-        this.rounds = exercise.getRounds();
-        this.repetition = exercise.getRepetition();
-        this.weights = exercise.getWeights();
-        this.time = exercise.getTime();
-        this.bodyPart = exercise.getBodyPart();
-        this.difficulty = exercise.getDifficulty();
+        super(
+            exercise.getId(),
+            exercise.getName(),
+            exercise.getDescription(),
+            exercise.getRounds(),
+            exercise.getRepetition(),
+            exercise.getWeights(),
+            exercise.getTime(),
+            exercise.getBodyPart(),
+            exercise.getDifficulty()
+        );
     }
 
     public static List<ExerciseTraining> toExerciseTrainingList(final List<Exercise> list) {

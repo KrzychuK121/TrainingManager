@@ -61,16 +61,16 @@ public class ExerciseWrite extends ExerciseSchema implements Castable<Exercise> 
 
     @Override
     public Exercise toEntity() {
-        var toReturn = new Exercise();
-
-        toReturn.setName(name);
-        toReturn.setDescription(description);
-        toReturn.setRounds(rounds);
-        toReturn.setRepetition(repetition);
-        toReturn.setWeights(weights);
-        toReturn.setTime(time);
-        toReturn.setBodyPart(bodyPart);
-        toReturn.setDifficulty(difficulty);
+        var toReturn = new Exercise(
+            name,
+            description,
+            rounds,
+            repetition,
+            weights,
+            time,
+            bodyPart,
+            difficulty
+        );
 
         if (trainings != null)
             toReturn.setTrainings(TrainingExercise.toTrainingList(trainings));

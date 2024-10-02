@@ -2,11 +2,13 @@ package springweb.training_manager.models.schemas;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
 
 @Getter
+@AllArgsConstructor
 @NoArgsConstructor
 @MappedSuperclass
 public abstract class UserSchema implements Identificable<String> {

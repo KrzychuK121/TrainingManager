@@ -5,13 +5,17 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.MappedSuperclass;
 import jakarta.validation.constraints.NotBlank;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
 
 import java.util.Objects;
 
 @MappedSuperclass
 @Getter
+@AllArgsConstructor
+@NoArgsConstructor
 public abstract class TrainingSchema implements Identificable<Integer> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

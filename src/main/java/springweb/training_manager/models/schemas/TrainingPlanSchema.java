@@ -4,6 +4,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Id;
 import jakarta.persistence.IdClass;
 import jakarta.persistence.MappedSuperclass;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -12,6 +13,7 @@ import java.time.LocalTime;
 
 @Getter
 @NoArgsConstructor
+@AllArgsConstructor
 @IdClass(TrainingPlanId.class)
 @MappedSuperclass
 public class TrainingPlanSchema implements Identificable<TrainingPlanId> {

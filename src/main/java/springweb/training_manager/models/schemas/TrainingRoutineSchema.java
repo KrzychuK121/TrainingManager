@@ -5,10 +5,12 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.MappedSuperclass;
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
+@AllArgsConstructor
 @NoArgsConstructor
 @MappedSuperclass
 public class TrainingRoutineSchema implements Identificable<Integer> {

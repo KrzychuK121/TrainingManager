@@ -30,6 +30,17 @@ public class Training extends TrainingSchema {
     @ManyToMany(mappedBy = "trainings")
     private Set<User> users = new HashSet<>();
 
+    public Training(
+        String title,
+        String description
+    ) {
+        super(
+            0,
+            title,
+            description
+        );
+    }
+
     public void setId(int id) {
         this.id = id;
     }

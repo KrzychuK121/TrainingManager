@@ -10,8 +10,10 @@ public class TrainingRoutineRead extends TrainingRoutineSchema {
     private final UserRead owner;
 
     public TrainingRoutineRead(TrainingRoutine trainingRoutine) {
-        this.id = trainingRoutine.getId();
-        this.active = trainingRoutine.isActive();
+        super(
+            trainingRoutine.getId(),
+            trainingRoutine.isActive()
+        );
         this.owner = new UserRead(trainingRoutine.getOwner());
     }
 

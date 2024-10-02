@@ -40,4 +40,19 @@ public class User extends UserSchema {
         inverseJoinColumns = @JoinColumn(name = "exercise_id", referencedColumnName = "id")
     )
     private Set<Exercise> exercises = new HashSet<>();
+
+    public User(
+        String firstName,
+        String lastName,
+        String username,
+        String password
+    ) {
+        super(
+            "",
+            firstName,
+            lastName,
+            username,
+            password
+        );
+    }
 }

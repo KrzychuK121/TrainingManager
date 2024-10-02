@@ -17,27 +17,19 @@ public class ExerciseRead extends ExerciseSchema {
     private final String bodyPartDesc;
 
     public ExerciseRead(Exercise exercise) {
-        this.id = exercise.getId();
-        this.name = exercise.getName();
-        this.description = exercise.getDescription();
-        this.rounds = exercise.getRounds();
-        this.repetition = exercise.getRepetition();
-        this.weights = exercise.getWeights();
-        this.time = exercise.getTime();
-        this.bodyPart = exercise.getBodyPart();
+        super(
+            exercise.getId(),
+            exercise.getName(),
+            exercise.getDescription(),
+            exercise.getRounds(),
+            exercise.getRepetition(),
+            exercise.getWeights(),
+            exercise.getTime(),
+            exercise.getBodyPart(),
+            exercise.getDifficulty()
+        );
         this.bodyPartDesc = BodyPart.getBodyDesc(bodyPart);
-        this.difficulty = exercise.getDifficulty();
         this.difficultyDesc = Difficulty.getEnumDesc(difficulty);
         this.trainings = TrainingExercise.toTrainingExerciseList(exercise.getTrainings());
-    }
-
-    public static List<ExerciseRead> toExerciseReadList(final List<Exercise> list) {
-        List<ExerciseRead> result = new ArrayList<>(list.size());
-        list.forEach(exercise -> result.add(new ExerciseRead(exercise)));
-        return result;
-    }
-
-    public void setTrainings(List<TrainingExercise> trainings) {
-        this.trainings = trainings;
     }
 }

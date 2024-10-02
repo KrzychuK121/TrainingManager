@@ -27,10 +27,11 @@ public class TrainingWrite extends TrainingSchema implements Castable<Training> 
 
     @Override
     public Training toEntity() {
-        var toReturn = new Training();
-
-        toReturn.setTitle(title);
-        toReturn.setDescription(description);
+        var toReturn = new Training(
+            title,
+            description
+        );
+        
         if (exercises != null)
             toReturn.setExercises(ExerciseTraining.toExerciseList(exercises));
 

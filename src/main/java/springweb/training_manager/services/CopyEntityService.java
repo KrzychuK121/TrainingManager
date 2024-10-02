@@ -1,23 +1,30 @@
 package springweb.training_manager.services;
 
-import lombok.AllArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
-@AllArgsConstructor
 @Service
 public class CopyEntityService {
+    private static final Logger logger = LoggerFactory.getLogger(CopyEntityService.class);
 
     public static <E> void copy(
         E source,
         E target
     ) {
-        copy(source, target, null);
+        copy(source, target, (List<String>) null);
+    }
+
+    public static <E> void copy(
+        E source,
+        E target,
+        String... ignoreFields
+    ) {
+        copy(source, target, List.of(ignoreFields));
     }
 
     public static <E> void copy(
@@ -28,26 +35,27 @@ public class CopyEntityService {
         var sourceClass = source.getClass();
         var targetClass = target.getClass();
 
-        if (!sourceClass.equals(targetClass))
-            throw new IllegalArgumentException("Objects must be of the same type.");
-        List<Field> fields = new ArrayList<>();
+        Map<String, Field> sourceFields = getFieldsMap(sourceClass, ignoredFields);
+        Map<String, Field> targetFields = getFieldsMap(targetClass, ignoredFields);
 
-        while (sourceClass != null) {
-            fields.addAll(
-                List.of(sourceClass.getDeclaredFields())
-            );
-            sourceClass = sourceClass.getSuperclass();
-        }
-
-        if (ignoredFields != null)
-            filterFields(fields, ignoredFields);
-
-        fields.forEach(
-            field -> {
-                field.setAccessible(true);
+        sourceFields.forEach(
+            (fieldName, sourceField) -> {
+                sourceField.setAccessible(true);
                 try {
-                    Object value = field.get(source);
-                    field.set(target, value);
+                    Object value = sourceField.get(source);
+                    if (!targetFields.containsKey(fieldName))
+                        return;
+                    var targetField = targetFields.get(fieldName);
+                    targetField.setAccessible(true);
+                    if (!sourceField.getType().isInstance(targetField.getType()))
+                        logger.warn(
+                            "Field {} could not be initialized because types are not identical ({} != {}).",
+                            fieldName,
+                            sourceField.getType().toString(),
+                            targetField.getType().toString()
+                        );
+                    else
+                        sourceField.set(target, value);
                 } catch (IllegalAccessException e) {
                     e.printStackTrace();
                 }
@@ -55,23 +63,51 @@ public class CopyEntityService {
         );
     }
 
+    private static String getNormalizedFieldName(String fieldName) {
+        var lastDotIndex = fieldName.lastIndexOf('.');
+        return fieldName.substring(lastDotIndex + 1)
+            .toLowerCase();
+    }
+
+    private static String getNormalizedFieldName(Field field) {
+        return getNormalizedFieldName(field.getName());
+    }
+
+    private static Map<String, Field> getFieldsMap(
+        Class<?> sourceClass,
+        List<String> ignoredFields
+    ) {
+        Map<String, Field> fieldsMap = new HashMap<>();
+
+        while (sourceClass != null) {
+            fieldsMap.putAll(
+                Arrays.stream(sourceClass.getDeclaredFields())
+                    .collect(Collectors.toMap(
+                        CopyEntityService::getNormalizedFieldName,
+                        value -> value
+                    ))
+            );
+            sourceClass = sourceClass.getSuperclass();
+        }
+
+        if (ignoredFields != null)
+            filterFields(fieldsMap, ignoredFields);
+
+        return fieldsMap;
+    }
+
     private static void filterFields(
-        List<Field> fields,
+        Map<String, Field> fields,
         List<String> ignoredFields
     ) {
         HashSet<String> filterhashSet = ignoredFields.stream()
             .map(String::toLowerCase)
             .collect(Collectors.toCollection(HashSet::new));
 
-        fields.removeIf(
+        filterhashSet.forEach(
             field -> {
-                var lastDotIndex = field.getName().lastIndexOf('.');
-                var onlyFieldName = field.getName()
-                    .substring(lastDotIndex + 1)
-                    .toLowerCase();
-                return filterhashSet.contains(
-                    onlyFieldName
-                );
+                if (fields.containsKey(field))
+                    fields.remove(getNormalizedFieldName(field));
             }
         );
     }

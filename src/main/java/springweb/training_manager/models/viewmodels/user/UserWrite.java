@@ -19,12 +19,12 @@ public class UserWrite extends UserSchema implements Castable<User> {
 
     @Override
     public User toEntity() {
-        User toReturn = new User();
-
-        toReturn.setUsername(username);
-        toReturn.setFirstName(firstName);
-        toReturn.setLastName(lastName);
-        toReturn.setPassword(password);
+        User toReturn = new User(
+            firstName,
+            lastName,
+            username,
+            password
+        );
 
         return toReturn;
     }
