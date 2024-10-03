@@ -44,6 +44,7 @@ public class TrainingExercise extends TrainingSchema implements Castable<Trainin
             title,
             description
         );
+        toReturn.setId(id);
 
         return toReturn;
     }

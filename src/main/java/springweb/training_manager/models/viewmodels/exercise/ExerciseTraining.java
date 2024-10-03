@@ -93,7 +93,6 @@ public class ExerciseTraining extends ExerciseSchema implements Castable<Exercis
             bodyPart,
             difficulty
         );
-
         toReturn.setId(id);
 
         return toReturn;
