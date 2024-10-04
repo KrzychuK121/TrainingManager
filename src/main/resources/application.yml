@@ -3,6 +3,13 @@ spring:
   #  profiles.active: local
   jpa.hibernate.ddl-auto: validate
   main.banner-mode: off
+  # Uncomment for debugging Hibernate SQLs
+#  jpa:
+#    show-sql: true
+#    properties:
+#      hibernate:
+#        format_sql: true
+#        generate_statistics: true
 
 security:
   jwt:

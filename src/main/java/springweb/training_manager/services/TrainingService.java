@@ -3,6 +3,7 @@ package springweb.training_manager.services;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -36,6 +37,7 @@ public class TrainingService {
      *
      * @param exercises list of <code>ExerciseTraining</code> from <code>TrainingWrite</code> object.
      *                  Can be used e.g. in <code>create(TrainingWrite toSave)</code> method.
+     *
      * @return prepared list with <code>ExerciseTraining</code> (founded in database or just created)
      */
     public List<Exercise> prepExercises(List<ExerciseTraining> exercises) {
@@ -132,6 +134,49 @@ public class TrainingService {
         return getAll(TrainingRead::new);
     }
 
+    /**
+     * More effective but less elegant than <code>getAll(Pageable page)</code> method.
+     *
+     * @param page request to get paged <code>TrainingRead</code>
+     *
+     * @return Paged list of <code>TrainingRead</code> objects.
+     *
+     * @see #getAll(Pageable page)
+     */
+    public Page<TrainingRead> getAllAlternative(Pageable page) {
+        page = PageSortService.validateSort(
+            Training.class,
+            page,
+            LoggerFactory.getLogger(TrainingService.class)
+        );
+
+        Page<Integer> allIds = repository.findAllIds(page);
+        if (allIds.getContent().isEmpty())
+            allIds = repository.findAllIds(
+                PageRequest.of(
+                    PageSortService.getPageNumber(allIds),
+                    allIds.getSize(),
+                    page.getSort()
+                )
+            );
+
+        List<TrainingRead> toReturn = repository.findAllByIdIn(allIds.getContent())
+            .stream().map(
+                TrainingRead::new
+            ).toList();
+
+        return new PageImpl<>(toReturn, page, allIds.getTotalElements());
+    }
+
+    /**
+     * Less effective than alternative approach of <code>getAllAlternative(Pageable page)</code> method.
+     *
+     * @param page request to get paged <code>TrainingRead</code>
+     *
+     * @return Paged list of <code>TrainingRead</code> objects.
+     *
+     * @see #getAllAlternative(Pageable page)
+     */
     public Page<TrainingRead> getAll(Pageable page) {
         page = PageSortService.validateSort(
             Training.class,

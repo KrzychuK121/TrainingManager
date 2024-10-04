@@ -9,13 +9,23 @@ import java.util.List;
 import java.util.Optional;
 
 public interface TrainingRepository {
+    Page<Integer> findAllIds(Pageable page);
+
+    List<Training> findAllByIdIn(List<Integer> ids);
 
     List<Training> findAll();
+
     Page<Training> findAll(Pageable pageable);
+
     Optional<Training> findById(Integer integer);
+
     Optional<Training> findByTraining(Training training);
+
     Training save(Training entity);
+
     boolean existsById(Integer integer);
+
     void deleteById(Integer integer);
+
     void delete(Training entity);
 }
