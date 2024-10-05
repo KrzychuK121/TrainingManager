@@ -9,8 +9,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 import springweb.training_manager.models.entities.Training;
+import springweb.training_manager.models.schemas.RoleSchema;
 import springweb.training_manager.models.viewmodels.training.TrainingRead;
 import springweb.training_manager.models.viewmodels.training.TrainingWrite;
 import springweb.training_manager.services.TrainingService;
@@ -18,6 +20,7 @@ import springweb.training_manager.services.TrainingService;
 import java.net.URI;
 
 @RestController
+@Secured({RoleSchema.ROLE_ADMIN, RoleSchema.ROLE_USER})
 @RequestMapping(
     value = "/api/training",
     produces = MediaType.APPLICATION_JSON_VALUE,
