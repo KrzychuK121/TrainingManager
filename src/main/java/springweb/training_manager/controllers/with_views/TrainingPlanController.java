@@ -1,5 +1,6 @@
 package springweb.training_manager.controllers.with_views;
 
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.access.annotation.Secured;
@@ -24,20 +25,13 @@ import springweb.training_manager.services.UserService;
 import java.util.List;
 import java.util.Map;
 
+@RequiredArgsConstructor
 @Controller
 @RequestMapping("/plans")
 public class TrainingPlanController {
     private final TrainingPlanService service;
     private final TrainingRoutineService routineService;
     private final Logger logger = LoggerFactory.getLogger(TrainingPlanController.class);
-
-    public TrainingPlanController(
-        final TrainingPlanService service,
-        final TrainingRoutineService routineService
-    ) {
-        this.service = service;
-        this.routineService = routineService;
-    }
 
     @Secured({RoleSchema.ROLE_ADMIN, RoleSchema.ROLE_USER})
     @GetMapping
