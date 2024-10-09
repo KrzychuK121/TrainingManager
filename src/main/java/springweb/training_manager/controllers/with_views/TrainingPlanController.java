@@ -35,7 +35,7 @@ public class TrainingPlanController {
 
     @Secured({RoleSchema.ROLE_ADMIN, RoleSchema.ROLE_USER})
     @GetMapping
-    public String getAll(Authentication auth, Model model){
+    public String getAll(Authentication auth, Model model) {
         var loggedUser = UserService.getUserByAuth(auth);
 
         List<TrainingRoutineReadIndex> plans = service.getAllByUser(loggedUser);
@@ -50,12 +50,12 @@ public class TrainingPlanController {
     public String getWeek(
         Authentication auth,
         Model model
-    ){
+    ) {
         String userId = UserService.getUserIdByAuth(auth);
         Map<Weekdays, TrainingPlan> plans = null;
         try {
-            plans = service.getUserActivePlans(userId);
-        } catch(IllegalStateException ex){
+            plans = service.getUserActivePlansMap(userId);
+        } catch (IllegalStateException ex) {
             model.addAttribute("noActiveRoutineMess", ex.getMessage());
         } finally {
             model.addAttribute("plans", plans);
@@ -67,10 +67,10 @@ public class TrainingPlanController {
     @GetMapping("/week/create")
     public String getWeekCreate(
         Model model
-    ){
+    ) {
         var weekdays = Weekdays.values();
         TrainingPlansWrite toWrite = new TrainingPlansWrite();
-        for(var weekday : weekdays)
+        for (var weekday : weekdays)
             toWrite.add(weekday);
 
         model.addAttribute("plansWrite", toWrite);
@@ -83,7 +83,7 @@ public class TrainingPlanController {
         @ModelAttribute("schedulesList") TrainingPlansWrite schedulesList,
         Authentication auth,
         RedirectAttributes attributes
-    ){
+    ) {
         // TODO: Test this action with acc: TestPlansCreate and pass as user
         try {
             List<TrainingPlan> created = service.createNewPlans(
@@ -93,7 +93,7 @@ public class TrainingPlanController {
 
             attributes.addFlashAttribute("messType", "success");
             attributes.addFlashAttribute("mess", "Stworzono nowy plan treningowy.");
-        } catch(IllegalStateException ex) {
+        } catch (IllegalStateException ex) {
             attributes.addFlashAttribute("messType", "danger");
             attributes.addFlashAttribute("mess", ex.getMessage());
         }
