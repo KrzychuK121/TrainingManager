@@ -10,12 +10,15 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import springweb.training_manager.models.entities.Training;
 import springweb.training_manager.models.schemas.RoleSchema;
+import springweb.training_manager.models.viewmodels.training.TrainingCreate;
 import springweb.training_manager.models.viewmodels.training.TrainingRead;
 import springweb.training_manager.models.viewmodels.training.TrainingWrite;
 import springweb.training_manager.services.TrainingService;
+import springweb.training_manager.services.UserService;
 
 import java.net.URI;
 
@@ -35,6 +38,15 @@ public class TrainingControllerAPI {
     @ResponseBody
     ResponseEntity<Page<TrainingRead>> getAll(@PageableDefault(size = 2) Pageable page) {
         return ResponseEntity.ok(service.getAllAlternative(page));
+    }
+
+    @GetMapping(value = {"/createModel", "/createModel/{id}"})
+    public ResponseEntity<TrainingCreate> getCreateModel(
+        @PathVariable(required = false) Integer id,
+        Authentication auth
+    ) {
+        var userId = UserService.getUserIdByAuth(auth);
+        return ResponseEntity.ok(service.getCreateModel(id, userId));
     }
 
     @PostMapping()

@@ -11,6 +11,7 @@ import springweb.training_manager.models.entities.Exercise;
 import springweb.training_manager.models.entities.Training;
 import springweb.training_manager.models.entities.User;
 import springweb.training_manager.models.viewmodels.exercise.ExerciseTraining;
+import springweb.training_manager.models.viewmodels.training.TrainingCreate;
 import springweb.training_manager.models.viewmodels.training.TrainingRead;
 import springweb.training_manager.models.viewmodels.training.TrainingWrite;
 import springweb.training_manager.repositories.for_controllers.ExerciseRepository;
@@ -229,6 +230,17 @@ public class TrainingService {
                 }
             ).collect(Collectors.toList());
         return usersTrainings;
+    }
+
+    public TrainingCreate getCreateModel(Integer id, String userId) {
+        var allExerciseTrainings = ExerciseTraining.toExerciseTrainingList(exerciseRepository.findAll());
+        if (id == null)
+            return new TrainingCreate(allExerciseTrainings);
+        try {
+            return new TrainingCreate(new TrainingRead(getById(id, userId)), allExerciseTrainings);
+        } catch (IllegalArgumentException ex) {
+            return new TrainingCreate(allExerciseTrainings);
+        }
     }
 
     public boolean existsById(int trainingId) {
