@@ -17,7 +17,6 @@ import springweb.training_manager.models.entities.Training;
 import springweb.training_manager.models.schemas.RoleSchema;
 import springweb.training_manager.models.viewmodels.training.TrainingCreate;
 import springweb.training_manager.models.viewmodels.training.TrainingRead;
-import springweb.training_manager.models.viewmodels.training.TrainingWrite;
 import springweb.training_manager.models.viewmodels.training.TrainingWriteAPI;
 import springweb.training_manager.services.TrainingService;
 import springweb.training_manager.services.UserService;
@@ -53,8 +52,15 @@ public class TrainingControllerAPI {
 
     @PostMapping()
     @ResponseBody
-    ResponseEntity<TrainingRead> create(@RequestBody @Valid TrainingWrite toCreate) {
-        Training created = service.create(toCreate, null);
+    ResponseEntity<?> create(
+        @RequestBody @Valid TrainingWriteAPI toCreate,
+        BindingResult result
+    ) {
+        var validationErrors = service.validateAndPrepareTraining(toCreate, result);
+        if (validationErrors != null)
+            return ResponseEntity.badRequest().body(validationErrors);
+
+        Training created = service.create(toCreate.getToSave(), null);
         var trainingRead = new TrainingRead(created);
         return ResponseEntity.created(
             URI.create("/api/training/" + created.getId())
