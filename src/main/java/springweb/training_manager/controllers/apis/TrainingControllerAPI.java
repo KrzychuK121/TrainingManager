@@ -11,12 +11,14 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import springweb.training_manager.models.entities.Training;
 import springweb.training_manager.models.schemas.RoleSchema;
 import springweb.training_manager.models.viewmodels.training.TrainingCreate;
 import springweb.training_manager.models.viewmodels.training.TrainingRead;
 import springweb.training_manager.models.viewmodels.training.TrainingWrite;
+import springweb.training_manager.models.viewmodels.training.TrainingWriteAPI;
 import springweb.training_manager.services.TrainingService;
 import springweb.training_manager.services.UserService;
 
@@ -59,5 +61,27 @@ public class TrainingControllerAPI {
         ).body(trainingRead);
     }
 
+    @PutMapping("/{id}")
+    @ResponseBody
+    public ResponseEntity<?> edit(
+        @RequestBody @Valid TrainingWriteAPI data,
+        BindingResult result,
+        @PathVariable int id,
+        Authentication auth
+    ) {
+        var userId = UserService.getUserIdByAuth(auth);
+        var validationErrors = service.validateAndPrepareTraining(data, result);
+        if (validationErrors != null)
+            return ResponseEntity.badRequest().body(validationErrors);
+        try {
+            var toEdit = data.getToSave();
+            service.edit(toEdit, id, userId);
+        } catch (IllegalArgumentException e) {
+            logger.error("Wystąpił wyjątek: " + e.getMessage());
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.noContent().build();
+    }
 
 }

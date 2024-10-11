@@ -7,6 +7,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.BindingResult;
 import springweb.training_manager.models.entities.Exercise;
 import springweb.training_manager.models.entities.Training;
 import springweb.training_manager.models.entities.User;
@@ -14,12 +15,15 @@ import springweb.training_manager.models.viewmodels.exercise.ExerciseTraining;
 import springweb.training_manager.models.viewmodels.training.TrainingCreate;
 import springweb.training_manager.models.viewmodels.training.TrainingRead;
 import springweb.training_manager.models.viewmodels.training.TrainingWrite;
+import springweb.training_manager.models.viewmodels.training.TrainingWriteAPI;
+import springweb.training_manager.models.viewmodels.validation.ValidationErrors;
 import springweb.training_manager.repositories.for_controllers.ExerciseRepository;
 import springweb.training_manager.repositories.for_controllers.TrainingRepository;
 import springweb.training_manager.repositories.for_controllers.UserRepository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -60,6 +64,39 @@ public class TrainingService {
             }
         );
         return exerciseToSave;
+    }
+
+    public void setExercisesById(TrainingWrite toSave, String[] exercisesIds) {
+        if (exercisesIds == null || exercisesIds.length == 0)
+            return;
+        List<ExerciseTraining> exercisesToSave = new ArrayList<>(exercisesIds.length);
+        for (String exerciseID : exercisesIds) {
+            if (exerciseID.isEmpty())
+                continue;
+            int id = Integer.parseInt(exerciseID);
+            Exercise found = exerciseRepository.findById(id).get();
+            ExerciseTraining viewModel = new ExerciseTraining(found);
+            exercisesToSave.add(viewModel);
+        }
+
+        List<ExerciseTraining> currExercises = toSave.getExercises();
+        currExercises.addAll(exercisesToSave);
+        toSave.setExercises(currExercises);
+    }
+
+    public Map<String, List<String>> validateAndPrepareTraining(
+        TrainingWriteAPI data,
+        BindingResult result
+    ) {
+        var toSave = data.getToSave();
+
+        if (result.hasErrors()) {
+            var validation = ValidationErrors.createFrom(result, "toSave.");
+            return validation.getErrors();
+        }
+
+        setExercisesById(toSave, data.getSelectedExercises());
+        return null;
     }
 
     public Training create(TrainingWrite toSave, String userId) {

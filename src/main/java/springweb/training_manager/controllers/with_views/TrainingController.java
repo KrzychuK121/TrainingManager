@@ -1,6 +1,7 @@
 package springweb.training_manager.controllers.with_views;
 
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -15,7 +16,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import springweb.training_manager.models.entities.Exercise;
 import springweb.training_manager.models.entities.Training;
 import springweb.training_manager.models.schemas.RoleSchema;
 import springweb.training_manager.models.viewmodels.exercise.ExerciseTraining;
@@ -26,10 +26,10 @@ import springweb.training_manager.services.PageSortService;
 import springweb.training_manager.services.TrainingService;
 import springweb.training_manager.services.UserService;
 
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
+@RequiredArgsConstructor
 @Controller
 @RequestMapping("/training")
 public class TrainingController {
@@ -37,47 +37,41 @@ public class TrainingController {
     private final ExerciseRepository exerciseRepo;
     private static final Logger logger = LoggerFactory.getLogger(TrainingController.class);
 
-    public TrainingController(
-        final TrainingService service,
-        final ExerciseRepository exerciseRepo
-    ) {
-        this.service = service;
-        this.exerciseRepo = exerciseRepo;
-    }
-
     @ModelAttribute("title")
-    String getTitle(){ return "TrainingM - Treningi"; }
+    String getTitle() {
+        return "TrainingM - Treningi";
+    }
 
     List<TrainingRead> getTrainings(
         Authentication auth,
         @PageableDefault(size = 2) Pageable page,
         Model model
-    ){
+    ) {
         String userId = UserService.getUserIdByAuth(auth);
         Page<TrainingRead> pagedList = null;
-        if(userId == null) {
+        if (userId == null) {
             pagedList = service.getAll(page);
             model.addAttribute("pages", pagedList);
         }
 
         return userId != null ?
-        service.getByUserId(userId) :
-        pagedList.getContent();
+            service.getByUserId(userId) :
+            pagedList.getContent();
     }
 
-    private void prepExerciseSelect(Model model){
-        prepExerciseSelect(model, new  String[]{});
+    private void prepExerciseSelect(Model model) {
+        prepExerciseSelect(model, new String[]{});
     }
 
-    private void prepExerciseSelect(Model model, String[] selected){
+    private void prepExerciseSelect(Model model, String[] selected) {
         List<ExerciseTraining> exerciseSelectList = ExerciseTraining.toExerciseTrainingList(exerciseRepo.findAll());
-        if(selected != null && selected.length > exerciseSelectList.size())
+        if (selected != null && selected.length > exerciseSelectList.size())
             throw new IllegalStateException("Lista zaznaczonych elementów nie może być mniejsza niż lista wszystkich elementów.");
         model.addAttribute("allExercises", exerciseSelectList);
-        if(selected != null && selected.length != 0){
+        if (selected != null && selected.length != 0) {
             List<Integer> selectedInt = new ArrayList<>();
-            for(String sel : selected){
-                if(sel.isBlank())
+            for (String sel : selected) {
+                if (sel.isBlank())
                     continue;
                 selectedInt.add(Integer.parseInt(sel));
             }
@@ -91,7 +85,7 @@ public class TrainingController {
         value = "/create",
         produces = MediaType.TEXT_HTML_VALUE
     )
-    String createView(Model model){
+    String createView(Model model) {
         logger.info("Training create get");
         model.addAttribute("training", new TrainingWrite());
         model.addAttribute("action", "create");
@@ -110,7 +104,7 @@ public class TrainingController {
         @ModelAttribute("action") String action,
         Model model,
         String[] exerciseIds
-    ){
+    ) {
         logger.info("Training create addExercise with action: " + action);
         prepExerciseSelect(model, exerciseIds);
         current.getExercises().add(new ExerciseTraining());
@@ -129,14 +123,14 @@ public class TrainingController {
         Model model,
         Authentication auth,
         String[] exerciseIds
-    ){
-        if(result.hasErrors()){
+    ) {
+        if (result.hasErrors()) {
             model.addAttribute("action", "create");
             prepExerciseSelect(model, exerciseIds);
             return "training/save";
         }
 
-        setExercisesById(toSave, exerciseIds);
+        service.setExercisesById(toSave, exerciseIds);
 
         service.create(toSave, UserService.getUserIdByAuth(auth));
         prepExerciseSelect(model);
@@ -147,24 +141,6 @@ public class TrainingController {
         return "training/save";
     }
 
-    private void setExercisesById(TrainingWrite toSave, String[] exercisesIds) {
-        if(exercisesIds == null || exercisesIds.length == 0)
-            return;
-        List<ExerciseTraining> exercisesToSave = new ArrayList<>(exercisesIds.length);
-        for(String exerciseID : exercisesIds){
-            if(exerciseID.isEmpty())
-                continue;
-            int id = Integer.parseInt(exerciseID);
-            Exercise found = exerciseRepo.findById(id).get();
-            ExerciseTraining viewmodel = new ExerciseTraining(found);
-            exercisesToSave.add(viewmodel);
-        }
-
-        List<ExerciseTraining> currExercises = toSave.getExercises();
-        currExercises.addAll(exercisesToSave);
-        toSave.setExercises(currExercises);
-    }
-
     @Secured({RoleSchema.ROLE_ADMIN, RoleSchema.ROLE_USER})
     @GetMapping(
         produces = MediaType.TEXT_HTML_VALUE
@@ -173,7 +149,7 @@ public class TrainingController {
         Model model,
         Authentication auth,
         @PageableDefault(size = 2) Pageable page
-    ){
+    ) {
         model.addAttribute("trainings", getTrainings(auth, page, model));
         PageSortService.setSortModels(page, model, "id");
         return "training/index";
@@ -188,13 +164,13 @@ public class TrainingController {
     ResponseEntity<TrainingRead> getById(
         @PathVariable int id,
         Authentication auth
-    ){
+    ) {
         Training found = null;
         try {
             found = service.getById(id, UserService.getUserIdByAuth(auth));
-        } catch(IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             logger.error("Wystąpił wyjątek: " + e.getMessage());
-            if(e.getMessage().contains("Nie masz dostępu"))
+            if (e.getMessage().contains("Nie masz dostępu"))
                 return new ResponseEntity(e.getMessage(), HttpStatus.UNAUTHORIZED);
             return ResponseEntity.notFound().build();
         }
@@ -202,11 +178,11 @@ public class TrainingController {
     }
 
     @GetMapping(
-        value ="/api/users/{userId}",
+        value = "/api/users/{userId}",
         produces = MediaType.APPLICATION_JSON_VALUE
     )
     @ResponseBody
-    ResponseEntity<List<TrainingRead>> getByUserId(@PathVariable String userId){
+    ResponseEntity<List<TrainingRead>> getByUserId(@PathVariable String userId) {
         List<TrainingRead> usersTrainings = service.getByUserId(userId);
         return ResponseEntity.ok(usersTrainings);
     }
@@ -221,11 +197,11 @@ public class TrainingController {
         Model model,
         Authentication auth,
         @PageableDefault(size = 2) Pageable page
-    ){
+    ) {
         Training found = null;
         try {
             found = service.getById(id, UserService.getUserIdByAuth(auth));
-        } catch(IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             logger.error("Wystąpił wyjątek: " + e.getMessage());
             model.addAttribute("messType", "danger");
             model.addAttribute("mess", e.getMessage());
@@ -233,7 +209,7 @@ public class TrainingController {
             return "training/index";
         }
 
-        if(found.getExercises().isEmpty()){
+        if (found.getExercises().isEmpty()) {
             logger.warn("Wystąpił problem: brak ćwiczeń");
             model.addAttribute("messType", "danger");
             model.addAttribute("mess", "Wybierz trening zawierający ćwiczenia!");
@@ -245,25 +221,6 @@ public class TrainingController {
         return "training/train";
     }
 
-    @PutMapping(
-        value = "/api/{id}",
-        produces = MediaType.APPLICATION_JSON_VALUE,
-        consumes = MediaType.APPLICATION_JSON_VALUE
-    )
-    @ResponseBody
-    ResponseEntity<?> edit(
-        @RequestBody @Valid TrainingWrite toEdit,
-        @PathVariable int id
-    ){
-        try {
-            service.edit(toEdit, id, null);
-        } catch(IllegalArgumentException e) {
-            logger.error("Wystąpił wyjątek: " + e.getMessage());
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.noContent().build();
-    }
-
     @Secured({RoleSchema.ROLE_ADMIN, RoleSchema.ROLE_USER})
     @GetMapping("/edit/{id}")
     public String editView(
@@ -271,11 +228,11 @@ public class TrainingController {
         Model model,
         Authentication auth,
         @PageableDefault(size = 2) Pageable page
-    ){
+    ) {
         TrainingRead toEdit = null;
         try {
             toEdit = new TrainingRead(service.getById(id, UserService.getUserIdByAuth(auth)));
-        } catch(IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             logger.error("Wystąpił wyjątek: " + e.getMessage());
             model.addAttribute("messType", "danger");
             model.addAttribute("mess", "Nie można edytować. " + e.getMessage());
@@ -296,7 +253,7 @@ public class TrainingController {
     private static String[] getToEditExerciseIds(TrainingRead toEdit) {
         List<ExerciseTraining> toEditList = toEdit.getExercises();
         String[] selected = new String[toEditList.size()];
-        for(int i = 0; i < toEditList.size(); i++){
+        for (int i = 0; i < toEditList.size(); i++) {
             selected[i] = toEditList.get(i).getId() + "";
         }
         return selected;
@@ -315,18 +272,18 @@ public class TrainingController {
         Authentication auth,
         @PageableDefault(size = 2) Pageable page,
         String[] exerciseIds
-    ){
-        if(result.hasErrors()){
+    ) {
+        if (result.hasErrors()) {
             model.addAttribute("action", "edit/" + id);
             prepExerciseSelect(model, exerciseIds);
             return "training/save";
         }
 
-        setExercisesById(toEdit, exerciseIds);
+        service.setExercisesById(toEdit, exerciseIds);
 
         try {
             service.edit(toEdit, id, UserService.getUserIdByAuth(auth));
-        } catch(IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             logger.error("Wystąpił wyjątek: " + e.getMessage());
             model.addAttribute("message", "Wystąpił problem przy edycji. " + e.getMessage());
         }
@@ -343,10 +300,10 @@ public class TrainingController {
         produces = MediaType.APPLICATION_JSON_VALUE
     )
     @ResponseBody
-    public ResponseEntity<?> delete(@PathVariable int id){
+    public ResponseEntity<?> delete(@PathVariable int id) {
         try {
             service.delete(id, null);
-        } catch(IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             logger.error("Wystąpił wyjątek: " + e.getMessage());
             return ResponseEntity.notFound().build();
         }
@@ -364,10 +321,10 @@ public class TrainingController {
         Model model,
         Authentication auth,
         @PageableDefault(size = 2) Pageable page
-    ){
+    ) {
         try {
             service.delete(id, UserService.getUserIdByAuth(auth));
-        } catch(IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             logger.error("Wystąpił wyjątek: " + e.getMessage());
             model.addAttribute("messType", "danger");
             model.addAttribute("mess", "Nie można usunąć. " + e.getMessage());
