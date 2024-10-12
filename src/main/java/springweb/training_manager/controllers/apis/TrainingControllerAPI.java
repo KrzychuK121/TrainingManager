@@ -55,13 +55,15 @@ public class TrainingControllerAPI {
     @ResponseBody
     ResponseEntity<?> create(
         @RequestBody @Valid TrainingWriteAPI toCreate,
-        BindingResult result
+        BindingResult result,
+        Authentication auth
     ) {
         var validationErrors = service.validateAndPrepareTraining(toCreate, result);
         if (validationErrors != null)
             return ResponseEntity.badRequest().body(validationErrors);
 
-        Training created = service.create(toCreate.getToSave(), null);
+        var userId = UserService.getUserIdByAuth(auth);
+        Training created = service.create(toCreate.getToSave(), userId);
         var trainingRead = new TrainingRead(created);
         return ResponseEntity.created(
             URI.create("/api/training/" + created.getId())
