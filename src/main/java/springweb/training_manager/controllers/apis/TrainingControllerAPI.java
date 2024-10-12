@@ -13,6 +13,7 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import springweb.training_manager.exceptions.NotOwnedByUserException;
 import springweb.training_manager.models.entities.Training;
 import springweb.training_manager.models.schemas.RoleSchema;
 import springweb.training_manager.models.viewmodels.training.TrainingCreate;
@@ -90,4 +91,23 @@ public class TrainingControllerAPI {
         return ResponseEntity.noContent().build();
     }
 
+    @DeleteMapping("/{id}")
+    @ResponseBody
+    public ResponseEntity<?> delete(
+        @PathVariable int id,
+        Authentication auth
+    ) {
+        var userId = UserService.getUserIdByAuth(auth);
+        try {
+            service.delete(id, userId);
+        } catch (NotOwnedByUserException e) {
+            return ResponseEntity.badRequest().build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.notFound().build();
+        } catch (Exception ex) {
+            logger.error("Wystąpił nieoczekiwany wyjątek: {}", ex.getMessage(), ex);
+        }
+
+        return ResponseEntity.noContent().build();
+    }
 }

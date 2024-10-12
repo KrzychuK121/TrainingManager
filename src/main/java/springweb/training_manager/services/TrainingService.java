@@ -8,6 +8,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
+import springweb.training_manager.exceptions.NotOwnedByUserException;
 import springweb.training_manager.models.entities.Exercise;
 import springweb.training_manager.models.entities.Training;
 import springweb.training_manager.models.entities.User;
@@ -109,7 +110,7 @@ public class TrainingService {
         if (userId != null) {
             User loggedUser = userRepository.findById(userId)
                 .orElseThrow(
-                    () -> new IllegalArgumentException("Nie istnieje użytkownik o takim numerze ID.")
+                    () -> new NotOwnedByUserException("Nie istnieje użytkownik o takim numerze ID.")
                 );
             Set<Training> oldUsersTrainings = loggedUser.getTrainings();
             oldUsersTrainings.add(created);
@@ -252,14 +253,14 @@ public class TrainingService {
         )
             return found;
         else
-            throw new IllegalArgumentException("Nie masz dostępu do tego treningu.");
+            throw new NotOwnedByUserException("Nie masz dostępu do tego treningu.");
     }
 
     // TODO: Use it in controller when ROLE_USER registered, otherwise normal getAll
     public List<TrainingRead> getByUserId(String userId) {
         List<TrainingRead> usersTrainings = userRepository.findById(userId)
             .orElseThrow(
-                () -> new IllegalArgumentException("Użytkownik o takim numerze id nie istnieje.")
+                () -> new NotOwnedByUserException("Użytkownik o takim numerze id nie istnieje.")
             ).getTrainings().stream().map(
                 training -> {
                     TrainingRead read = new TrainingRead(training);

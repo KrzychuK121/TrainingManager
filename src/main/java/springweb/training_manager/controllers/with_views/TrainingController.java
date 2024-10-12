@@ -294,23 +294,6 @@ public class TrainingController {
         return "training/index";
     }
 
-
-    @DeleteMapping(
-        value = "/api/{id}",
-        produces = MediaType.APPLICATION_JSON_VALUE
-    )
-    @ResponseBody
-    public ResponseEntity<?> delete(@PathVariable int id) {
-        try {
-            service.delete(id, null);
-        } catch (IllegalArgumentException e) {
-            logger.error("Wystąpił wyjątek: " + e.getMessage());
-            return ResponseEntity.notFound().build();
-        }
-
-        return ResponseEntity.noContent().build();
-    }
-
     @Secured(RoleSchema.ROLE_ADMIN)
     @GetMapping(
         value = "/delete/{id}",
