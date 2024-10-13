@@ -6,11 +6,11 @@ It's a web application using Spring Boot v.3.2.2 technology with MVC, REST API, 
 ## Main technologies
 * **Backend:**
   * **Spring Boot**
-  * **Security** (accounts)
+  * **Spring Security - Tokens** (accounts)
   
 * **Database:**
   * **PostgreSQL** (from docker compose)
-  * **Jpa Repository** (Hibernate)
+  * **Spring Data - Jpa Repository** (Hibernate)
   * **Flyway migrations** (SQL and Java  files)
 
 * **Frontend:**
@@ -48,7 +48,7 @@ There are few default accounts. These accounts allows you to test full potential
 **password:** UserP@ssw0rd<br>
 
 ## Plan for application:
-* ~~Adding forms responsible for creating:~~
+* ~~Adding API + GUI for CRUD operations of:~~
     - ~~exercises~~
     - ~~trainings~~
     - ~~training schedule~~
@@ -61,11 +61,18 @@ There are few default accounts. These accounts allows you to test full potential
   - history:
     - weekly
     - monthly
-* Filtering training plans by:
-  - difficulty
-  - practising body part
-* ~~PostgreSQL database~~
-* React and ~~Thymeleaf~~ full responsible frontend
+* Implementing filtering for:
+  - trainings by:
+    - owner (user's owned)
+  - exercises by:
+    - owner (user's owned)
+  - training plans by:
+    - owner (user's owned)
+    - difficulty
+    - practising body part
+* ~~Moving from H2 Database to PostgreSQL database~~:
+  - ~~changing migrations dialect for PostgreSQL~~
+  - ~~setting up database environment (docker)~~
 * BMI and BMR calculators
 * Mobile version of the app with functionality:
   - current week infomration with "do todays training" option
