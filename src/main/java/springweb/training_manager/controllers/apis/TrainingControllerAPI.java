@@ -23,6 +23,7 @@ import springweb.training_manager.services.TrainingService;
 import springweb.training_manager.services.UserService;
 
 import java.net.URI;
+import java.util.List;
 
 @RestController
 @Secured({RoleSchema.ROLE_ADMIN, RoleSchema.ROLE_USER})
@@ -39,7 +40,13 @@ public class TrainingControllerAPI {
     @GetMapping()
     @ResponseBody
     ResponseEntity<Page<TrainingRead>> getAll(@PageableDefault(size = 2) Pageable page) {
-        return ResponseEntity.ok(service.getAllAlternative(page));
+        return ResponseEntity.ok(service.getAllPagedAlternative(page));
+    }
+
+    @GetMapping("/all")
+    @ResponseBody
+    ResponseEntity<List<TrainingRead>> getAll() {
+        return ResponseEntity.ok(service.getAll());
     }
 
     @GetMapping(value = {"/createModel", "/createModel/{id}"})
