@@ -40,6 +40,7 @@ public class ExerciseService {
      *
      * @param trainings list of <code>TrainingExercise</code> from <code>ExerciseWrite</code> object.
      *                  Can be used e.g. in <code>create(ExerciseWrite toSave)</code> method.
+     *
      * @return prepared list with <code>TrainingExercise</code> (founded in database or just created)
      */
     private List<Training> prepTrainings(List<TrainingExercise> trainings) {

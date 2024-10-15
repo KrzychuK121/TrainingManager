@@ -180,9 +180,9 @@ public class TrainingService {
      *
      * @return Paged list of <code>TrainingRead</code> objects.
      *
-     * @see #getAll(Pageable page)
+     * @see #getAllPaged(Pageable page)
      */
-    public Page<TrainingRead> getAllAlternative(Pageable page) {
+    public Page<TrainingRead> getAllPagedAlternative(Pageable page) {
         page = PageSortService.validateSort(
             Training.class,
             page,
@@ -214,9 +214,9 @@ public class TrainingService {
      *
      * @return Paged list of <code>TrainingRead</code> objects.
      *
-     * @see #getAllAlternative(Pageable page)
+     * @see #getAllPagedAlternative(Pageable page)
      */
-    public Page<TrainingRead> getAll(Pageable page) {
+    public Page<TrainingRead> getAllPaged(Pageable page) {
         page = PageSortService.validateSort(
             Training.class,
             page,
