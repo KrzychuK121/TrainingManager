@@ -1,5 +1,6 @@
 package springweb.training_manager.services;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import springweb.training_manager.models.entities.*;
 import springweb.training_manager.models.schemas.TrainingPlanId;
@@ -10,14 +11,13 @@ import springweb.training_manager.models.viewmodels.training_schedule.TrainingSc
 import springweb.training_manager.repositories.for_controllers.TrainingPlanRepository;
 import springweb.training_manager.repositories.for_controllers.TrainingScheduleRepository;
 
-import java.time.DateTimeException;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@RequiredArgsConstructor
 @Service
 public class TrainingPlanService {
     private final TrainingPlanRepository repository;
@@ -25,20 +25,7 @@ public class TrainingPlanService {
     private final TrainingRoutineService routineService;
     private final TrainingService trainingService;
 
-    public TrainingPlanService(
-        final TrainingPlanRepository repository,
-        final TrainingScheduleRepository scheduleRepository,
-        final TrainingRoutineService routineService,
-        final TrainingService trainingService
-    ) {
-        this.repository = repository;
-        this.scheduleRepository = scheduleRepository;
-        this.routineService = routineService;
-        this.trainingService = trainingService;
-    }
-
-
-    private Map<Integer, TrainingRoutineReadIndex> getMapFromPlans(List<TrainingPlan> plans) {
+    public Map<Integer, TrainingRoutineReadIndex> getMapFromPlans(List<TrainingPlan> plans) {
         Map<Integer, TrainingRoutineReadIndex> toReturn = new HashMap<>();
         plans.forEach(
             trainingPlan -> {
@@ -98,19 +85,29 @@ public class TrainingPlanService {
         );
     }
 
-    private TrainingSchedule prepTrainingSchedule(TrainingPlan plan) {
-        return NoDuplicationService.prepEntity(
+    private TrainingSchedule prepTrainingSchedule(TrainingPlan plan, User owner) {
+        TrainingSchedule prepared = NoDuplicationService.prepEntity(
             plan.getTrainingSchedule(),
             scheduleRepository,
             scheduleRepository::save
         );
+
+        if (prepared.getTraining() == null)
+            prepared.setTraining(
+                trainingService.getById(
+                    prepared.getTrainingId(),
+                    owner.getId()
+                )
+            );
+
+        return prepared;
     }
 
-    public List<TrainingPlan> createNewPlans(List<TrainingPlan> plans) {
+    public List<TrainingPlan> createNewPlans(List<TrainingPlan> plans, User owner) {
         List<TrainingPlan> created = new ArrayList<>(plans.size());
         plans.forEach(
             plan -> {
-                TrainingSchedule prepared = prepTrainingSchedule(plan);
+                TrainingSchedule prepared = prepTrainingSchedule(plan, owner);
                 int scheduleId = prepared.getId();
 
                 TrainingPlanId planId = new TrainingPlanId(
@@ -137,29 +134,19 @@ public class TrainingPlanService {
 
         for (var weekday : weekdays) {
             TrainingPlanWrite planWrite = plansWrite.getPlanWriteMap().get(weekday);
-            var trainingId = planWrite.getTrainingId();
+            if (planWrite == null)
+                continue;
 
+            var trainingId = planWrite.getTrainingId();
             if (trainingId == 0 || !trainingService.existsById(trainingId))
                 continue;
 
-            LocalTime trainingTime = null;
-            if (planWrite.getTrainingTime() != null && !planWrite.getTrainingTime().isEmpty()) {
-                String[] time = planWrite.getTrainingTime().split(":");
-                try {
-                    trainingTime = LocalTime.of(
-                        Integer.parseInt(time[0]),
-                        Integer.parseInt(time[1]),
-                        0
-                    );
-                } catch (DateTimeException ignored) {
-                }
-            }
-
+            var timeToSave = TimeService.parseTime(planWrite.getTrainingTime());
 
             var toAdd = new TrainingPlan(
                 routine,
                 new TrainingSchedule(trainingId, weekday),
-                trainingTime
+                timeToSave
             );
 
             plans.add(toAdd);
@@ -170,7 +157,7 @@ public class TrainingPlanService {
             throw new IllegalStateException("Nie utworzono planu ponieważ nie przypisano żadnego treningu.");
         }
 
-        return createNewPlans(plans);
+        return createNewPlans(plans, owner);
     }
 
 
