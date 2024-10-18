@@ -7,9 +7,26 @@ import java.util.Optional;
 
 public interface TrainingRoutineRepository {
     List<TrainingRoutine> findAll();
+
     TrainingRoutine save(TrainingRoutine entity);
+
     Optional<TrainingRoutine> findById(Integer integer);
-    boolean existsById(Integer integer);
-    void delete(TrainingRoutine entity);
+
     Optional<TrainingRoutine> findByOwnerIdAndActiveTrue(String ownerId);
+
+    boolean existsById(Integer integer);
+
+    boolean existsByIdAndOwnerId(int id, String ownerId);
+
+    void delete(TrainingRoutine entity);
+
+    /**
+     * This method (stored procedure) is responsible for deleting all training plans that
+     * contains provided <code>id</code>, training routine row itself
+     * and all training schedules which are no longer mentioned in
+     * training plan table (last row that used the schedule was removed right now).
+     *
+     * @param id item to delete
+     */
+    void deleteById(Integer id);
 }
