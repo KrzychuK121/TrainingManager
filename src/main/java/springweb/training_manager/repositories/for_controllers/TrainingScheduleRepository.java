@@ -7,10 +7,13 @@ import java.util.Optional;
 
 public interface TrainingScheduleRepository extends DuplicationRepository<TrainingSchedule> {
     List<TrainingSchedule> findAll();
+
     TrainingSchedule save(TrainingSchedule entity);
+
     Optional<TrainingSchedule> findById(Integer id);
+
     boolean existsById(Integer id);
-    void delete(TrainingSchedule entity);
+
     @Override
     Optional<TrainingSchedule> findDuplication(TrainingSchedule entity);
 }
