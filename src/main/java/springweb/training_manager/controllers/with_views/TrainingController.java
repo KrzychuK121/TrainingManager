@@ -107,7 +107,7 @@ public class TrainingController {
     ) {
         logger.info("Training create addExercise with action: " + action);
         prepExerciseSelect(model, exerciseIds);
-        current.getExercises().add(new ExerciseTraining());
+        current.getExercises().add(new ExerciseTraining("", ""));
         return "training/save";
     }
 

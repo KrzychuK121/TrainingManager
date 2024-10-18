@@ -1,5 +1,6 @@
 package springweb.training_manager.models.viewmodels.exercise;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import springweb.training_manager.models.entities.BodyPart;
 import springweb.training_manager.models.entities.Difficulty;
@@ -11,6 +12,7 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
+@AllArgsConstructor
 @Getter
 public class ExerciseTraining extends ExerciseSchema implements Castable<Exercise> {
     private final String difficultyDesc;
