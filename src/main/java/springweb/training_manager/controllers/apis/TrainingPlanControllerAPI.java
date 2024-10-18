@@ -1,5 +1,6 @@
 package springweb.training_manager.controllers.apis;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -7,18 +8,19 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
 import springweb.training_manager.models.entities.TrainingPlan;
 import springweb.training_manager.models.schemas.RoleSchema;
 import springweb.training_manager.models.viewmodels.training_plan.TrainingPlansRead;
+import springweb.training_manager.models.viewmodels.training_plan.TrainingPlansWrite;
 import springweb.training_manager.models.viewmodels.training_routine.TrainingRoutineReadIndex;
 import springweb.training_manager.models.viewmodels.training_schedule.TrainingScheduleRead;
 import springweb.training_manager.services.TrainingPlanService;
 import springweb.training_manager.services.TrainingRoutineService;
 import springweb.training_manager.services.UserService;
 
+import java.net.URI;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -65,6 +67,38 @@ public class TrainingPlanControllerAPI {
             );
         } catch (IllegalStateException ex) {
             return ResponseEntity.notFound().build();
+        }
+    }
+
+    @GetMapping("/id")
+    public ResponseEntity<TrainingPlansRead> getById(
+        @PathVariable int id,
+        Authentication auth
+    ) {
+        var loggedUser = UserService.getUserByAuth(auth);
+        List<TrainingRoutineReadIndex> plans = service.getAllByUser(loggedUser);
+        return ResponseEntity.ok(
+            new TrainingPlansRead(plans)
+        );
+    }
+
+    @PostMapping
+    public ResponseEntity<?> create(
+        @RequestBody @Valid TrainingPlansWrite schedulesList,
+        BindingResult result,
+        Authentication auth
+    ) {
+        try {
+            List<TrainingPlan> created = service.createNewPlans(
+                schedulesList,
+                UserService.getUserByAuth(auth)
+            );
+
+            return ResponseEntity.created(
+                URI.create("/api/plans/" + created.get(0).getTrainingRoutine().getId())
+            ).body(service.getMapFromPlans(created));
+        } catch (IllegalStateException ex) {
+            return ResponseEntity.badRequest().build();
         }
     }
 }
