@@ -70,6 +70,6 @@ public class TrainingRoutineService {
             );
 
         if (ownerId == null || existsByIdAndOwnedBy(id, ownerId))
-            repository.deleteById(id);
+            repository.deleteTR(id);
     }
 }

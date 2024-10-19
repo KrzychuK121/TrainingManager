@@ -28,5 +28,5 @@ public interface TrainingRoutineRepository {
      *
      * @param id item to delete
      */
-    void deleteById(Integer id);
+    void deleteTR(Integer id);
 }

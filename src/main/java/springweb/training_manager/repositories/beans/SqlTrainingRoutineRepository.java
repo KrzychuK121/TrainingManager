@@ -21,5 +21,5 @@ interface SqlTrainingRoutineRepository
 
     @Override
     @Procedure("delete_training_routine")
-    void deleteById(Integer id);
+    void deleteTR(Integer id);
 }
