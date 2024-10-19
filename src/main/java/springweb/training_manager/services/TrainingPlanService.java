@@ -35,6 +35,7 @@ public class TrainingPlanService {
                     toReturn.put(
                         routineId,
                         new TrainingRoutineReadIndex(
+                            routineId,
                             routine.isActive()
                         )
                     );

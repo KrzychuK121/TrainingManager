@@ -9,10 +9,15 @@ import java.util.Map;
 
 @Getter
 public class TrainingRoutineReadIndex {
+    private final int id;
     private final boolean active;
     private final Map<Weekdays, TrainingScheduleRead> schedules = new HashMap<>();
 
-    public TrainingRoutineReadIndex(boolean active) {
+    public TrainingRoutineReadIndex(
+        int id,
+        boolean active
+    ) {
+        this.id = id;
         this.active = active;
     }
 

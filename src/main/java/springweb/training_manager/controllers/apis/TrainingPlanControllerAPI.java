@@ -47,10 +47,12 @@ public class TrainingPlanControllerAPI {
 
     @GetMapping("/week")
     public ResponseEntity<TrainingPlansRead> getWeek(Authentication auth) {
+        // TODO: Extract it to service
         String userId = UserService.getUserIdByAuth(auth);
         try {
             List<TrainingPlan> activePlans = service.getUserActivePlans(userId);
-            var readModel = new TrainingRoutineReadIndex(true);
+            var routineId = activePlans.get(0).getTrainingRoutineId();
+            var readModel = new TrainingRoutineReadIndex(routineId, true);
             activePlans.forEach(
                 trainingPlan -> readModel.putSchedule(
                     trainingPlan.getTrainingSchedule().getWeekday(),
