@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
@@ -47,6 +48,24 @@ public class TrainingControllerAPI {
     @ResponseBody
     ResponseEntity<List<TrainingRead>> getAll() {
         return ResponseEntity.ok(service.getAll());
+    }
+
+    @GetMapping("/{id}")
+    @ResponseBody
+    ResponseEntity<TrainingRead> getById(
+        @PathVariable int id,
+        Authentication auth
+    ) {
+        Training found = null;
+        try {
+            found = service.getById(id, UserService.getUserIdByAuth(auth));
+        } catch (IllegalArgumentException e) {
+            logger.error("Wystąpił wyjątek: {}", e.getMessage());
+            if (e.getMessage().contains("Nie masz dostępu"))
+                return new ResponseEntity(e.getMessage(), HttpStatus.FORBIDDEN);
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(new TrainingRead(found));
     }
 
     @GetMapping(value = {"/createModel", "/createModel/{id}"})
