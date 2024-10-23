@@ -33,9 +33,9 @@ Trening:
 -------------------
 */
 
-function StartBlock(obj){
+function StartBlock(obj) {
     //Rozwinięcie listy i ustawienie koloru guzika (nagłówka listy) na kolor żółty, znak, że teraz robimy ten trening
-    if(obj.trainingNumber < obj.secExcTab.length){
+    if (obj.trainingNumber < obj.secExcTab.length) {
         let currExercise = obj.secExcTab[obj.trainingNumber];
         currExercise.tempRounds--;
 
@@ -46,44 +46,44 @@ function StartBlock(obj){
         //ustawiamy panel kontrolny w zależności od typu treningu, który teraz będzie się wykonywać
         document.getElementById("buttons").innerHTML = currExercise.addOptions();
 
-        switch(currExercise.mode) {
+        switch (currExercise.mode) {
             case 0: //timer
                 document.getElementById("opt1").onclick = function () {
                     obj.pauseOrResume();
                 };
-                document.getElementById("opt2").onclick = function(){
+                document.getElementById("opt2").onclick = function () {
                     obj.stop();
                 }
-                
+
                 obj.repeatExc();
                 break;
             case 1: //amount
-                document.getElementById("opt1").onclick = function() {
+                document.getElementById("opt1").onclick = function () {
                     obj.repeatExc();
                 }
                 break;
         }
-        
+
         document.getElementById("opt3").onclick = function () {
             obj.skip();
         }
-    } else{
+    } else {
         document.getElementById("buttons").innerHTML = '<button class="col-md-6 opt" id="opt0">START</button>';
         //czyszczenie guzików
         document.getElementById("opt0").onclick = (
-            async function(){
+            async function () {
                 await DoTraining(obj.trainingId);
             }
         );
         document.getElementById("opt1").onclick = null;
         document.getElementById("opt2").onclick = null;
         document.getElementById("opt3").onclick = null;
-        
+
     }
 }
 
 
-async function DoTraining(trainingId){
+async function DoTraining(trainingId) {
     const train = new Training(trainingId, 1);
     train.init().then(
         () => {
@@ -108,22 +108,29 @@ class Training {
 
     timer = 0;
 
-    constructor(trainingId, trainingNumber){
+    constructor(trainingId, trainingNumber) {
         this.trainingNumber = trainingNumber;
         this.trainingId = trainingId;
     }
 
-    async init(){
+    async init() {
         this.secExcTab = await this.getSecExcTab(this.trainingId);
     }
 
-    async getSecExcTab(trainingId){
+    async getSecExcTab(trainingId) {
         const secExcTab = [
             new Excersise("", "", 0, 0, 0, 0)
         ]
 
-        const response = await fetch(`/api/training/${trainingId}`);
-        if(!response.ok)
+        const response = await fetch(
+            `/api/training/${trainingId}`,
+            {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            }
+        );
+        if (!response.ok)
             throw new Error("Coś poszło nie tak!");
 
         const training = await response.json();
@@ -132,18 +139,18 @@ class Training {
         training.exercises.forEach(
             exercise => {
                 let howManyReps = [0, 0];
-                if(exercise.repetition === 0){
+                if (exercise.repetition === 0) {
                     const date = new Date('1970-01-01T' + exercise.time);
                     howManyReps[0] = date.getMinutes();
                     howManyReps[1] = date.getSeconds();
-                }else
+                } else
                     howManyReps[0] = exercise.repetition;
 
                 secExcTab.push(
                     new Excersise(
                         exercise.name,
                         exercise.description,
-                        exercise.repetition === 0  ? 0 : 1,
+                        exercise.repetition === 0 ? 0 : 1,
                         exercise.rounds,
                         howManyReps,
                         ++counter
@@ -155,7 +162,7 @@ class Training {
         return secExcTab;
     }
 
-    skip(){
+    skip() {
         //console.log(that);
         //ustawianie niewykonania ćwiczenia
         //console.log(that.trainingNumber);
@@ -163,16 +170,16 @@ class Training {
         document.getElementById("b" + this.trainingNumber).setAttribute("class", "accordion-button naglowek-listy collapsed");
         document.getElementById("b" + this.trainingNumber).setAttribute("aria-expanded", "false");
         document.getElementById("id" + this.trainingNumber).setAttribute("class", "accordion-collapse collapse");
-        if(this.timer != 0)
+        if (this.timer != 0)
             clearTimeout(this.timer);
         //startowanie kolejnego treningu na liście
         this.trainingNumber++;
         //console.log(this.trainingNumber);
         StartBlock(this);
     }
-    
-    pauseOrResume(){
-        switch(document.getElementById("opt1").innerText){
+
+    pauseOrResume() {
+        switch (document.getElementById("opt1").innerText) {
             case 'WSTRZYMAJ':
                 document.getElementById("opt1").innerHTML = 'START';
                 clearTimeout(this.timer);
@@ -184,38 +191,38 @@ class Training {
                 break;
         }
     }
-    
-    stop(){
+
+    stop() {
         clearTimeout(this.timer);
         this.secExcTab[this.trainingNumber].tempAmount[0] = this.secExcTab[this.trainingNumber].amount[0];
         this.secExcTab[this.trainingNumber].tempAmount[1] = this.secExcTab[this.trainingNumber].amount[1];
         StartBlock(this);
     }
-    
-    showList(){
+
+    showList() {
         let panel = this.secExcTab[0].addControlPanel();
-        for(let i = 1; i < this.secExcTab.length; i++){
+        for (let i = 1; i < this.secExcTab.length; i++) {
             panel += this.secExcTab[i].addList();
         }
-        document.getElementById("listaCwiczen").innerHTML =  panel;
+        document.getElementById("listaCwiczen").innerHTML = panel;
     }
-    
+
     //funkcja, która w pętli powtarza ćwiczenia na czas i/lub sprawdza
-    repeatExc(){
+    repeatExc() {
         let currentExercise = this.secExcTab[this.trainingNumber];
-        switch(currentExercise.mode){
+        switch (currentExercise.mode) {
             case 0: //timer
-                if(
+                if (
                     currentExercise.tempAmount[0] === 0 &&
                     currentExercise.tempAmount[1] === 0 &&
                     currentExercise.tempRounds === 0
-                ){
+                ) {
                     this.setAttributes();
                     var zeroMin = ""; //zero ustawiane dla minut
                     var zeroSec = ""; //zero ustawiane dla sekund
-                    if(currentExercise.amount[0] < 10)
+                    if (currentExercise.amount[0] < 10)
                         zeroMin = "0";
-                    if(currentExercise.amount[1] < 10)
+                    if (currentExercise.amount[1] < 10)
                         zeroSec = "0";
                     var timeSum = zeroMin + currentExercise.amount[0] + ":" + zeroSec + currentExercise.amount[1];
                     document.getElementById(
@@ -225,7 +232,7 @@ class Training {
                     //startowanie kolejnego treningu na liście
                     this.trainingNumber++;
                     StartBlock(this);
-                }else{
+                } else {
                     currentExercise.doExcersise();
 
                     let that = this;
@@ -234,16 +241,16 @@ class Training {
                 break;
             case 1: //amount
 
-                if(currentExercise.tempAmount[0] !== 1 || currentExercise.tempRounds !== 0)
-                   currentExercise.doExcersise();
-                else{
+                if (currentExercise.tempAmount[0] !== 1 || currentExercise.tempRounds !== 0)
+                    currentExercise.doExcersise();
+                else {
                     this.setAttributes();
                     document.getElementById(
                         "b" + currentExercise.which
                     ).innerHTML = currentExercise.getExerciseCountSummary(
-                            currentExercise.rounds,
-                            currentExercise.amount[0]
-                        );
+                        currentExercise.rounds,
+                        currentExercise.amount[0]
+                    );
 
                     //startowanie kolejnego treningu na liście
                     this.trainingNumber++;
@@ -251,7 +258,7 @@ class Training {
                 }
                 break;
         }
-        
+
     }
 
     setTimer(that) {
@@ -263,13 +270,13 @@ class Training {
         );
     }
 
-    setAttributes(){
+    setAttributes() {
         document.getElementById("b" + this.trainingNumber).style.backgroundColor = "#9EF01A";
         document.getElementById("b" + this.trainingNumber).setAttribute("class", "accordion-button naglowek-listy collapsed");
         document.getElementById("b" + this.trainingNumber).setAttribute("aria-expanded", "false");
         document.getElementById("id" + this.trainingNumber).setAttribute("class", "accordion-collapse collapse");
     }
-    
+
 }
 
 class Excersise {
@@ -297,15 +304,15 @@ class Excersise {
         this.amount = new Array(amount.length);
         this.tempAmount = new Array(amount.length);
 
-        for(let i = 0; i < amount.length; i++){
+        for (let i = 0; i < amount.length; i++) {
             this.amount[i] = amount[i];
             this.tempAmount[i] = amount[i];
         }
     }
 
-    getHowMany(){
+    getHowMany() {
         let toReturn = null;
-        switch(this.mode){
+        switch (this.mode) {
             case 0:
                 toReturn = "minut";
                 break;
@@ -317,66 +324,66 @@ class Excersise {
         return toReturn;
     }
 
-    getExerciseCountSummary(roundsToDisplay, counter){
-        return this.name +': '+  roundsToDisplay + ' serii, ' + counter + this.getHowMany();
+    getExerciseCountSummary(roundsToDisplay, counter) {
+        return this.name + ': ' + roundsToDisplay + ' serii, ' + counter + this.getHowMany();
     }
 
     //wykonanie ćwiczenia
-    doExcersise(){
-        switch(this.mode){
+    doExcersise() {
+        switch (this.mode) {
             case 0://timer
-                if(
+                if (
                     this.tempAmount[0] === 0 &&
                     this.tempAmount[1] === 0 &&
                     this.tempRounds !== 0
-                ){
+                ) {
                     this.tempAmount[0] = this.amount[0];
                     this.tempAmount[1] = this.amount[1];
                     this.tempRounds--;
                 }
 
-                if(this.tempAmount[1] === 0){
-                    this.tempAmount[0]--; 
+                if (this.tempAmount[1] === 0) {
+                    this.tempAmount[0]--;
                     this.tempAmount[1] = 59;
-                }else
+                } else
                     this.tempAmount[1]--;
                 var zeroMin = ""; //zero ustawiane dla minut
                 var zeroSec = ""; //zero ustawiane dla sekund
-                if(this.tempAmount[0] < 10)
+                if (this.tempAmount[0] < 10)
                     zeroMin = "0";
-                if(this.tempAmount[1] < 10)
+                if (this.tempAmount[1] < 10)
                     zeroSec = "0";
                 var timeSum = zeroMin + this.tempAmount[0] + ":" + zeroSec + this.tempAmount[1];
                 document.getElementById("b" + this.which).innerHTML = this.getExerciseCountSummary(
-                        this.tempRounds, timeSum
-                    );
+                    this.tempRounds, timeSum
+                );
                 break;
             case 1://amount
-                if(
+                if (
                     this.tempAmount[0] === 0 &&
                     this.tempRounds !== 0
-                ){
+                ) {
                     this.tempAmount[0] = this.amount[0];
                     this.tempRounds--;
                 }
                 this.tempAmount[0]--;
                 document.getElementById("b" + this.which).innerHTML = this.getExerciseCountSummary(
-                        this.tempRounds, this.tempAmount[0]
-                    );
+                    this.tempRounds, this.tempAmount[0]
+                );
                 break;
         }
 
-    }  
-        
+    }
+
     //dodaje guziki do panelu kontrolnego w zależności od trybu
-    addOptions(){
-        if(this.mode === 0)
+    addOptions() {
+        if (this.mode === 0)
             return '<button class="col-md-6 col-lg-3 opt" id="opt1">WSTRZYMAJ</button><button class="col-md-6 col-lg-3 opt" id="opt2">STOP</button><button class="col-md-6 col-lg-3 opt" id="opt3">POMIŃ</button>';
         else
             return '<button class="col-md-6 col-lg-3 opt" id="opt1">NASTEPNE POWTORZENIE</button><button class="col-md-6 col-lg-3 opt" id="opt3">POMIŃ</button>';
     }
 
-    addControlPanel(){
+    addControlPanel() {
         return `
             <div class="accordion-item cialo-listy">
                 <h2 class="accordion-header h2" id="ha0"></h2>
@@ -396,17 +403,17 @@ class Excersise {
     }
 
     //W zależności od przebiegu zwraca albo opcje kontroli treningu albo listę ćwiczeń
-    addList(){
+    addList() {
         let tempAmount = 0;
-        if(this.mode === 0){   //oba w przypadku kiedy
+        if (this.mode === 0) {   //oba w przypadku kiedy
             let zeroMin = ""; //zero ustawiane dla minut
             let zeroSec = ""; //zero ustawiane dla sekund
-            if(this.amount[0] < 10)
+            if (this.amount[0] < 10)
                 zeroMin = "0";
-            if(this.amount[1] < 10)
+            if (this.amount[1] < 10)
                 zeroSec = "0";
-                tempAmount = zeroMin + this.amount[0] + ":" + zeroSec + this.amount[1];
-        }else
+            tempAmount = zeroMin + this.amount[0] + ":" + zeroSec + this.amount[1];
+        } else
             tempAmount = this.amount[0];
 
         return `
