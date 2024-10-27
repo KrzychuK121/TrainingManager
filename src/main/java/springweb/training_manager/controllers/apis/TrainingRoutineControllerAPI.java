@@ -33,6 +33,21 @@ public class TrainingRoutineControllerAPI {
         return ResponseEntity.ok(service.getAll());
     }
 
+    @PatchMapping("/{id}")
+    public ResponseEntity<?> switchActive(
+        @PathVariable int id,
+        Authentication auth
+    ) {
+        // TODO: Handle scenario where user wants to active activated routine
+        var userId = UserService.getUserIdByAuth(auth);
+        try {
+            service.switchActive(id, userId);
+            return ResponseEntity.noContent().build();
+        } catch (IllegalArgumentException ex) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
     @DeleteMapping("/{id}")
     @ResponseBody
     public ResponseEntity<?> delete(

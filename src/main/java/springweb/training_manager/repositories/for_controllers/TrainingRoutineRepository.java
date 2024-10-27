@@ -18,6 +18,15 @@ public interface TrainingRoutineRepository {
 
     boolean existsByIdAndOwnerId(int id, String ownerId);
 
+    /**
+     * This method (stored procedure) is responsible for switching previous active routine
+     * to new routine provided in parameter for specified user.
+     *
+     * @param id      routine to active
+     * @param ownerId owner of routine to active
+     */
+    void switchActive(Integer id, String ownerId);
+
     void delete(TrainingRoutine entity);
 
     /**

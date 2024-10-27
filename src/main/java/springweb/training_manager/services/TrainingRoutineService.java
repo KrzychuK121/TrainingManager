@@ -59,6 +59,12 @@ public class TrainingRoutineService {
         return createNew(routine);
     }
 
+    public void switchActive(int id, String userId) {
+        if (userId != null && !existsByIdAndOwnedBy(id, userId))
+            throw new IllegalArgumentException("Provided user is not and owner of provided routine.");
+        repository.switchActive(id, userId);
+    }
+
     public void delete(TrainingRoutine toDelete) {
         repository.delete(toDelete);
     }
