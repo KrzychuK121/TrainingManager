@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import springweb.training_manager.models.entities.*;
 import springweb.training_manager.models.schemas.TrainingPlanId;
+import springweb.training_manager.models.viewmodels.training.TrainingRead;
 import springweb.training_manager.models.viewmodels.training_plan.TrainingPlanWrite;
 import springweb.training_manager.models.viewmodels.training_plan.TrainingPlansWrite;
 import springweb.training_manager.models.viewmodels.training_routine.TrainingRoutineReadIndex;
@@ -11,6 +12,7 @@ import springweb.training_manager.models.viewmodels.training_schedule.TrainingSc
 import springweb.training_manager.repositories.for_controllers.TrainingPlanRepository;
 import springweb.training_manager.repositories.for_controllers.TrainingScheduleRepository;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -84,6 +86,27 @@ public class TrainingPlanService {
                 o -> o
             )
         );
+    }
+
+    public TrainingRead getUserActiveTraining(String userId) {
+        var plans = getUserActivePlans(userId);
+        var today = LocalDateTime.now().getDayOfWeek();
+        var todayPlans = plans.stream().filter(
+            plan -> (
+                plan.getTrainingSchedule()
+                    .getWeekday()
+                    .toString()
+                    .equals(today.toString())
+            )
+        ).toList();
+
+        if (todayPlans.isEmpty())
+            return null;
+
+        Training todayTraining = todayPlans.get(0)
+            .getTrainingSchedule()
+            .getTraining();
+        return new TrainingRead(todayTraining);
     }
 
     private TrainingSchedule prepTrainingSchedule(TrainingPlan plan, User owner) {

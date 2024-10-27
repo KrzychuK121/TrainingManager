@@ -12,6 +12,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import springweb.training_manager.models.entities.TrainingPlan;
 import springweb.training_manager.models.schemas.RoleSchema;
+import springweb.training_manager.models.viewmodels.training.TrainingRead;
 import springweb.training_manager.models.viewmodels.training_plan.TrainingPlansRead;
 import springweb.training_manager.models.viewmodels.training_plan.TrainingPlansWrite;
 import springweb.training_manager.models.viewmodels.training_routine.TrainingRoutineReadIndex;
@@ -70,6 +71,16 @@ public class TrainingPlanControllerAPI {
         } catch (IllegalStateException ex) {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    @GetMapping("/today-training")
+    @ResponseBody
+    public ResponseEntity<TrainingRead> getTodayTraining(Authentication auth) {
+        var userId = UserService.getUserIdByAuth(auth);
+        var training = service.getUserActiveTraining(userId);
+        if (training == null)
+            return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(training);
     }
 
     @GetMapping("/id")
