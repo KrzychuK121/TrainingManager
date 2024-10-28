@@ -20,6 +20,9 @@ interface SqlTrainingRoutineRepository
     boolean existsByIdAndOwnerId(int id, String ownerId);
 
     @Override
+    boolean existsByIdAndOwnerIdAndActiveIsFalse(int id, String ownerId);
+
+    @Override
     @Procedure("switch_active_procedure")
     void switchActive(Integer id, String ownerId);
 

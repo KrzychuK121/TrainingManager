@@ -38,7 +38,6 @@ public class TrainingRoutineControllerAPI {
         @PathVariable int id,
         Authentication auth
     ) {
-        // TODO: Handle scenario where user wants to active activated routine
         var userId = UserService.getUserIdByAuth(auth);
         try {
             service.switchActive(id, userId);

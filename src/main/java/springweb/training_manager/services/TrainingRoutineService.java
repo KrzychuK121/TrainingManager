@@ -1,6 +1,8 @@
 package springweb.training_manager.services;
 
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import springweb.training_manager.exceptions.NotOwnedByUserException;
 import springweb.training_manager.models.entities.TrainingRoutine;
@@ -14,8 +16,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Service
 public class TrainingRoutineService {
-
     private final TrainingRoutineRepository repository;
+    private static final Logger logger = LoggerFactory.getLogger(TrainingRoutineService.class);
 
     public List<TrainingRoutineRead> getAll() {
         return repository.findAll()
@@ -25,6 +27,10 @@ public class TrainingRoutineService {
 
     public boolean existsByIdAndOwnedBy(int id, String ownerId) {
         return repository.existsByIdAndOwnerId(id, ownerId);
+    }
+
+    public boolean existsAndIsNotActive(int id, String ownerId) {
+        return repository.existsByIdAndOwnerIdAndActiveIsFalse(id, ownerId);
     }
 
     public TrainingRoutine getById(int id, String userId) {
@@ -60,8 +66,12 @@ public class TrainingRoutineService {
     }
 
     public void switchActive(int id, String userId) {
-        if (userId != null && !existsByIdAndOwnedBy(id, userId))
-            throw new IllegalArgumentException("Provided user is not and owner of provided routine.");
+        if (userId == null)
+            return;
+        if (!existsAndIsNotActive(id, userId))
+            throw new IllegalArgumentException(
+                "Provided user is not an owner of provided routine or routine you want to active is already activated"
+            );
         repository.switchActive(id, userId);
     }
 
