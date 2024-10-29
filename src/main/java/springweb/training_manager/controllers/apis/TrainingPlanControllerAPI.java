@@ -15,6 +15,7 @@ import springweb.training_manager.models.schemas.RoleSchema;
 import springweb.training_manager.models.viewmodels.training.TrainingRead;
 import springweb.training_manager.models.viewmodels.training_plan.TrainingPlansRead;
 import springweb.training_manager.models.viewmodels.training_plan.TrainingPlansWrite;
+import springweb.training_manager.models.viewmodels.training_plan.TrainingReminderRead;
 import springweb.training_manager.models.viewmodels.training_routine.TrainingRoutineReadIndex;
 import springweb.training_manager.models.viewmodels.training_schedule.TrainingScheduleRead;
 import springweb.training_manager.services.TrainingPlanService;
@@ -81,6 +82,16 @@ public class TrainingPlanControllerAPI {
         if (training == null)
             return ResponseEntity.noContent().build();
         return ResponseEntity.ok(training);
+    }
+
+    @GetMapping("/today-training-reminder")
+    @ResponseBody
+    public ResponseEntity<TrainingReminderRead> getTodayTrainingReminder(Authentication auth) {
+        var userId = UserService.getUserIdByAuth(auth);
+        var trainingReminder = service.getUserTrainingReminder(userId);
+        if (trainingReminder == null)
+            return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(trainingReminder);
     }
 
     @GetMapping("/id")

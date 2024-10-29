@@ -7,6 +7,7 @@ import springweb.training_manager.models.schemas.TrainingPlanId;
 import springweb.training_manager.models.viewmodels.training.TrainingRead;
 import springweb.training_manager.models.viewmodels.training_plan.TrainingPlanWrite;
 import springweb.training_manager.models.viewmodels.training_plan.TrainingPlansWrite;
+import springweb.training_manager.models.viewmodels.training_plan.TrainingReminderRead;
 import springweb.training_manager.models.viewmodels.training_routine.TrainingRoutineReadIndex;
 import springweb.training_manager.models.viewmodels.training_schedule.TrainingScheduleRead;
 import springweb.training_manager.repositories.for_controllers.TrainingPlanRepository;
@@ -88,7 +89,7 @@ public class TrainingPlanService {
         );
     }
 
-    public TrainingRead getUserActiveTraining(String userId) {
+    private List<TrainingPlan> getTodayPlans(String userId) {
         var plans = getUserActivePlans(userId);
         var today = LocalDateTime.now().getDayOfWeek();
         var todayPlans = plans.stream().filter(
@@ -101,6 +102,30 @@ public class TrainingPlanService {
         ).toList();
 
         if (todayPlans.isEmpty())
+            return null;
+
+        return todayPlans;
+    }
+
+    public TrainingReminderRead getUserTrainingReminder(String userId) {
+        var todayPlans = getTodayPlans(userId);
+        if (todayPlans == null)
+            return null;
+
+        TrainingPlan todayPlan = todayPlans.get(0);
+        Training todayTraining = todayPlan
+            .getTrainingSchedule()
+            .getTraining();
+
+        return new TrainingReminderRead(
+            todayTraining.getTitle(),
+            todayPlan.getTrainingTime()
+        );
+    }
+
+    public TrainingRead getUserActiveTraining(String userId) {
+        var todayPlans = getTodayPlans(userId);
+        if (todayPlans == null)
             return null;
 
         Training todayTraining = todayPlans.get(0)
