@@ -4,9 +4,14 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import springweb.training_manager.models.viewmodels.user.MyUserDetails;
+import springweb.training_manager.services.MyUserDetailsService;
 
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
@@ -15,12 +20,38 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+@RequiredArgsConstructor
 @Service
 public class JwtService {
     @Value("${security.jwt.secret-key}")
     private String secretKey;
     @Value("${security.jwt.expiration}")
     private long jwtExpiration;
+    public static final String AUTH_HEADER = "Authorization";
+    private final MyUserDetailsService userDetailsService;
+
+    public UsernamePasswordAuthenticationToken getToken(final String authHeader) {
+        var authPrefix = "Bearer ";
+
+        if (authHeader == null || !authHeader.startsWith(authPrefix))
+            return null;
+
+        final var jwt = authHeader.substring(authPrefix.length());
+        final String username = extractUsername(jwt);
+
+        if (username == null || SecurityContextHolder.getContext().getAuthentication() != null)
+            return null;
+
+        MyUserDetails userDetails = (MyUserDetails) userDetailsService.loadUserByUsername(username);
+        if (!isTokenValid(jwt, userDetails))
+            return null;
+
+        return new UsernamePasswordAuthenticationToken(
+            userDetails,
+            null,
+            userDetails.getAuthorities()
+        );
+    }
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
