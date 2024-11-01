@@ -1,6 +1,7 @@
 package springweb.training_manager.services;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -15,6 +16,7 @@ import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
+@Slf4j
 public class TrainingRoutineService {
     private final TrainingRoutineRepository repository;
     private static final Logger logger = LoggerFactory.getLogger(TrainingRoutineService.class);
