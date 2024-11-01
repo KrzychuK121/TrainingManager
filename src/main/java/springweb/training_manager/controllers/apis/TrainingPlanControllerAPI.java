@@ -15,11 +15,9 @@ import springweb.training_manager.models.schemas.RoleSchema;
 import springweb.training_manager.models.viewmodels.training.TrainingRead;
 import springweb.training_manager.models.viewmodels.training_plan.TrainingPlansRead;
 import springweb.training_manager.models.viewmodels.training_plan.TrainingPlansWrite;
-import springweb.training_manager.models.viewmodels.training_plan.TrainingReminderRead;
 import springweb.training_manager.models.viewmodels.training_routine.TrainingRoutineReadIndex;
 import springweb.training_manager.models.viewmodels.training_schedule.TrainingScheduleRead;
 import springweb.training_manager.services.TrainingPlanService;
-import springweb.training_manager.services.TrainingRoutineService;
 import springweb.training_manager.services.UserService;
 
 import java.net.URI;
@@ -35,7 +33,6 @@ import java.util.List;
 @Secured({RoleSchema.ROLE_ADMIN, RoleSchema.ROLE_USER})
 public class TrainingPlanControllerAPI {
     private final TrainingPlanService service;
-    private final TrainingRoutineService routineService;
     private final Logger logger = LoggerFactory.getLogger(TrainingPlanControllerAPI.class);
 
     @GetMapping
@@ -82,16 +79,6 @@ public class TrainingPlanControllerAPI {
         if (training == null)
             return ResponseEntity.noContent().build();
         return ResponseEntity.ok(training);
-    }
-
-    @GetMapping("/today-training-reminder")
-    @ResponseBody
-    public ResponseEntity<TrainingReminderRead> getTodayTrainingReminder(Authentication auth) {
-        var userId = UserService.getUserIdByAuth(auth);
-        var trainingReminder = service.getUserTrainingReminder(userId);
-        if (trainingReminder == null)
-            return ResponseEntity.noContent().build();
-        return ResponseEntity.ok(trainingReminder);
     }
 
     @GetMapping("/id")
