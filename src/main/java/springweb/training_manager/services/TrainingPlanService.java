@@ -111,6 +111,18 @@ public class TrainingPlanService {
         String userId,
         String reminderTitle
     ) {
+        return getUserTrainingReminder(
+            userId,
+            reminderTitle,
+            ReminderType.INIT
+        );
+    }
+
+    public TrainingReminderRead getUserTrainingReminder(
+        String userId,
+        String reminderTitle,
+        ReminderType type
+    ) {
         var todayPlans = getTodayPlans(userId);
         if (todayPlans == null)
             return null;
@@ -123,7 +135,8 @@ public class TrainingPlanService {
         return new TrainingReminderRead(
             reminderTitle,
             todayTraining.getTitle(),
-            todayPlan.getTrainingTime()
+            todayPlan.getTrainingTime(),
+            type
         );
     }
 

@@ -4,15 +4,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-import springweb.training_manager.controllers.web_sockets.TrainingPlanControllerWS;
 import springweb.training_manager.exceptions.NotOwnedByUserException;
 import springweb.training_manager.models.schemas.RoleSchema;
 import springweb.training_manager.models.viewmodels.training_routine.TrainingRoutineRead;
-import springweb.training_manager.services.TrainingPlanService;
+import springweb.training_manager.services.TimerServices.NotificationTimerService;
 import springweb.training_manager.services.TrainingRoutineService;
 import springweb.training_manager.services.UserService;
 
@@ -28,9 +26,8 @@ import java.util.List;
 )
 @Slf4j
 public class TrainingRoutineControllerAPI {
-    private final TrainingPlanService trainingPlanService;
     private final TrainingRoutineService service;
-    private final SimpMessageSendingOperations messageTemplate;
+    private final NotificationTimerService notificationTimerService;
 
     @GetMapping
     public ResponseEntity<List<TrainingRoutineRead>> getAll() {
@@ -46,19 +43,7 @@ public class TrainingRoutineControllerAPI {
         try {
             var userId = user.getId();
             service.switchActive(id, userId);
-            var reminder = trainingPlanService.getUserTrainingReminder(
-                userId,
-                TrainingPlanControllerWS.FIRST_REMINDER_TITME
-            );
-
-            if (reminder != null) {
-                log.info("Sending reminder");
-                messageTemplate.convertAndSendToUser(
-                    auth.getName(),
-                    TrainingPlanControllerWS.NOTIFICATION_ENDPOINT,
-                    reminder
-                );
-            }
+            notificationTimerService.getReminderAndInitRest(auth);
             return ResponseEntity.noContent().build();
         } catch (IllegalArgumentException | IllegalStateException ex) {
             return ResponseEntity.badRequest().build();
