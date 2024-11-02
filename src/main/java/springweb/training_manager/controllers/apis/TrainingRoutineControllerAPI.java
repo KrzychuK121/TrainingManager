@@ -1,21 +1,24 @@
 package springweb.training_manager.controllers.apis;
 
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import springweb.training_manager.controllers.web_sockets.TrainingPlanControllerWS;
 import springweb.training_manager.exceptions.NotOwnedByUserException;
 import springweb.training_manager.models.schemas.RoleSchema;
 import springweb.training_manager.models.viewmodels.training_routine.TrainingRoutineRead;
+import springweb.training_manager.services.TrainingPlanService;
 import springweb.training_manager.services.TrainingRoutineService;
 import springweb.training_manager.services.UserService;
 
 import java.util.List;
 
+@RequiredArgsConstructor
 @RestController
 @Secured({RoleSchema.ROLE_ADMIN, RoleSchema.ROLE_USER})
 @RequestMapping(
@@ -23,10 +26,11 @@ import java.util.List;
     produces = MediaType.APPLICATION_JSON_VALUE,
     consumes = MediaType.APPLICATION_JSON_VALUE
 )
-@RequiredArgsConstructor
+@Slf4j
 public class TrainingRoutineControllerAPI {
+    private final TrainingPlanService trainingPlanService;
     private final TrainingRoutineService service;
-    private static final Logger logger = LoggerFactory.getLogger(TrainingRoutineControllerAPI.class);
+    private final SimpMessageSendingOperations messageTemplate;
 
     @GetMapping
     public ResponseEntity<List<TrainingRoutineRead>> getAll() {
@@ -38,11 +42,25 @@ public class TrainingRoutineControllerAPI {
         @PathVariable int id,
         Authentication auth
     ) {
-        var userId = UserService.getUserIdByAuth(auth);
+        var user = UserService.getUserByAuth(auth);
         try {
+            var userId = user.getId();
             service.switchActive(id, userId);
+            var reminder = trainingPlanService.getUserTrainingReminder(
+                userId,
+                TrainingPlanControllerWS.FIRST_REMINDER_TITME
+            );
+
+            if (reminder != null) {
+                log.info("Sending reminder");
+                messageTemplate.convertAndSendToUser(
+                    auth.getName(),
+                    TrainingPlanControllerWS.NOTIFICATION_ENDPOINT,
+                    reminder
+                );
+            }
             return ResponseEntity.noContent().build();
-        } catch (IllegalArgumentException ex) {
+        } catch (IllegalArgumentException | IllegalStateException ex) {
             return ResponseEntity.badRequest().build();
         }
     }
@@ -61,7 +79,7 @@ public class TrainingRoutineControllerAPI {
         } catch (IllegalArgumentException e) {
             return ResponseEntity.notFound().build();
         } catch (Exception ex) {
-            logger.error("Wystąpił nieoczekiwany wyjątek: {}", ex.getMessage(), ex);
+            log.error("Wystąpił nieoczekiwany wyjątek: {}", ex.getMessage(), ex);
         }
 
         return ResponseEntity.noContent().build();

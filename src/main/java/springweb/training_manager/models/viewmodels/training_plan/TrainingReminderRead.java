@@ -8,6 +8,7 @@ import java.time.LocalTime;
 @AllArgsConstructor
 @Getter
 public class TrainingReminderRead {
+    private String reminderTitle;
     private String trainingTitle;
     private LocalTime time;
 }

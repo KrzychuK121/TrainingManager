@@ -20,6 +20,7 @@ import java.util.ArrayList;
 @EnableScheduling
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     public static final String APP_DESTINATION_PREFIX = "/websockets";
+    public static final String FRONTEND_PUBLIC_ENDPOINT_PREFIX = "/topic";
     private final JwtService service;
 
     @Override
@@ -34,7 +35,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
         registry.setApplicationDestinationPrefixes(APP_DESTINATION_PREFIX);
-        registry.enableSimpleBroker("/topic");
+        registry.enableSimpleBroker(FRONTEND_PUBLIC_ENDPOINT_PREFIX);
     }
 
     @Override
