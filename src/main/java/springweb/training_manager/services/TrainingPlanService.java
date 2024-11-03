@@ -6,6 +6,7 @@ import springweb.training_manager.models.entities.*;
 import springweb.training_manager.models.schemas.TrainingPlanId;
 import springweb.training_manager.models.viewmodels.training.TrainingRead;
 import springweb.training_manager.models.viewmodels.training_plan.TrainingPlanWrite;
+import springweb.training_manager.models.viewmodels.training_plan.TrainingPlansEditRead;
 import springweb.training_manager.models.viewmodels.training_plan.TrainingPlansWrite;
 import springweb.training_manager.models.viewmodels.training_plan.TrainingReminderRead;
 import springweb.training_manager.models.viewmodels.training_routine.TrainingRoutineReadIndex;
@@ -64,6 +65,22 @@ public class TrainingPlanService {
         return new ArrayList<>(
             getMapFromPlans(all).values()
         );
+    }
+
+    public TrainingPlansEditRead getUserEditPlans(
+        String ownerId,
+        int routineId
+    ) {
+        List<TrainingPlan> plans = repository.findByTrainingRoutineOwnerIdAndTrainingRoutineId(
+            ownerId,
+            routineId
+        ).orElseThrow(
+            () -> new IllegalArgumentException(
+                "Podany użytkownik nie istnieje lub nie posiada planu treningowego o podanej nazwie."
+            )
+        );
+
+        return new TrainingPlansEditRead(plans);
     }
 
     private List<TrainingPlan> getPlansByRoutineId(int trainingRoutineId) {
