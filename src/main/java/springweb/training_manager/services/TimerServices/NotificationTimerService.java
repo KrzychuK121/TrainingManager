@@ -81,7 +81,10 @@ public class NotificationTimerService extends TimerService {
                 FIRST_REMINDER_TITLE
             );
 
-            if(
+            if (initReminder == null)
+                return null;
+
+            if (
                 LocalTime.now().isAfter(
                     initReminder.getTime()
                 )
