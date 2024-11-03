@@ -98,7 +98,8 @@ public class TrainingPlanControllerAPI {
     @GetMapping("/editModel/{id}")
     @ResponseBody
     public ResponseEntity<TrainingPlansEditRead> getEditMode(
-        @PathVariable int id
+        @PathVariable int id,
+        Authentication auth
     ) {
         try {
             var userId = UserService.getUserIdByAuth(auth);
