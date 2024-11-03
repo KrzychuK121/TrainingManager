@@ -19,4 +19,9 @@ interface SqlTrainingPlanRepository
     Optional<List<TrainingPlan>> findByTrainingRoutineId(int trainingRoutineId);
     @Override
     Optional<List<TrainingPlan>> findByTrainingRoutineOwner(User owner);
+    @Override
+    Optional<List<TrainingPlan>> findByTrainingRoutineOwnerIdAndTrainingRoutineId(
+        String userId,
+        int routineId
+    );
 }

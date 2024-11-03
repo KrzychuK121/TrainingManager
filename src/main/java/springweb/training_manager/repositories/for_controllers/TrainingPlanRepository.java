@@ -18,5 +18,10 @@ public interface TrainingPlanRepository {
 
     Optional<List<TrainingPlan>> findByTrainingRoutineOwner(User owner);
 
+    Optional<List<TrainingPlan>> findByTrainingRoutineOwnerIdAndTrainingRoutineId(
+        String userId,
+        int routineId
+    );
+
     boolean existsById(TrainingPlanId trainingPlanId);
 }
