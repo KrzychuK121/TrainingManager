@@ -13,10 +13,12 @@ import org.springframework.web.bind.annotation.*;
 import springweb.training_manager.models.entities.TrainingPlan;
 import springweb.training_manager.models.schemas.RoleSchema;
 import springweb.training_manager.models.viewmodels.training.TrainingRead;
+import springweb.training_manager.models.viewmodels.training_plan.TrainingPlansEditRead;
 import springweb.training_manager.models.viewmodels.training_plan.TrainingPlansRead;
 import springweb.training_manager.models.viewmodels.training_plan.TrainingPlansWrite;
 import springweb.training_manager.models.viewmodels.training_routine.TrainingRoutineReadIndex;
 import springweb.training_manager.models.viewmodels.training_schedule.TrainingScheduleRead;
+import springweb.training_manager.models.viewmodels.validation.ValidationErrors;
 import springweb.training_manager.services.TrainingPlanService;
 import springweb.training_manager.services.UserService;
 
@@ -93,12 +95,40 @@ public class TrainingPlanControllerAPI {
         );
     }
 
+    @GetMapping("/editModel/{id}")
+    @ResponseBody
+    public ResponseEntity<TrainingPlansEditRead> getEditMode(
+        @PathVariable int id
+    ) {
+        try {
+            var userId = UserService.getUserIdByAuth(auth);
+            TrainingPlansEditRead plans = service.getUserEditPlans(
+                userId,
+                id
+            );
+
+            return ResponseEntity.ok(
+                plans
+            );
+        } catch (IllegalArgumentException ex) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+
     @PostMapping
     public ResponseEntity<?> create(
         @RequestBody @Valid TrainingPlansWrite schedulesList,
         BindingResult result,
         Authentication auth
     ) {
+        if (result.hasErrors()) {
+            var validation = ValidationErrors.createFrom(result, "planWriteMap.");
+            return ResponseEntity.badRequest().body(
+                validation.getErrors()
+            );
+        }
+
         try {
             List<TrainingPlan> created = service.createNewPlans(
                 schedulesList,
