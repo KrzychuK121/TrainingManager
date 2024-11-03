@@ -81,6 +81,18 @@ public class NotificationTimerService extends TimerService {
                 FIRST_REMINDER_TITLE
             );
 
+            if(
+                LocalTime.now().isAfter(
+                    initReminder.getTime()
+                )
+            )
+                return new TrainingReminderRead(
+                    "Przegapiłeś trening",
+                    initReminder.getTrainingTitle(),
+                    initReminder.getTime(),
+                    ReminderType.LATE
+                );
+
             prepareReminderForFuture(
                 initReminder,
                 ReminderType.SOME_TIME_BEFORE,
