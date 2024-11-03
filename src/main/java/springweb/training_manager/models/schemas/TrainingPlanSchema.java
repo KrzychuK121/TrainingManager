@@ -4,6 +4,8 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Id;
 import jakarta.persistence.IdClass;
 import jakarta.persistence.MappedSuperclass;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,12 +19,15 @@ import java.time.LocalTime;
 @IdClass(TrainingPlanId.class)
 @MappedSuperclass
 public class TrainingPlanSchema implements Identificable<TrainingPlanId> {
+    public static final String PLAN_TIME_NOT_NULL_MESSAGE = "Podaj czas treningu.";
     @Id
     @Column(name = "routine_id")
     protected int trainingRoutineId;
     @Id
     @Column(name = "schedule_id")
     protected int trainingScheduleId;
+    @NotBlank(message = PLAN_TIME_NOT_NULL_MESSAGE)
+    @NotNull(message = PLAN_TIME_NOT_NULL_MESSAGE)
     @DateTimeFormat(pattern = "hh:mm")
     protected LocalTime trainingTime;
 
