@@ -1,5 +1,7 @@
 package springweb.training_manager.models.viewmodels.training_plan;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,6 +16,8 @@ import java.util.Map;
 @NoArgsConstructor
 @AllArgsConstructor
 public class TrainingPlansWrite {
+    @NotNull
+    @Valid
     private Map<Weekdays, TrainingPlanWrite> planWriteMap = new HashMap<>();
 
     public void add(Weekdays weekday, int trainingId, String trainingTime) {
