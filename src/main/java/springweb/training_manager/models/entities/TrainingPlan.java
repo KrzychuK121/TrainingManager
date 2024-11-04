@@ -44,6 +44,9 @@ public class TrainingPlan extends TrainingPlanSchema {
         trainingRoutine.setOwner(owner);
 
         trainingSchedule = schedule;
+        trainingScheduleId = schedule != null
+            ? schedule.getId()
+            : 0;
         this.trainingTime = trainingTime;
     }
 
@@ -54,6 +57,12 @@ public class TrainingPlan extends TrainingPlanSchema {
     ) {
         trainingRoutine = routine;
         trainingSchedule = schedule;
+        setId(
+            new TrainingPlanId(
+                routine,
+                schedule
+            )
+        );
         this.trainingTime = trainingTime;
     }
 
