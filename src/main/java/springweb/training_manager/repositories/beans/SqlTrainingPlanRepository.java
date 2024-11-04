@@ -24,4 +24,11 @@ interface SqlTrainingPlanRepository
         String userId,
         int routineId
     );
+
+    @Override
+    int countByTrainingScheduleId(int id);
+
+    @Override
+    void delete (TrainingPlan entity);
+
 }

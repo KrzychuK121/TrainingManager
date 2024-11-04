@@ -20,6 +20,7 @@ import springweb.training_manager.models.viewmodels.training_routine.TrainingRou
 import springweb.training_manager.models.viewmodels.training_schedule.TrainingScheduleRead;
 import springweb.training_manager.models.viewmodels.validation.ValidationErrors;
 import springweb.training_manager.services.TrainingPlanService;
+import springweb.training_manager.services.TrainingRoutineService;
 import springweb.training_manager.services.UserService;
 
 import java.net.URI;
@@ -142,5 +143,30 @@ public class TrainingPlanControllerAPI {
         } catch (IllegalStateException ex) {
             return ResponseEntity.badRequest().build();
         }
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<?> edit(
+        @PathVariable int id,
+        @RequestBody @Valid TrainingPlansWrite schedulesList,
+        BindingResult result,
+        Authentication auth
+    ) {
+        var user = UserService.getUserByAuth(auth);
+        if (result.hasErrors()) {
+            var validation = ValidationErrors.createFrom(result, "planWriteMap.");
+            return ResponseEntity.badRequest().body(
+                validation.getErrors()
+            );
+        }
+
+        try {
+            service.edit(schedulesList, id, user);
+        } catch (IllegalArgumentException e) {
+            logger.error("Wystąpił wyjątek: " + e.getMessage());
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.noContent().build();
     }
 }

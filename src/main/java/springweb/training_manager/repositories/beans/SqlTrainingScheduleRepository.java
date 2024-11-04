@@ -22,4 +22,7 @@ interface SqlTrainingScheduleRepository
         """
     )
     Optional<TrainingSchedule> findDuplication(@Param("entity") TrainingSchedule entity);
+
+    @Override
+    void deleteById (Integer id);
 }

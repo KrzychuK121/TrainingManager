@@ -16,4 +16,6 @@ public interface TrainingScheduleRepository extends DuplicationRepository<Traini
 
     @Override
     Optional<TrainingSchedule> findDuplication(TrainingSchedule entity);
+
+    void deleteById (Integer id);
 }

@@ -26,7 +26,6 @@ public class TrainingPlanSchema implements Identificable<TrainingPlanId> {
     @Id
     @Column(name = "schedule_id")
     protected int trainingScheduleId;
-    @NotBlank(message = PLAN_TIME_NOT_NULL_MESSAGE)
     @NotNull(message = PLAN_TIME_NOT_NULL_MESSAGE)
     @DateTimeFormat(pattern = "hh:mm")
     protected LocalTime trainingTime;

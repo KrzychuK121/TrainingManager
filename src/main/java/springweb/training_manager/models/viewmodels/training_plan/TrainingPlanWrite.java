@@ -14,7 +14,6 @@ import springweb.training_manager.models.schemas.TrainingPlanSchema;
 @AllArgsConstructor
 public class TrainingPlanWrite {
     private int trainingId;
-    @NotBlank(message = TrainingPlanSchema.PLAN_TIME_NOT_NULL_MESSAGE)
     @NotNull(message = TrainingPlanSchema.PLAN_TIME_NOT_NULL_MESSAGE)
     private String trainingTime;
 }

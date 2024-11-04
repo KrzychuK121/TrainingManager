@@ -23,5 +23,7 @@ public interface TrainingPlanRepository {
         int routineId
     );
 
-    boolean existsById(TrainingPlanId trainingPlanId);
+    int countByTrainingScheduleId(int id);
+
+    void delete (TrainingPlan entity);
 }
