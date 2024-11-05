@@ -15,7 +15,7 @@ import springweb.training_manager.models.viewmodels.exercise.ExerciseCreate;
 import springweb.training_manager.models.viewmodels.exercise.ExerciseRead;
 import springweb.training_manager.models.viewmodels.exercise.ExerciseWrite;
 import springweb.training_manager.models.viewmodels.exercise.ExerciseWriteAPI;
-import springweb.training_manager.models.viewmodels.training.TrainingExercise;
+import springweb.training_manager.models.viewmodels.training.TrainingExerciseVM;
 import springweb.training_manager.models.viewmodels.validation.ValidationErrors;
 import springweb.training_manager.repositories.for_controllers.ExerciseRepository;
 import springweb.training_manager.repositories.for_controllers.TrainingRepository;
@@ -37,12 +37,12 @@ public class ExerciseService {
      * corresponding to objects inside <code>trainings</code>. After that, they are
      * returned as a new list.
      *
-     * @param trainings list of <code>TrainingExercise</code> from <code>ExerciseWrite</code> object.
+     * @param trainings list of <code>TrainingExerciseVM</code> from <code>ExerciseWrite</code> object.
      *                  Can be used e.g. in <code>create(ExerciseWrite toSave)</code> method.
      *
-     * @return prepared list with <code>TrainingExercise</code> (founded in database or just created)
+     * @return prepared list with <code>TrainingExerciseVM</code> (founded in database or just created)
      */
-    private List<Training> prepTrainings(List<TrainingExercise> trainings) {
+    private List<Training> prepTrainings(List<TrainingExerciseVM> trainings) {
         if (trainings == null || trainings.isEmpty())
             return null;
 
@@ -65,13 +65,13 @@ public class ExerciseService {
 
     public void setTrainingsById(ExerciseWrite toSave, String[] trainingIds) {
         if (trainingIds != null && trainingIds.length != 0) {
-            List<TrainingExercise> trainingsToSave = new ArrayList<>(trainingIds.length);
+            List<TrainingExerciseVM> trainingsToSave = new ArrayList<>(trainingIds.length);
             for (String trainingID : trainingIds) {
                 if (trainingID.isEmpty())
                     continue;
                 int id = Integer.parseInt(trainingID);
                 Training found = trainingRepository.findById(id).get();
-                TrainingExercise viewModel = new TrainingExercise(found);
+                TrainingExerciseVM viewModel = new TrainingExerciseVM(found);
                 trainingsToSave.add(viewModel);
             }
             toSave.setTrainings(trainingsToSave);
@@ -92,7 +92,7 @@ public class ExerciseService {
     }
 
     public static String[] getToEditTrainingIds(ExerciseRead toEdit) {
-        List<TrainingExercise> toEditList = toEdit.getTrainings();
+        List<TrainingExerciseVM> toEditList = toEdit.getTrainings();
         String[] selected = new String[toEditList.size()];
         for (int i = 0; i < toEditList.size(); i++) {
             selected[i] = toEditList.get(i).getId() + "";
@@ -125,7 +125,7 @@ public class ExerciseService {
     public Exercise create(ExerciseWrite toSave) {
         List<Training> preparedTrainingList = prepTrainings(toSave.getTrainings());
         if (preparedTrainingList != null)
-            toSave.setTrainings(TrainingExercise.toTrainingExerciseList(preparedTrainingList));
+            toSave.setTrainings(TrainingExerciseVM.toTrainingExerciseList(preparedTrainingList));
 
         var created = repository.save(toSave.toEntity());
         if (preparedTrainingList != null)
@@ -182,7 +182,7 @@ public class ExerciseService {
     }
 
     public ExerciseCreate getCreateModel(Integer id) {
-        var allTrainings = trainingService.getAll(TrainingExercise::new);
+        var allTrainings = trainingService.getAll(TrainingExerciseVM::new);
         if (id == null)
             return new ExerciseCreate(allTrainings);
         try {
@@ -194,7 +194,7 @@ public class ExerciseService {
 
     public void edit(ExerciseWrite toEdit, int id) {
         List<Training> preparedTrainingList = prepTrainings(toEdit.getTrainings());
-        toEdit.setTrainings(TrainingExercise.toTrainingExerciseList(preparedTrainingList));
+        toEdit.setTrainings(TrainingExerciseVM.toTrainingExerciseList(preparedTrainingList));
 
         Exercise toSave = getById(id);
         editExerciseInTrainings(toSave, toSave.getTrainings(), false);

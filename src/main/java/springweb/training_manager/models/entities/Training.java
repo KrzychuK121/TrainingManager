@@ -27,6 +27,9 @@ public class Training extends TrainingSchema {
     @Valid
     private List<Exercise> exercises = new ArrayList<>();
 
+    @OneToMany(mappedBy = "training")
+    private List<TrainingExercise> trainingExercises = new ArrayList<>();
+
     @ManyToMany(mappedBy = "trainings")
     private Set<User> users = new HashSet<>();
 

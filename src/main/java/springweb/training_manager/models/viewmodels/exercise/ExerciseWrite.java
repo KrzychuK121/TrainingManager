@@ -8,7 +8,7 @@ import springweb.training_manager.models.entities.Difficulty;
 import springweb.training_manager.models.entities.Exercise;
 import springweb.training_manager.models.schemas.ExerciseSchema;
 import springweb.training_manager.models.viewmodels.Castable;
-import springweb.training_manager.models.viewmodels.training.TrainingExercise;
+import springweb.training_manager.models.viewmodels.training.TrainingExerciseVM;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 @Setter
 @NoArgsConstructor
 public class ExerciseWrite extends ExerciseSchema implements Castable<Exercise> {
-    private List<TrainingExercise> trainings = new ArrayList<>();
+    private List<TrainingExerciseVM> trainings = new ArrayList<>();
 
     public static List<Exercise> toExerciseList(final List<ExerciseWrite> list) {
         return list.stream().map(
@@ -73,7 +73,7 @@ public class ExerciseWrite extends ExerciseSchema implements Castable<Exercise> 
         );
 
         if (trainings != null)
-            toReturn.setTrainings(TrainingExercise.toTrainingList(trainings));
+            toReturn.setTrainings(TrainingExerciseVM.toTrainingList(trainings));
 
         return toReturn;
     }
