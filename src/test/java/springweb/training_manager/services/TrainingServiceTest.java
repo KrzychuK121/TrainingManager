@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import springweb.training_manager.models.entities.BodyPart;
 import springweb.training_manager.models.entities.Difficulty;
 import springweb.training_manager.models.entities.Exercise;
+import springweb.training_manager.models.entities.ExerciseParameters;
 import springweb.training_manager.models.viewmodels.exercise.ExerciseTraining;
 import springweb.training_manager.repositories.for_controllers.ExerciseRepository;
 
@@ -13,47 +14,54 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class TrainingServiceTest {
 
-    private ExerciseRepository repositoryFindByExercise(List<Exercise> toFind, List<Boolean> found){
+    private ExerciseRepository repositoryFindByExercise(List<Exercise> toFind, List<Boolean> found) {
         var mock = mock(ExerciseRepository.class);
 
         for (int i = 0; i < toFind.size(); i++) {
             when(mock.findByExercise(toFind.get(i)))
-            .thenReturn(
-                Optional.of(
-                    copy(toFind.get(i), found.get(i) ? 9 : 0)
-                )
-            );
-
-            if(!found.get(i))
-                when(mock.save(toFind.get(i)))
                 .thenReturn(
-                    copy(toFind.get(i), 9)
+                    Optional.of(
+                        copy(toFind.get(i), found.get(i) ? 9 : 0)
+                    )
                 );
+
+            if (!found.get(i))
+                when(mock.save(toFind.get(i)))
+                    .thenReturn(
+                        copy(toFind.get(i), 9)
+                    );
         }
 
 
         return mock;
     }
 
-    private Exercise copy(Exercise toCopy, int id){
+    private Exercise copy(Exercise toCopy, int id) {
         var copyOf = new Exercise();
+
+        var parameters = toCopy.getParameters();
 
         copyOf.setId(id);
         copyOf.setName(toCopy.getName());
         copyOf.setDescription(toCopy.getDescription());
-        copyOf.setRepetition(toCopy.getRepetition());
-        copyOf.setRounds(toCopy.getRounds());
-        copyOf.setWeights(toCopy.getWeights());
-        copyOf.setTime(toCopy.getTime());
         copyOf.setBodyPart(toCopy.getBodyPart());
-        copyOf.setDifficulty(toCopy.getDifficulty());
+        copyOf.setParameters(
+            parameters == null
+                ? null
+                : new ExerciseParameters(
+                parameters.getId(),
+                parameters.getRounds(),
+                parameters.getRepetition(),
+                parameters.getWeights(),
+                parameters.getTime(),
+                parameters.getDifficulty()
+            )
+        );
 
         return copyOf;
     }
@@ -65,23 +73,30 @@ class TrainingServiceTest {
         var first = new Exercise(
             "pompki",
             "zwykłe pompki",
-            3,
-            20,
-            (short) 0,
-            LocalTime.of(0, 0, 0),
             BodyPart.CHEST,
-            Difficulty.FOR_BEGINNERS
+            new ExerciseParameters(
+                9,
+                3,
+                20,
+                (short) 0,
+                LocalTime.of(0, 0, 0),
+                Difficulty.FOR_BEGINNERS
+
+            )
         );
 
         var second = new Exercise(
             "brzuszki",
             "brzuszki z obciążeniem 4,5kg na rękę",
-            3,
-            20,
-            (short) 4,
-            LocalTime.of(0, 0, 0),
             BodyPart.UPPER_ABS,
-            Difficulty.MEDIUM
+            new ExerciseParameters(
+                10,
+                3,
+                20,
+                (short) 4,
+                LocalTime.of(0, 0, 0),
+                Difficulty.MEDIUM
+            )
         );
 
         var newFirst = copy(first, 9);
@@ -108,8 +123,8 @@ class TrainingServiceTest {
         result.forEach(
             exercise -> System.out.println(
                 exercise.getId() + "\t" +
-                exercise.getName() + "\t" +
-                exercise.getDescription()
+                    exercise.getName() + "\t" +
+                    exercise.getDescription()
             )
         );
         assertThat(result).contains(newFirst, newSecond);

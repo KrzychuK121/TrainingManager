@@ -20,4 +20,10 @@ public class TrainingExercise {
         referencedColumnName = "id"
     )
     Exercise exercise;
+    @ManyToOne
+    @JoinColumn(
+        name = "parameters_id",
+        referencedColumnName = "id"
+    )
+    ExerciseParameters parameters;
 }

@@ -20,16 +20,12 @@ interface SqlExerciseRepository extends ExerciseRepository, JpaRepository<Exerci
     @Override
     @Query(
         """
-        SELECT e FROM Exercise e LEFT JOIN FETCH e.trainings 
-        WHERE e.name = :#{#exercise.name} AND 
-        e.description = :#{#exercise.description} AND 
-        e.rounds = :#{#exercise.rounds} AND
-        e.repetition = :#{#exercise.repetition} AND 
-        e.time = :#{#exercise.time} AND 
-        e.bodyPart = :#{#exercise.bodyPart} AND 
-        e.weights = :#{#exercise.weights} AND 
-        e.difficulty = :#{#exercise.difficulty}
-        """
+            SELECT e FROM Exercise e LEFT JOIN FETCH e.trainings 
+            WHERE e.name = :#{#exercise.name} AND 
+            e.description = :#{#exercise.description} AND 
+            e.bodyPart = :#{#exercise.bodyPart} AND
+            e.parameters = :#{#exercise.parameters} 
+            """
     )
     Optional<Exercise> findByExercise(@Param("exercise") Exercise exercise);
 }

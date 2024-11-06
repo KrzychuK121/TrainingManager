@@ -16,7 +16,7 @@ import java.time.LocalTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode
-public class ExerciseParametersSchema {
+public class ExerciseParametersSchema implements Identificable<Integer> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     protected int id;
@@ -33,4 +33,14 @@ public class ExerciseParametersSchema {
     protected LocalTime time;
     @Enumerated(EnumType.STRING)
     protected Difficulty difficulty;
+
+    @Override
+    public Integer defaultId() {
+        return 0;
+    }
+
+    @Override
+    public Integer getId() {
+        return id;
+    }
 }

@@ -3,6 +3,7 @@ package db.migration;
 import org.flywaydb.core.api.migration.BaseJavaMigration;
 import org.flywaydb.core.api.migration.Context;
 import springweb.training_manager.models.entities.Exercise;
+import springweb.training_manager.models.entities.ExerciseParameters;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -23,12 +24,17 @@ public class V10__insert_exercises extends BaseJavaMigration {
 
                 statement.setString(1, exercise.getName());
                 statement.setString(2, exercise.getDescription());
-                statement.setInt(3, exercise.getRounds());
-                statement.setInt(4, exercise.getRepetition());
-                if (exercise.getTime() == null)
+                statement.setInt(3, exercise.getParameters().getRounds());
+                statement.setInt(4, exercise.getParameters().getRepetition());
+                if (exercise.getParameters().getTime() == null)
                     statement.setNull(5, Types.TIME);
                 else
-                    statement.setTime(5, Time.valueOf(exercise.getTime()));
+                    statement.setTime(
+                            5,
+                            Time.valueOf(
+                                    exercise.getParameters().getTime()
+                            )
+                    );
                 statement.setInt(6, exercise.getId());
                 statement.addBatch();
             }
@@ -97,12 +103,15 @@ public class V10__insert_exercises extends BaseJavaMigration {
         Exercise ex = new Exercise(
             name,
             description,
-            rounds,
-            repetition,
-            (short) 0,
-            time,
             null,
-            null
+            new ExerciseParameters(
+                0,
+                rounds,
+                repetition,
+                (short) 0,
+                time,
+                null
+            )
         );
         ex.setId(id);
 

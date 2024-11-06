@@ -37,10 +37,13 @@ public class ExerciseService {
      * corresponding to objects inside <code>trainings</code>. After that, they are
      * returned as a new list.
      *
-     * @param trainings list of <code>TrainingExerciseVM</code> from <code>ExerciseWrite</code> object.
-     *                  Can be used e.g. in <code>create(ExerciseWrite toSave)</code> method.
+     * @param trainings list of <code>TrainingExerciseVM</code> from
+     *                  <code>ExerciseWrite</code> object. Can be used e.g. in
+     *                  <code>create(ExerciseWrite toSave)</code> method.
      *
-     * @return prepared list with <code>TrainingExerciseVM</code> (founded in database or just created)
+     * @return prepared list with
+     * <code>TrainingExerciseVM</code> (founded in database
+     * or just created)
      */
     private List<Training> prepTrainings(List<TrainingExerciseVM> trainings) {
         if (trainings == null || trainings.isEmpty())
@@ -70,7 +73,8 @@ public class ExerciseService {
                 if (trainingID.isEmpty())
                     continue;
                 int id = Integer.parseInt(trainingID);
-                Training found = trainingRepository.findById(id).get();
+                Training found = trainingRepository.findById(id)
+                    .get();
                 TrainingExerciseVM viewModel = new TrainingExerciseVM(found);
                 trainingsToSave.add(viewModel);
             }
@@ -79,8 +83,10 @@ public class ExerciseService {
     }
 
     public static void setTime(ExerciseWrite toSave) {
-        var validTime = toSave.getTime() != null
-            ? toSave.getTime().toString()
+        var parameters = toSave.getParameters();
+        var validTime = parameters.getTime() != null
+            ? parameters.getTime()
+            .toString()
             : null;
         setTime(toSave, validTime);
     }
@@ -95,7 +101,8 @@ public class ExerciseService {
         List<TrainingExerciseVM> toEditList = toEdit.getTrainings();
         String[] selected = new String[toEditList.size()];
         for (int i = 0; i < toEditList.size(); i++) {
-            selected[i] = toEditList.get(i).getId() + "";
+            selected[i] = toEditList.get(i)
+                .getId() + "";
         }
         return selected;
     }
@@ -104,16 +111,19 @@ public class ExerciseService {
         ExerciseWriteAPI data,
         BindingResult result
     ) {
+        final var ENTITY_PREFIX = "toSave.";
         var toSave = data.getToSave();
+        var parameters = toSave.getParameters();
 
-        if (toSave.getRepetition() == 0 && toSave.getTime() == null) {
+        if (parameters.getRepetition() == 0 && parameters.getTime() == null) {
+            final var FIELD_PREFIX = ENTITY_PREFIX + "parameters.";
             var message = "Wpisz wartość w polu 'Powtórzenia' lub 'Czas wykonania'";
-            result.addError(new FieldError("data", "toSave.repetition", message));
-            result.addError(new FieldError("data", "toSave.time", message));
+            result.addError(new FieldError("data", FIELD_PREFIX + "repetition", message));
+            result.addError(new FieldError("data", FIELD_PREFIX + "time", message));
         }
 
         if (result.hasErrors()) {
-            var validation = ValidationErrors.createFrom(result, "toSave.");
+            var validation = ValidationErrors.createFrom(result, ENTITY_PREFIX);
             return validation.getErrors();
         }
 
@@ -135,25 +145,35 @@ public class ExerciseService {
     }
 
     /**
-     * This method <b>SHOULD</b> be used after creating/editing <code>Exercise</code>.
-     * It is responsible for adding <code>toAddOrRemove</code> to every <code>toEdit</code> element
-     * and then saving the changes in the database. This operation is required to create proper
-     * many to many row between <code>Exercise</code> and <code>Training</code>
+     * This method <b>SHOULD</b> be used after creating/editing <code>Exercise</code>. It
+     * is responsible for adding <code>toAddOrRemove</code> to every <code>toEdit</code>
+     * element and then saving the changes in the database. This operation is required to
+     * create proper many to many row between
+     * <code>Exercise</code> and <code>Training</code>
      *
-     * @param toAddOrRemove <code>Exercise</code> with id which should be connected with <code>Training</code>
-     * @param toEdit        list of <code>Training</code> objects which should be connected with <code>Exercise</code>
-     * @param ifAdd         when true, it will add <code>toAddOrRemove</code> to <code>toEdit</code>, otherwise it will
-     *                      remove <code>toAddOrRemove</code> from <code>toEdit</code>.
+     * @param toAddOrRemove <code>Exercise</code> with id which should be connected with
+     *                      <code>Training</code>
+     * @param toEdit        list of <code>Training</code> objects which should be
+     *                      connected with <code>Exercise</code>
+     * @param ifAdd         when true, it will add <code>toAddOrRemove</code> to
+     *                      <code>toEdit</code>, otherwise it will remove
+     *                      <code>toAddOrRemove</code> from <code>toEdit</code>.
      */
-    private void editExerciseInTrainings(Exercise toAddOrRemove, List<Training> toEdit, boolean ifAdd) {
+    private void editExerciseInTrainings(
+        Exercise toAddOrRemove,
+        List<Training> toEdit,
+        boolean ifAdd
+    ) {
         if (toEdit == null)
             return;
         toEdit.forEach(
             training -> {
                 if (ifAdd)
-                    training.getExercises().add(toAddOrRemove);
+                    training.getExercises()
+                        .add(toAddOrRemove);
                 else
-                    training.getExercises().remove(toAddOrRemove);
+                    training.getExercises()
+                        .remove(toAddOrRemove);
                 trainingRepository.save(training);
             }
         );
@@ -162,15 +182,18 @@ public class ExerciseService {
     public Page<ExerciseRead> getAll(Pageable page) {
         page = PageSortService.validateSort(Exercise.class, page, logger);
 
-        Page<ExerciseRead> toReturn = repository.findAll(page).map(ExerciseRead::new);
-        if (toReturn.getContent().isEmpty())
+        Page<ExerciseRead> toReturn = repository.findAll(page)
+            .map(ExerciseRead::new);
+        if (toReturn.getContent()
+            .isEmpty())
             toReturn = repository.findAll(
-                PageRequest.of(
-                    PageSortService.getPageNumber(toReturn),
-                    toReturn.getSize(),
-                    page.getSort()
+                    PageRequest.of(
+                        PageSortService.getPageNumber(toReturn),
+                        toReturn.getSize(),
+                        page.getSort()
+                    )
                 )
-            ).map(ExerciseRead::new);
+                .map(ExerciseRead::new);
         return toReturn;
     }
 

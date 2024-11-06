@@ -8,7 +8,6 @@ import lombok.Setter;
 import lombok.ToString;
 import springweb.training_manager.models.schemas.ExerciseSchema;
 
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,6 +23,7 @@ public class Exercise extends ExerciseSchema {
         name = "parameters_id",
         referencedColumnName = "id"
     )
+    @Valid
     private ExerciseParameters parameters;
     @ManyToMany(mappedBy = "exercises")
     @Valid
@@ -69,13 +69,13 @@ public class Exercise extends ExerciseSchema {
         parameters = toEdit.parameters == null
             ? null
             : new ExerciseParameters(
-                toEdit.parameters.getId(),
-                toEdit.parameters.getRounds(),
-                toEdit.parameters.getRepetition(),
-                toEdit.parameters.getWeights(),
-                toEdit.parameters.getTime(),
-                toEdit.parameters.getDifficulty()
-            );
+            toEdit.parameters.getId(),
+            toEdit.parameters.getRounds(),
+            toEdit.parameters.getRepetition(),
+            toEdit.parameters.getWeights(),
+            toEdit.parameters.getTime(),
+            toEdit.parameters.getDifficulty()
+        );
         bodyPart = toEdit.bodyPart;
         trainings = toEdit.trainings == null || toEdit.trainings.isEmpty() ?
             null :
