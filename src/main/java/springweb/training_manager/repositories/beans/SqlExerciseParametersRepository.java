@@ -4,7 +4,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import springweb.training_manager.models.entities.ExerciseParameters;
-import springweb.training_manager.repositories.for_controllers.DuplicationRepository;
 import springweb.training_manager.repositories.for_controllers.ExerciseParametersRepository;
 
 import java.util.Optional;
@@ -12,8 +11,7 @@ import java.util.Optional;
 @Repository
 interface SqlExerciseParametersRepository
     extends ExerciseParametersRepository,
-    JpaRepository<ExerciseParameters, Integer>,
-    DuplicationRepository<ExerciseParameters> {
+    JpaRepository<ExerciseParameters, Integer> {
     @Query("""
             SELECT ep
             FROM ExerciseParameters ep

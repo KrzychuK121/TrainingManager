@@ -1,5 +1,6 @@
 package springweb.training_manager.models.viewmodels.exercise;
 
+import jakarta.validation.Valid;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -21,6 +22,7 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 public class ExerciseWrite extends ExerciseSchema implements Castable<Exercise> {
     private List<TrainingExerciseVM> trainings = new ArrayList<>();
+    @Valid
     private ExerciseParametersWrite parameters = new ExerciseParametersWrite();
 
     public static List<Exercise> toExerciseList(final List<ExerciseWrite> list) {

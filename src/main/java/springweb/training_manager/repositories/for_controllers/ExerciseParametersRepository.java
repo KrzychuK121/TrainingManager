@@ -4,6 +4,8 @@ import springweb.training_manager.models.entities.ExerciseParameters;
 
 import java.util.Optional;
 
-public interface ExerciseParametersRepository {
+public interface ExerciseParametersRepository extends DuplicationRepository<ExerciseParameters> {
     Optional<ExerciseParameters> findDuplication(ExerciseParameters entity);
+
+    ExerciseParameters save(ExerciseParameters entity);
 }
