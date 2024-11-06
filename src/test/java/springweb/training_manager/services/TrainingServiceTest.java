@@ -19,7 +19,10 @@ import static org.mockito.Mockito.when;
 
 class TrainingServiceTest {
 
-    private ExerciseRepository repositoryFindByExercise(List<Exercise> toFind, List<Boolean> found) {
+    private ExerciseRepository repositoryFindByExercise(
+        List<Exercise> toFind,
+        List<Boolean> found
+    ) {
         var mock = mock(ExerciseRepository.class);
 
         for (int i = 0; i < toFind.size(); i++) {
@@ -47,21 +50,7 @@ class TrainingServiceTest {
         var parameters = toCopy.getParameters();
 
         copyOf.setId(id);
-        copyOf.setName(toCopy.getName());
-        copyOf.setDescription(toCopy.getDescription());
-        copyOf.setBodyPart(toCopy.getBodyPart());
-        copyOf.setParameters(
-            parameters == null
-                ? null
-                : new ExerciseParameters(
-                parameters.getId(),
-                parameters.getRounds(),
-                parameters.getRepetition(),
-                parameters.getWeights(),
-                parameters.getTime(),
-                parameters.getDifficulty()
-            )
-        );
+        copyOf.copy(toCopy);
 
         return copyOf;
     }
