@@ -8,4 +8,8 @@ public interface ExerciseParametersRepository extends DuplicationRepository<Exer
     Optional<ExerciseParameters> findDuplication(ExerciseParameters entity);
 
     ExerciseParameters save(ExerciseParameters entity);
+
+    boolean referencedInExercise(Integer parametersId);
+
+    boolean referencedInTrainingExercise(Integer parametersId);
 }

@@ -10,16 +10,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import springweb.training_manager.models.entities.Exercise;
-import springweb.training_manager.models.entities.ExerciseParameters;
 import springweb.training_manager.models.entities.Training;
 import springweb.training_manager.models.viewmodels.exercise.ExerciseCreate;
 import springweb.training_manager.models.viewmodels.exercise.ExerciseRead;
 import springweb.training_manager.models.viewmodels.exercise.ExerciseWrite;
 import springweb.training_manager.models.viewmodels.exercise.ExerciseWriteAPI;
-import springweb.training_manager.models.viewmodels.exercise_parameters.ExerciseParametersWrite;
 import springweb.training_manager.models.viewmodels.training.TrainingExerciseVM;
 import springweb.training_manager.models.viewmodels.validation.ValidationErrors;
-import springweb.training_manager.repositories.for_controllers.ExerciseParametersRepository;
 import springweb.training_manager.repositories.for_controllers.ExerciseRepository;
 import springweb.training_manager.repositories.for_controllers.TrainingRepository;
 
@@ -31,7 +28,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class ExerciseService {
     private final ExerciseRepository repository;
-    private final ExerciseParametersRepository parametersRepository;
+    private final ExerciseParametersService parametersService;
     private final TrainingRepository trainingRepository;
     private final TrainingService trainingService;
     private static final Logger logger = LoggerFactory.getLogger(ExerciseService.class);
@@ -68,17 +65,6 @@ public class ExerciseService {
             }
         );
         return trainingToSave;
-    }
-
-    private ExerciseParameters prepExerciseParameters(ExerciseParametersWrite parametersWrite) {
-        var preparedParameters = NoDuplicationService.prepEntity(
-            parametersWrite.toEntity(),
-            parametersRepository,
-            parametersRepository::save
-        );
-        if (preparedParameters == null)
-            throw new IllegalArgumentException("Exercises must contain its parameters");
-        return preparedParameters;
     }
 
     public void setTrainingsById(ExerciseWrite toSave, String[] trainingIds) {
@@ -148,7 +134,9 @@ public class ExerciseService {
     }
 
     public Exercise create(ExerciseWrite toSave) {
-        var preparedParameters = prepExerciseParameters(toSave.getParameters());
+        var preparedParameters = parametersService.prepExerciseParameters(
+            toSave.getParameters()
+        );
         List<Training> preparedTrainingList = prepTrainings(toSave.getTrainings());
         if (preparedTrainingList != null)
             toSave.setTrainings(TrainingExerciseVM.toTrainingExerciseList(preparedTrainingList));
@@ -236,7 +224,9 @@ public class ExerciseService {
     public void edit(ExerciseWrite toEdit, int id) {
         List<Training> preparedTrainingList = prepTrainings(toEdit.getTrainings());
         toEdit.setTrainings(TrainingExerciseVM.toTrainingExerciseList(preparedTrainingList));
-        var preparedParameters = prepExerciseParameters(toEdit.getParameters());
+        var preparedParameters = parametersService.prepExerciseParameters(
+            toEdit.getParameters()
+        );
 
         Exercise toSave = getById(id);
         editExerciseInTrainings(toSave, toSave.getTrainings(), false);

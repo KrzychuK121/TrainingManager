@@ -23,4 +23,12 @@ interface SqlExerciseParametersRepository
         """)
     @Override
     Optional<ExerciseParameters> findDuplication(ExerciseParameters entity);
+
+    @Query("SELECT 1 FROM Exercise e WHERE e.parameters.id = :#{#parametersId}")
+    @Override
+    boolean referencedInExercise(Integer parametersId);
+
+    @Query("SELECT 1 FROM TrainingExercise te WHERE te.parameters.id = :#{#parametersId}")
+    @Override
+    boolean referencedInTrainingExercise(Integer parametersId);
 }
