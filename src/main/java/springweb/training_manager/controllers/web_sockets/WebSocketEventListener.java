@@ -20,6 +20,8 @@ public class WebSocketEventListener {
     public void handleWebSocketDisconnectListener(SessionDisconnectEvent event) {
         StompHeaderAccessor accessor = StompHeaderAccessor.wrap(event.getMessage());
         Principal principal = accessor.getUser();
+        if(principal == null)
+            return;
         log.info("Removing notification timers for {}'s incoming trainings.", principal.getName());
         notificationTimerService.cancelTimerForUser(principal);
     }
