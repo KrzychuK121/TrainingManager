@@ -136,6 +136,7 @@ public class ExerciseService {
         return null;
     }
 
+    @Transactional
     public Exercise create(ExerciseWrite toSave) {
         var preparedParameters = parametersService.prepExerciseParameters(
             toSave.getParameters()

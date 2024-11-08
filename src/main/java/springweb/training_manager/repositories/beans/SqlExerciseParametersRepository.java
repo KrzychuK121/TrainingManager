@@ -13,15 +13,12 @@ import java.util.Optional;
 interface SqlExerciseParametersRepository
     extends ExerciseParametersRepository,
     JpaRepository<ExerciseParameters, Integer> {
-    @Query("""
+    @Query(value = """
             SELECT ep
             FROM ExerciseParameters ep
             WHERE ep.rounds = :#{#entity.rounds}
                 AND ep.repetition = :#{#entity.repetition}
-                AND (
-                    ep.time IS NULL AND :#{#entity.time} IS NULL 
-                    OR ep.time = :#{#entity.time}
-                )
+                AND NULLIF(ep.time, :#{#entity.time}) IS NULL
                 AND ep.weights = :#{#entity.weights}
         """)
     @Override

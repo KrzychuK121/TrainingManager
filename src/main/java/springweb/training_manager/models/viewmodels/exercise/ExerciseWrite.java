@@ -32,32 +32,12 @@ public class ExerciseWrite extends ExerciseSchema implements Castable<Exercise> 
             .collect(Collectors.toList());
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public void setRounds(int rounds) {
-        this.parameters.setRounds(rounds);
-    }
-
-    public void setRepetition(int repetition) {
-        this.parameters.setRepetition(repetition);
-    }
-
-    public void setWeights(short weights) {
-        this.parameters.setWeights(weights);
+    public void setBodyPart(BodyPart bodyPart) {
+        this.bodyPart = bodyPart;
     }
 
     public void setTime(LocalTime time) {
         this.parameters.setTime(time);
-    }
-
-    public void setBodyPart(BodyPart bodyPart) {
-        this.bodyPart = bodyPart;
     }
 
     @Override
