@@ -7,7 +7,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Range;
 import org.springframework.format.annotation.DateTimeFormat;
-import springweb.training_manager.models.entities.Difficulty;
 
 import java.time.LocalTime;
 
@@ -31,8 +30,6 @@ public class ExerciseParametersSchema implements Identificable<Integer> {
     protected short weights;
     @DateTimeFormat(pattern = "mm:ss")
     protected LocalTime time;
-    @Enumerated(EnumType.STRING)
-    protected Difficulty difficulty;
 
     @Override
     public Integer defaultId() {

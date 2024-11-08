@@ -1,5 +1,6 @@
 package springweb.training_manager.services;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +16,7 @@ import springweb.training_manager.models.viewmodels.exercise.ExerciseCreate;
 import springweb.training_manager.models.viewmodels.exercise.ExerciseRead;
 import springweb.training_manager.models.viewmodels.exercise.ExerciseWrite;
 import springweb.training_manager.models.viewmodels.exercise.ExerciseWriteAPI;
+import springweb.training_manager.models.viewmodels.exercise_parameters.ExerciseParametersRead;
 import springweb.training_manager.models.viewmodels.training.TrainingExerciseVM;
 import springweb.training_manager.models.viewmodels.validation.ValidationErrors;
 import springweb.training_manager.repositories.for_controllers.ExerciseRepository;
@@ -29,6 +31,7 @@ import java.util.Map;
 public class ExerciseService {
     private final ExerciseRepository repository;
     private final ExerciseParametersService parametersService;
+    private final TrainingExerciseService trainingExerciseService;
     private final TrainingRepository trainingRepository;
     private final TrainingService trainingService;
     private static final Logger logger = LoggerFactory.getLogger(ExerciseService.class);
@@ -138,14 +141,18 @@ public class ExerciseService {
             toSave.getParameters()
         );
         List<Training> preparedTrainingList = prepTrainings(toSave.getTrainings());
-        if (preparedTrainingList != null)
-            toSave.setTrainings(TrainingExerciseVM.toTrainingExerciseList(preparedTrainingList));
 
         var entityToSave = toSave.toEntity();
         entityToSave.setParameters(preparedParameters);
+
         var created = repository.save(entityToSave);
         if (preparedTrainingList != null)
-            editExerciseInTrainings(created, preparedTrainingList, true);
+            created.setTrainingExercises(
+                trainingExerciseService.updateTrainingExerciseConnection(
+                    created,
+                    preparedTrainingList
+                )
+            );
 
         return created;
     }
@@ -180,7 +187,6 @@ public class ExerciseService {
                 else
                     training.getExercises()
                         .remove(toAddOrRemove);
-                trainingRepository.save(training);
             }
         );
     }
@@ -221,25 +227,35 @@ public class ExerciseService {
         }
     }
 
+    @Transactional
     public void edit(ExerciseWrite toEdit, int id) {
         List<Training> preparedTrainingList = prepTrainings(toEdit.getTrainings());
-        toEdit.setTrainings(TrainingExerciseVM.toTrainingExerciseList(preparedTrainingList));
         var preparedParameters = parametersService.prepExerciseParameters(
             toEdit.getParameters()
         );
 
         Exercise toSave = getById(id);
-        editExerciseInTrainings(toSave, toSave.getTrainings(), false);
-
+        var oldParametersRead = new ExerciseParametersRead(
+            toSave.getParameters()
+        );
         toSave.copy(toEdit.toEntity());
         toSave.setParameters(preparedParameters);
+
         var saved = repository.save(toSave);
-        editExerciseInTrainings(saved, saved.getTrainings(), true);
+        trainingExerciseService.updateTrainingExerciseConnection(
+            saved,
+            preparedTrainingList
+        );
+        parametersService.deleteIfOrphaned(oldParametersRead);
     }
 
     public void delete(int id) {
         var toDelete = getById(id);
+        var oldParametersRead = new ExerciseParametersRead(
+            toDelete.getParameters()
+        );
         editExerciseInTrainings(toDelete, toDelete.getTrainings(), false);
         repository.deleteById(id);
+        parametersService.deleteIfOrphaned(oldParametersRead);
     }
 }

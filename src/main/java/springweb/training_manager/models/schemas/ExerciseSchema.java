@@ -8,13 +8,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
-import org.hibernate.validator.constraints.Range;
-import org.springframework.format.annotation.DateTimeFormat;
 import springweb.training_manager.models.entities.BodyPart;
-import springweb.training_manager.models.entities.Difficulty;
-
-import java.time.LocalTime;
-import java.util.Objects;
 
 @Getter
 @AllArgsConstructor
@@ -34,6 +28,8 @@ public abstract class ExerciseSchema implements Identificable<Integer> {
     @NotNull(message = "Wybierz wartość z listy")
     @Enumerated(EnumType.STRING)
     protected BodyPart bodyPart;
+    @NotNull(message = "Podaj domyślną wartość spalanych kalorii przy wykonywaniu tego ćwiczenia")
+    protected int defaultBurnedKcal;
 
     @Override
     public Integer getId() {

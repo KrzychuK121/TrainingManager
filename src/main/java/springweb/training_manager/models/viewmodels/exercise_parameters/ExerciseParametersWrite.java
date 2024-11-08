@@ -1,8 +1,6 @@
 package springweb.training_manager.models.viewmodels.exercise_parameters;
 
-import lombok.Builder;
 import lombok.NoArgsConstructor;
-import springweb.training_manager.models.entities.Difficulty;
 import springweb.training_manager.models.entities.ExerciseParameters;
 import springweb.training_manager.models.schemas.ExerciseParametersSchema;
 import springweb.training_manager.models.viewmodels.Castable;
@@ -31,10 +29,6 @@ public class ExerciseParametersWrite extends ExerciseParametersSchema implements
         this.time = time;
     }
 
-    public void setDifficulty(Difficulty difficulty) {
-        this.difficulty = difficulty;
-    }
-
     @Override
     public ExerciseParameters toEntity() {
         return new ExerciseParameters(
@@ -42,8 +36,7 @@ public class ExerciseParametersWrite extends ExerciseParametersSchema implements
             rounds,
             repetition,
             weights,
-            time,
-            difficulty
+            time
         );
     }
 }

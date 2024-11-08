@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import springweb.training_manager.models.entities.ExerciseParameters;
+import springweb.training_manager.models.viewmodels.exercise_parameters.ExerciseParametersRead;
 import springweb.training_manager.models.viewmodels.exercise_parameters.ExerciseParametersWrite;
 import springweb.training_manager.repositories.for_controllers.ExerciseParametersRepository;
 
@@ -26,8 +27,13 @@ public class ExerciseParametersService {
         return preparedParameters;
     }
 
-    public boolean parametersAreOrphaned(ExerciseParametersWrite parametersWrite) {
-        return !repository.referencedInExercise(parametersWrite.getId()) &&
-            repository.referencedInTrainingExercise(parametersWrite.getId());
+    public boolean parametersAreOrphaned(ExerciseParametersRead parametersRead) {
+        return !repository.referencedInExercise(parametersRead.getId()) &&
+            !repository.referencedInTrainingExercise(parametersRead.getId());
+    }
+
+    public void deleteIfOrphaned(ExerciseParametersRead parametersRead) {
+        if (parametersAreOrphaned(parametersRead))
+            repository.deleteById(parametersRead.getId());
     }
 }

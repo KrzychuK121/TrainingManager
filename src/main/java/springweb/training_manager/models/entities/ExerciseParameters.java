@@ -1,6 +1,7 @@
 package springweb.training_manager.models.entities;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 import lombok.NoArgsConstructor;
 import springweb.training_manager.models.schemas.ExerciseParametersSchema;
 
@@ -15,16 +16,14 @@ public class ExerciseParameters extends ExerciseParametersSchema {
         int rounds,
         int repetition,
         short weights,
-        LocalTime time,
-        Difficulty difficulty
-    ){
+        LocalTime time
+    ) {
         super(
             id,
             rounds,
             repetition,
             weights,
-            time,
-            difficulty
+            time
         );
     }
 }

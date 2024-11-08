@@ -12,4 +12,6 @@ public interface ExerciseParametersRepository extends DuplicationRepository<Exer
     boolean referencedInExercise(Integer parametersId);
 
     boolean referencedInTrainingExercise(Integer parametersId);
+
+    void deleteById(Integer integer);
 }

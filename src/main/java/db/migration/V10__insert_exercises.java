@@ -19,21 +19,26 @@ public class V10__insert_exercises extends BaseJavaMigration {
         String sql = "INSERT INTO PUBLIC.EXERCISE (NAME, DESCRIPTION, ROUNDS, REPETITION, TIME, ID) VALUES (?, ?, ?, ?, ?, ?)";
         var exercises = exercisesToCreate();
 
-        try (PreparedStatement statement = context.getConnection().prepareStatement(sql)) {
+        try (PreparedStatement statement = context.getConnection()
+            .prepareStatement(sql)) {
             for (Exercise exercise : exercises) {
 
                 statement.setString(1, exercise.getName());
                 statement.setString(2, exercise.getDescription());
-                statement.setInt(3, exercise.getParameters().getRounds());
-                statement.setInt(4, exercise.getParameters().getRepetition());
-                if (exercise.getParameters().getTime() == null)
+                statement.setInt(3, exercise.getParameters()
+                    .getRounds());
+                statement.setInt(4, exercise.getParameters()
+                    .getRepetition());
+                if (exercise.getParameters()
+                    .getTime() == null)
                     statement.setNull(5, Types.TIME);
                 else
                     statement.setTime(
-                            5,
-                            Time.valueOf(
-                                    exercise.getParameters().getTime()
-                            )
+                        5,
+                        Time.valueOf(
+                            exercise.getParameters()
+                                .getTime()
+                        )
                     );
                 statement.setInt(6, exercise.getId());
                 statement.addBatch();
@@ -109,9 +114,9 @@ public class V10__insert_exercises extends BaseJavaMigration {
                 rounds,
                 repetition,
                 (short) 0,
-                time,
-                null
-            )
+                time
+            ),
+            1
         );
         ex.setId(id);
 

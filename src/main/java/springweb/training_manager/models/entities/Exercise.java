@@ -35,13 +35,15 @@ public class Exercise extends ExerciseSchema {
         String name,
         String description,
         BodyPart bodyPart,
-        ExerciseParameters parameters
+        ExerciseParameters parameters,
+        int defaultBurnedKcal
     ) {
         super(
             0,
             name,
             description,
-            bodyPart
+            bodyPart,
+            defaultBurnedKcal
         );
         this.parameters = parameters;
     }
@@ -62,6 +64,13 @@ public class Exercise extends ExerciseSchema {
         this.bodyPart = bodyPart;
     }
 
+    public void setTrainingExercises(List<TrainingExercise> trainingExercises) {
+        this.trainingExercises = trainingExercises;
+        this.trainings = trainingExercises.stream()
+            .map(TrainingExercise::getTraining)
+            .toList();
+    }
+
     // Might be used in PUT but NOT PATCH!!
     public void copy(Exercise toEdit) {
         name = toEdit.name;
@@ -73,10 +82,10 @@ public class Exercise extends ExerciseSchema {
             toEdit.parameters.getRounds(),
             toEdit.parameters.getRepetition(),
             toEdit.parameters.getWeights(),
-            toEdit.parameters.getTime(),
-            toEdit.parameters.getDifficulty()
+            toEdit.parameters.getTime()
         );
         bodyPart = toEdit.bodyPart;
+        defaultBurnedKcal = toEdit.defaultBurnedKcal;
         trainings = toEdit.trainings == null || toEdit.trainings.isEmpty() ?
             null :
             toEdit.trainings;

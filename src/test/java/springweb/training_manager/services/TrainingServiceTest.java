@@ -3,7 +3,6 @@ package springweb.training_manager.services;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import springweb.training_manager.models.entities.BodyPart;
-import springweb.training_manager.models.entities.Difficulty;
 import springweb.training_manager.models.entities.Exercise;
 import springweb.training_manager.models.entities.ExerciseParameters;
 import springweb.training_manager.models.viewmodels.exercise.ExerciseTraining;
@@ -68,10 +67,9 @@ class TrainingServiceTest {
                 3,
                 20,
                 (short) 0,
-                LocalTime.of(0, 0, 0),
-                Difficulty.FOR_BEGINNERS
-
-            )
+                LocalTime.of(0, 0, 0)
+            ),
+            1
         );
 
         var second = new Exercise(
@@ -83,9 +81,9 @@ class TrainingServiceTest {
                 3,
                 20,
                 (short) 4,
-                LocalTime.of(0, 0, 0),
-                Difficulty.MEDIUM
-            )
+                LocalTime.of(0, 0, 0)
+            ),
+            2
         );
 
         var newFirst = copy(first, 9);

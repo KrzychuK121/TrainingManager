@@ -24,7 +24,8 @@ interface SqlExerciseRepository extends ExerciseRepository, JpaRepository<Exerci
             WHERE e.name = :#{#exercise.name} AND 
             e.description = :#{#exercise.description} AND 
             e.bodyPart = :#{#exercise.bodyPart} AND
-            e.parameters = :#{#exercise.parameters} 
+            e.parameters = :#{#exercise.parameters} AND 
+            e.defaultBurnedKcal = :#{#exercise.defaultBurnedKcal}
             """
     )
     Optional<Exercise> findByExercise(@Param("exercise") Exercise exercise);

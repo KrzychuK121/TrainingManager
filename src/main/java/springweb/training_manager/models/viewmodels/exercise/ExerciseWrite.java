@@ -5,7 +5,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import springweb.training_manager.models.entities.BodyPart;
-import springweb.training_manager.models.entities.Difficulty;
 import springweb.training_manager.models.entities.Exercise;
 import springweb.training_manager.models.schemas.ExerciseSchema;
 import springweb.training_manager.models.viewmodels.Castable;
@@ -61,17 +60,14 @@ public class ExerciseWrite extends ExerciseSchema implements Castable<Exercise> 
         this.bodyPart = bodyPart;
     }
 
-    public void setDifficulty(Difficulty difficulty) {
-        this.parameters.setDifficulty(difficulty);
-    }
-
     @Override
     public Exercise toEntity() {
         var toReturn = new Exercise(
             name,
             description,
             bodyPart,
-            parameters.toEntity()
+            parameters.toEntity(),
+            defaultBurnedKcal
         );
 
         if (trainings != null)

@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import springweb.training_manager.models.entities.BodyPart;
-import springweb.training_manager.models.entities.Difficulty;
 import springweb.training_manager.models.entities.Exercise;
 import springweb.training_manager.models.entities.ExerciseParameters;
 import springweb.training_manager.models.schemas.ExerciseSchema;
@@ -18,21 +17,20 @@ import java.util.List;
 @Getter
 @Setter
 public class ExerciseTraining extends ExerciseSchema implements Castable<Exercise> {
-    private final String difficultyDesc;
     private final String bodyPartDesc;
     private final int parameters_id;
     private final int rounds;
     private final int repetition;
     private final short weights;
     private final LocalTime time;
-    private final Difficulty difficulty;
 
     public ExerciseTraining(Exercise exercise) {
         super(
             exercise.getId(),
             exercise.getName(),
             exercise.getDescription(),
-            exercise.getBodyPart()
+            exercise.getBodyPart(),
+            exercise.getDefaultBurnedKcal()
         );
         this.parameters_id = exercise.getParameters()
             .getId();
@@ -44,10 +42,7 @@ public class ExerciseTraining extends ExerciseSchema implements Castable<Exercis
             .getWeights();
         this.time = exercise.getParameters()
             .getTime();
-        this.difficulty = exercise.getParameters()
-            .getDifficulty();
         this.bodyPartDesc = BodyPart.getBodyDesc(bodyPart);
-        this.difficultyDesc = Difficulty.getEnumDesc(difficulty);
     }
 
     public static List<ExerciseTraining> toExerciseTrainingList(final List<Exercise> list) {
@@ -90,9 +85,9 @@ public class ExerciseTraining extends ExerciseSchema implements Castable<Exercis
                 rounds,
                 repetition,
                 weights,
-                time,
-                difficulty
-            )
+                time
+            ),
+            defaultBurnedKcal
         );
         toReturn.setId(id);
 
