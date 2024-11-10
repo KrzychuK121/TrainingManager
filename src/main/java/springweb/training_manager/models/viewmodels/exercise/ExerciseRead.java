@@ -11,7 +11,7 @@ import java.util.List;
 
 @Getter
 public class ExerciseRead extends ExerciseSchema {
-    private List<TrainingExerciseVM> trainings;
+    private final List<TrainingExerciseVM> trainings;
     private final String bodyPartDesc;
     private final int parameters_id;
     private final int rounds;
