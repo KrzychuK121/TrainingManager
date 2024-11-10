@@ -45,6 +45,25 @@ public class ExerciseTraining extends ExerciseSchema implements Castable<Exercis
         this.bodyPartDesc = BodyPart.getBodyDesc(bodyPart);
     }
 
+    public ExerciseTraining(
+        Exercise exercise,
+        ExerciseParameters parameters
+    ) {
+        super(
+            exercise.getId(),
+            exercise.getName(),
+            exercise.getDescription(),
+            exercise.getBodyPart(),
+            exercise.getDefaultBurnedKcal()
+        );
+        this.parametersId = parameters.getId();
+        this.rounds = parameters.getRounds();
+        this.repetition = parameters.getRepetition();
+        this.weights = parameters.getWeights();
+        this.time = parameters.getTime();
+        this.bodyPartDesc = BodyPart.getBodyDesc(bodyPart);
+    }
+
     public static List<ExerciseTraining> toExerciseTrainingList(final List<Exercise> list) {
         if (list == null)
             return null;

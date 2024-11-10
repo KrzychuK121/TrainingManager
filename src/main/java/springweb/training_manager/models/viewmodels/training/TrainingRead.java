@@ -18,8 +18,19 @@ public class TrainingRead extends TrainingSchema {
             training.getTitle(),
             training.getDescription()
         );
-        this.exercises = TrainingExercise.toExerciseTrainingList(
+        this.exercises = toExerciseTrainingList(
             training.getTrainingExercises()
         );
+    }
+
+    public static List<ExerciseTraining> toExerciseTrainingList(List<TrainingExercise> toMap) {
+        return toMap.stream()
+            .map(
+                trainingExercise -> new ExerciseTraining(
+                    trainingExercise.getExercise(),
+                    trainingExercise.getParameters()
+                )
+            )
+            .toList();
     }
 }
