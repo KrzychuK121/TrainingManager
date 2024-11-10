@@ -14,13 +14,13 @@ import java.util.Optional;
 @Repository
 interface SqlExerciseRepository extends ExerciseRepository, JpaRepository<Exercise, Integer> {
     @Override
-    @Query("SELECT e FROM Exercise e LEFT JOIN FETCH e.trainings")
+    @Query("SELECT e FROM Exercise e LEFT JOIN FETCH e.trainingExercises")
     List<Exercise> findAll();
 
     @Override
     @Query(
         """
-            SELECT e FROM Exercise e LEFT JOIN FETCH e.trainings 
+            SELECT e FROM Exercise e LEFT JOIN FETCH e.trainingExercises
             WHERE e.name = :#{#exercise.name} AND 
             e.description = :#{#exercise.description} AND 
             e.bodyPart = :#{#exercise.bodyPart} AND

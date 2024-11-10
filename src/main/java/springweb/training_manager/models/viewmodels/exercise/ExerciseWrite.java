@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import springweb.training_manager.models.entities.BodyPart;
 import springweb.training_manager.models.entities.Exercise;
+import springweb.training_manager.models.entities.TrainingExercise;
 import springweb.training_manager.models.schemas.ExerciseSchema;
 import springweb.training_manager.models.viewmodels.Castable;
 import springweb.training_manager.models.viewmodels.exercise_parameters.ExerciseParametersWrite;
@@ -40,6 +41,18 @@ public class ExerciseWrite extends ExerciseSchema implements Castable<Exercise> 
         this.parameters.setTime(time);
     }
 
+    private List<TrainingExercise> toTrainingExercise(Exercise toMap) {
+        return trainings.stream()
+            .map(
+                customData -> new TrainingExercise(
+                    customData.toEntity(),
+                    toMap,
+                    toMap.getParameters()
+                )
+            )
+            .toList();
+    }
+
     @Override
     public Exercise toEntity() {
         var toReturn = new Exercise(
@@ -51,7 +64,9 @@ public class ExerciseWrite extends ExerciseSchema implements Castable<Exercise> 
         );
 
         if (trainings != null)
-            toReturn.setTrainings(TrainingExerciseVM.toTrainingList(trainings));
+            toReturn.setTrainingExercises(
+                toTrainingExercise(toReturn)
+            );
 
         return toReturn;
     }

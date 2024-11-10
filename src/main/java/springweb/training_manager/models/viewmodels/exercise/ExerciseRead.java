@@ -38,6 +38,6 @@ public class ExerciseRead extends ExerciseSchema {
         this.time = exercise.getParameters()
             .getTime();
         this.bodyPartDesc = BodyPart.getBodyDesc(bodyPart);
-        this.trainings = TrainingExerciseVM.toTrainingExerciseList(exercise.getTrainings());
+        this.trainings = TrainingExerciseVM.toTrainingExerciseVMList(exercise.getTrainings());
     }
 }

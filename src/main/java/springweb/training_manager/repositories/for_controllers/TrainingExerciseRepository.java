@@ -18,10 +18,17 @@ public interface TrainingExerciseRepository {
         int exerciseId
     );
 
-    void deleteIfNotIn(
+    void deleteIfTrainingsNotIn(
         @Param("exerciseId") Integer exerciseId,
         @Param("ids") List<Integer> trainingIds
     );
+
+    void deleteIfExercisesNotIn(
+        @Param("trainingId") Integer trainingId,
+        @Param("ids") List<Integer> exercisesIds
+    );
+
+    void deleteByTrainingId(int trainingId);
 
     void deleteByExerciseId(int exerciseId);
 }

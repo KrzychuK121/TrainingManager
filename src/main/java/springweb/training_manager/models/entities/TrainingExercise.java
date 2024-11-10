@@ -4,6 +4,9 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import springweb.training_manager.models.viewmodels.exercise.ExerciseTraining;
+
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -44,5 +47,15 @@ public class TrainingExercise {
             exercise,
             parameters
         );
+    }
+
+    public static List<ExerciseTraining> toExerciseTrainingList(List<TrainingExercise> toMap) {
+        return toMap.stream()
+            .map(
+                trainingExercise -> new ExerciseTraining(
+                    trainingExercise.getExercise()
+                )
+            )
+            .toList();
     }
 }

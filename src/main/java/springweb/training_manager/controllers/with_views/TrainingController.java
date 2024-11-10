@@ -19,8 +19,10 @@ import springweb.training_manager.models.entities.Exercise;
 import springweb.training_manager.models.entities.Training;
 import springweb.training_manager.models.schemas.RoleSchema;
 import springweb.training_manager.models.viewmodels.exercise.ExerciseTraining;
+import springweb.training_manager.models.viewmodels.exercise_parameters.ExerciseParametersWrite;
 import springweb.training_manager.models.viewmodels.training.TrainingRead;
 import springweb.training_manager.models.viewmodels.training.TrainingWrite;
+import springweb.training_manager.models.viewmodels.training_exercise.CustomTrainingParametersWrite;
 import springweb.training_manager.repositories.for_controllers.ExerciseRepository;
 import springweb.training_manager.services.PageSortService;
 import springweb.training_manager.services.TrainingService;
@@ -109,8 +111,11 @@ public class TrainingController {
         prepExerciseSelect(model, exerciseIds);
         current.getExercises()
             .add(
-                new ExerciseTraining(
-                    new Exercise()
+                new CustomTrainingParametersWrite(
+                    new ExerciseTraining(
+                        new Exercise()
+                    ),
+                    new ExerciseParametersWrite()
                 )
             );
         return "training/save";

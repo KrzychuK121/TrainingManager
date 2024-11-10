@@ -1,5 +1,6 @@
 package springweb.training_manager.services;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -10,22 +11,20 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
 import springweb.training_manager.exceptions.NotOwnedByUserException;
 import springweb.training_manager.models.entities.Exercise;
+import springweb.training_manager.models.entities.ExerciseParameters;
 import springweb.training_manager.models.entities.Training;
 import springweb.training_manager.models.entities.User;
 import springweb.training_manager.models.viewmodels.exercise.ExerciseTraining;
-import springweb.training_manager.models.viewmodels.training.TrainingCreate;
-import springweb.training_manager.models.viewmodels.training.TrainingRead;
-import springweb.training_manager.models.viewmodels.training.TrainingWrite;
-import springweb.training_manager.models.viewmodels.training.TrainingWriteAPI;
+import springweb.training_manager.models.viewmodels.exercise_parameters.ExerciseParametersRead;
+import springweb.training_manager.models.viewmodels.exercise_parameters.ExerciseParametersWrite;
+import springweb.training_manager.models.viewmodels.training.*;
+import springweb.training_manager.models.viewmodels.training_exercise.CustomTrainingParametersWrite;
 import springweb.training_manager.models.viewmodels.validation.ValidationErrors;
 import springweb.training_manager.repositories.for_controllers.ExerciseRepository;
 import springweb.training_manager.repositories.for_controllers.TrainingRepository;
 import springweb.training_manager.repositories.for_controllers.UserRepository;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -33,18 +32,22 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class TrainingService {
     private final ExerciseRepository exerciseRepository;
+    private final ExerciseParametersService parametersService;
     private final TrainingRepository repository;
     private final UserRepository userRepository;
+    private final TrainingExerciseService trainingExerciseService;
 
     /**
      * This method is used to find existing exercises in database or creating new one
      * corresponding to objects inside <code>exercises</code>. After that, they are
      * returned as a new list.
      *
-     * @param exercises list of <code>ExerciseTraining</code> from <code>TrainingWrite</code> object.
-     *                  Can be used e.g. in <code>create(TrainingWrite toSave)</code> method.
+     * @param exercises list of <code>ExerciseTraining</code> from
+     *                  <code>TrainingWrite</code> object. Can be used e.g. in
+     *                  <code>create(TrainingWrite toSave)</code> method.
      *
-     * @return prepared list with <code>ExerciseTraining</code> (founded in database or just created)
+     * @return prepared list with <code>ExerciseTraining</code> (founded in database or
+     * just created)
      */
     public List<Exercise> prepExercises(List<ExerciseTraining> exercises) {
         if (exercises == null || exercises.isEmpty())
@@ -67,21 +70,81 @@ public class TrainingService {
         return exerciseToSave;
     }
 
+    public Map<Exercise, ExerciseParameters> prepExercisesAndParametersMap(
+        List<CustomTrainingParametersWrite> customData
+    ) {
+        if (customData == null || customData.isEmpty())
+            return null;
+
+        return customData.stream()
+            .collect(
+                Collectors.toMap(
+                    data -> NoDuplicationService.prepEntity(
+                        data.getExerciseWrite()
+                            .toEntity(),
+                        exerciseRepository::findByExercise,
+                        exerciseRepository::save
+                    ),
+                    data -> parametersService.prepExerciseParameters(
+                        data.getParameters() != null
+                            ? data.getParameters()
+                            : data.getExerciseWrite()
+                            .getExerciseParameters()
+                    )
+                )
+            );
+    }
+
     public void setExercisesById(TrainingWrite toSave, String[] exercisesIds) {
         if (exercisesIds == null || exercisesIds.length == 0)
             return;
-        List<ExerciseTraining> exercisesToSave = new ArrayList<>(exercisesIds.length);
-        for (String exerciseID : exercisesIds) {
-            if (exerciseID.isEmpty())
-                continue;
-            int id = Integer.parseInt(exerciseID);
-            Exercise found = exerciseRepository.findById(id).get();
-            ExerciseTraining viewModel = new ExerciseTraining(found);
-            exercisesToSave.add(viewModel);
-        }
+        var selectedExercises = Arrays.stream(exercisesIds)
+            .map(
+                id -> new SelectedExerciseWrite(
+                    id,
+                    new ExerciseParametersWrite()
+                )
+            )
+            .toList();
+        setExercisesById(toSave, selectedExercises);
+    }
 
-        List<ExerciseTraining> currExercises = toSave.getExercises();
-        currExercises.addAll(exercisesToSave);
+    // TODO: Prepare exercise parameters and put them later into TrainingExercise
+    public void setExercisesById(
+        TrainingWrite toSave,
+        List<SelectedExerciseWrite> selectedExercises
+    ) {
+        if (selectedExercises == null || selectedExercises.isEmpty())
+            return;
+
+        setExercisesBy(toSave, selectedExercises);
+    }
+
+    private void setExercisesBy(
+        TrainingWrite toSave,
+        List<SelectedExerciseWrite> selectedExercises
+    ) {
+        List<CustomTrainingParametersWrite> currExercises = toSave.getExercises();
+        currExercises.addAll(
+            selectedExercises.stream()
+                .filter(
+                    selected -> !selected.getSelectedId()
+                        .isEmpty()
+                )
+                .map(
+                    selected -> {
+                        var exerciseID = selected.getSelectedId();
+                        int id = Integer.parseInt(exerciseID);
+                        Exercise found = exerciseRepository.findById(id)
+                            .get();
+                        return new CustomTrainingParametersWrite(
+                            new ExerciseTraining(found),
+                            selected.getParameters()
+                        );
+                    }
+                )
+                .toList()
+        );
         toSave.setExercises(currExercises);
     }
 
@@ -100,10 +163,9 @@ public class TrainingService {
         return null;
     }
 
+    @Transactional
     public Training create(TrainingWrite toSave, String userId) {
-        List<Exercise> preparedExerciseList = prepExercises(toSave.getExercises());
-        if (preparedExerciseList != null)
-            toSave.setExercises(ExerciseTraining.toExerciseTrainingList(preparedExerciseList));
+        var preparedExerciseList = prepExercisesAndParametersMap(toSave.getExercises());
 
         var created = repository.save(toSave.toEntity());
 
@@ -119,45 +181,66 @@ public class TrainingService {
         }
 
         if (preparedExerciseList != null)
-            editTrainingInExercises(created, preparedExerciseList, true);
+            created.setTrainingExercises(
+                trainingExerciseService.updateTrainingExerciseConnection(
+                    created,
+                    preparedExerciseList
+                )
+            );
 
         return created;
     }
 
     /**
-     * This method <b>SHOULD</b> be used after creating/editing <code>Training</code>.
-     * It is responsible for adding <code>toAddOrRemove</code> to every <code>toEdit</code> element
-     * and then saving the changes in the database. This operation is required to create proper
-     * many to many row between <code>Exercise</code> and <code>Training</code>
+     * This method <b>SHOULD</b> be used after creating/editing <code>Training</code>. It
+     * is responsible for adding <code>toAddOrRemove</code> to every <code>toEdit</code>
+     * element and then saving the changes in the database. This operation is required to
+     * create proper many to many row between <code>Exercise</code> and
+     * <code>Training</code>
      *
-     * @param toAddOrRemove <code>Training</code> with id which should be connected with <code>Exercise</code>
-     * @param toEdit        list of <code>Exercise</code> objects which should be connected with <code>Training</code>
-     * @param ifAdd         when true, it will add <code>toAddOrRemove</code> to <code>toEdit</code>, otherwise it will
-     *                      remove <code>toAddOrRemove</code> from <code>toEdit</code>.
+     * @param toAddOrRemove <code>Training</code> with id which should be connected with
+     *                      <code>Exercise</code>
+     * @param toEdit        list of <code>Exercise</code> objects which should be
+     *                      connected with <code>Training</code>
+     * @param ifAdd         when true, it will add <code>toAddOrRemove</code> to
+     *                      <code>toEdit</code>, otherwise it will remove
+     *                      <code>toAddOrRemove</code> from <code>toEdit</code>.
      */
-    private void editTrainingInExercises(Training toAddOrRemove, List<Exercise> toEdit, boolean ifAdd) {
+    private void editTrainingInExercises(
+        Training toAddOrRemove,
+        List<Exercise> toEdit,
+        boolean ifAdd
+    ) {
         if (toEdit == null)
             return;
         toEdit.forEach(
             exercise -> {
                 if (ifAdd)
-                    exercise.getTrainings().add(toAddOrRemove);
+                    exercise.getTrainings()
+                        .add(toAddOrRemove);
                 else
-                    exercise.getTrainings().remove(toAddOrRemove);
+                    exercise.getTrainings()
+                        .remove(toAddOrRemove);
                 exerciseRepository.save(exercise);
             }
         );
     }
 
-    private void editTrainingInUsers(Training toAddOrRemove, Set<User> toEdit, boolean ifAdd) {
+    private void editTrainingInUsers(
+        Training toAddOrRemove,
+        Set<User> toEdit,
+        boolean ifAdd
+    ) {
         if (toEdit == null)
             return;
         toEdit.forEach(
             user -> {
                 if (ifAdd)
-                    user.getTrainings().add(toAddOrRemove);
+                    user.getTrainings()
+                        .add(toAddOrRemove);
                 else
-                    user.getTrainings().remove(toAddOrRemove);
+                    user.getTrainings()
+                        .remove(toAddOrRemove);
                 userRepository.save(user);
             }
         );
@@ -165,7 +248,8 @@ public class TrainingService {
 
     public <TR> List<TR> getAll(Function<Training, TR> mapper) {
         return repository.findAll()
-            .stream().map(mapper)
+            .stream()
+            .map(mapper)
             .collect(Collectors.toList());
     }
 
@@ -190,7 +274,8 @@ public class TrainingService {
         );
 
         Page<Integer> allIds = repository.findAllIds(page);
-        if (allIds.getContent().isEmpty())
+        if (allIds.getContent()
+            .isEmpty())
             allIds = repository.findAllIds(
                 PageRequest.of(
                     PageSortService.getPageNumber(allIds),
@@ -200,15 +285,18 @@ public class TrainingService {
             );
 
         List<TrainingRead> toReturn = repository.findAllByIdIn(allIds.getContent())
-            .stream().map(
+            .stream()
+            .map(
                 TrainingRead::new
-            ).toList();
+            )
+            .toList();
 
         return new PageImpl<>(toReturn, page, allIds.getTotalElements());
     }
 
     /**
-     * Less effective than alternative approach of <code>getAllAlternative(Pageable page)</code> method.
+     * Less effective than alternative approach of <code>getAllAlternative(Pageable
+     * page)</code> method.
      *
      * @param page request to get paged <code>TrainingRead</code>
      *
@@ -223,15 +311,18 @@ public class TrainingService {
             LoggerFactory.getLogger(TrainingService.class)
         );
 
-        Page<TrainingRead> toReturn = repository.findAll(page).map(TrainingRead::new);
-        if (toReturn.getContent().isEmpty())
+        Page<TrainingRead> toReturn = repository.findAll(page)
+            .map(TrainingRead::new);
+        if (toReturn.getContent()
+            .isEmpty())
             toReturn = repository.findAll(
-                PageRequest.of(
-                    PageSortService.getPageNumber(toReturn),
-                    toReturn.getSize(),
-                    page.getSort()
+                    PageRequest.of(
+                        PageSortService.getPageNumber(toReturn),
+                        toReturn.getSize(),
+                        page.getSort()
+                    )
                 )
-            ).map(TrainingRead::new);
+                .map(TrainingRead::new);
 
         return toReturn;
     }
@@ -246,9 +337,11 @@ public class TrainingService {
             return found;
 
         if (
-            found.getUsers().stream()
+            found.getUsers()
+                .stream()
                 .anyMatch(
-                    user -> user.getId().equals(userId)
+                    user -> user.getId()
+                        .equals(userId)
                 )
         )
             return found;
@@ -261,12 +354,11 @@ public class TrainingService {
         List<TrainingRead> usersTrainings = userRepository.findById(userId)
             .orElseThrow(
                 () -> new NotOwnedByUserException("Użytkownik o takim numerze id nie istnieje.")
-            ).getTrainings().stream().map(
-                training -> {
-                    TrainingRead read = new TrainingRead(training);
-                    return read;
-                }
-            ).collect(Collectors.toList());
+            )
+            .getTrainings()
+            .stream()
+            .map(TrainingRead::new)
+            .collect(Collectors.toList());
         return usersTrainings;
     }
 
@@ -285,24 +377,44 @@ public class TrainingService {
         return repository.existsById(trainingId);
     }
 
-    public void edit(TrainingWrite toEdit, int id, String userId) {
-        List<Exercise> preparedExerciseList = prepExercises(toEdit.getExercises());
-        toEdit.setExercises(ExerciseTraining.toExerciseTrainingList(preparedExerciseList));
-
-        Training toSave = getById(id, userId);
-        editTrainingInExercises(toSave, toSave.getExercises(), false);
-
-        toSave.copy(toEdit.toEntity());
-        var saved = repository.save(toSave);
-        editTrainingInExercises(saved, saved.getExercises(), true);
+    private static List<ExerciseParametersRead> getOldParametersList(Training toDelete) {
+        return toDelete.getTrainingExercises()
+            .stream()
+            .map(
+                trainingExercise -> new ExerciseParametersRead(
+                    trainingExercise.getParameters()
+                )
+            )
+            .toList();
     }
 
+    @Transactional
+    public void edit(TrainingWrite toEdit, int id, String userId) {
+        Map<Exercise, ExerciseParameters> preparedExerciseList = prepExercisesAndParametersMap(
+            toEdit.getExercises()
+        );
+
+        Training toSave = getById(id, userId);
+        var oldParametersList = getOldParametersList(toSave);
+        toSave.copy(toEdit.toEntity());
+
+        var saved = repository.save(toSave);
+        trainingExerciseService.updateTrainingExerciseConnection(
+            saved,
+            preparedExerciseList
+        );
+        parametersService.deleteIfOrphaned(oldParametersList);
+    }
+
+    @Transactional
     public void delete(int id, String userId) {
         var toDelete = getById(id, userId);
-        editTrainingInExercises(toDelete, toDelete.getExercises(), false);
+        var oldParametersList = getOldParametersList(toDelete);
         editTrainingInUsers(toDelete, toDelete.getUsers(), false);
 
+        trainingExerciseService.deleteByTrainingId(toDelete);
         repository.deleteById(id);
+        parametersService.deleteIfOrphaned(oldParametersList);
     }
 
 }

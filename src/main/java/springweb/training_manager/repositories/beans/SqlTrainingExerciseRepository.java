@@ -34,10 +34,26 @@ public interface SqlTrainingExerciseRepository extends TrainingExerciseRepositor
                 AND t.training.id NOT IN :ids
         """)
     @Override
-    void deleteIfNotIn(
+    void deleteIfTrainingsNotIn(
         @Param("exerciseId") Integer exerciseId,
         @Param("ids") List<Integer> trainingIds
     );
+
+    @Modifying
+    @Query("""
+            DELETE FROM TrainingExercise t 
+            WHERE t.training.id = :trainingId 
+                AND t.exercise.id NOT IN :ids
+        """)
+    @Override
+    void deleteIfExercisesNotIn(
+        @Param("trainingId") Integer trainingId,
+        @Param("ids") List<Integer> exercisesIds
+    );
+
+    @Modifying
+    @Override
+    void deleteByTrainingId(int trainingId);
 
     @Modifying
     @Override

@@ -8,15 +8,19 @@ import springweb.training_manager.models.viewmodels.exercise_parameters.Exercise
 import springweb.training_manager.models.viewmodels.exercise_parameters.ExerciseParametersWrite;
 import springweb.training_manager.repositories.for_controllers.ExerciseParametersRepository;
 
+import java.util.List;
+
 @RequiredArgsConstructor
 @Service
 @Slf4j
 public class ExerciseParametersService {
     private final ExerciseParametersRepository repository;
 
-    public ExerciseParameters prepExerciseParameters(ExerciseParametersWrite parametersWrite) {
+    public ExerciseParameters prepExerciseParameters(
+        ExerciseParameters parametersWrite
+    ) {
         var preparedParameters = NoDuplicationService.prepEntity(
-            parametersWrite.toEntity(),
+            parametersWrite,
             repository,
             repository::save
         );
@@ -27,13 +31,30 @@ public class ExerciseParametersService {
         return preparedParameters;
     }
 
+    public ExerciseParameters prepExerciseParameters(
+        ExerciseParametersWrite parametersWrite
+    ) {
+        return prepExerciseParameters(parametersWrite.toEntity());
+    }
+
     public boolean parametersAreOrphaned(ExerciseParametersRead parametersRead) {
         return !repository.referencedInExercise(parametersRead.getId()) &&
             !repository.referencedInTrainingExercise(parametersRead.getId());
     }
 
     public void deleteIfOrphaned(ExerciseParametersRead parametersRead) {
-        if (parametersAreOrphaned(parametersRead))
-            repository.deleteById(parametersRead.getId());
+        if (!parametersAreOrphaned(parametersRead))
+            return;
+        repository.deleteById(parametersRead.getId());
+    }
+
+    public void deleteIfOrphaned(List<ExerciseParametersRead> parametersRead) {
+        var toDelete = parametersRead.stream()
+            .filter(this::parametersAreOrphaned)
+            .map(ExerciseParametersRead::getId)
+            .toList();
+        if (toDelete.isEmpty())
+            return;
+        repository.deleteAllById(toDelete);
     }
 }

@@ -18,7 +18,7 @@ import java.util.List;
 @Setter
 public class ExerciseTraining extends ExerciseSchema implements Castable<Exercise> {
     private final String bodyPartDesc;
-    private final int parameters_id;
+    private final int parametersId;
     private final int rounds;
     private final int repetition;
     private final short weights;
@@ -32,7 +32,7 @@ public class ExerciseTraining extends ExerciseSchema implements Castable<Exercis
             exercise.getBodyPart(),
             exercise.getDefaultBurnedKcal()
         );
-        this.parameters_id = exercise.getParameters()
+        this.parametersId = exercise.getParameters()
             .getId();
         this.rounds = exercise.getParameters()
             .getRounds();
@@ -62,6 +62,16 @@ public class ExerciseTraining extends ExerciseSchema implements Castable<Exercis
         return result;
     }
 
+    public ExerciseParameters getExerciseParameters() {
+        return new ExerciseParameters(
+            parametersId,
+            rounds,
+            repetition,
+            weights,
+            time
+        );
+    }
+
     public void setName(String name) {
         this.name = name;
     }
@@ -80,13 +90,7 @@ public class ExerciseTraining extends ExerciseSchema implements Castable<Exercis
             name,
             description,
             bodyPart,
-            new ExerciseParameters(
-                parameters_id,
-                rounds,
-                repetition,
-                weights,
-                time
-            ),
+            getExerciseParameters(),
             defaultBurnedKcal
         );
         toReturn.setId(id);

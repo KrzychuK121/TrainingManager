@@ -250,12 +250,13 @@ public class ExerciseService {
         parametersService.deleteIfOrphaned(oldParametersRead);
     }
 
+    @Transactional
     public void delete(int id) {
         var toDelete = getById(id);
         var oldParametersRead = new ExerciseParametersRead(
             toDelete.getParameters()
         );
-        editExerciseInTrainings(toDelete, toDelete.getTrainings(), false);
+        trainingExerciseService.deleteByExerciseId(toDelete);
         repository.deleteById(id);
         parametersService.deleteIfOrphaned(oldParametersRead);
     }

@@ -64,7 +64,7 @@ public class ExerciseController {
     }
 
     private void prepTrainingSelect(Model model, String[] selected) {
-        List<TrainingExerciseVM> trainingSelectList = TrainingExerciseVM.toTrainingExerciseList(trainingRepo.findAll());
+        List<TrainingExerciseVM> trainingSelectList = TrainingExerciseVM.toTrainingExerciseVMList(trainingRepo.findAll());
 
         if (selected.length > trainingSelectList.size())
             throw new IllegalStateException("Lista zaznaczonych elementów nie może być większa jak lista wszystkich elementów.");

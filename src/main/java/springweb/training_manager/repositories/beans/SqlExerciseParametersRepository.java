@@ -42,4 +42,7 @@ interface SqlExerciseParametersRepository
 
     @Override
     void deleteById(Integer integer);
+
+    @Override
+    void deleteAllById(Iterable<? extends Integer> ids);
 }

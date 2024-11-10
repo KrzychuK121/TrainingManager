@@ -25,9 +25,6 @@ public class Exercise extends ExerciseSchema {
     )
     @Valid
     private ExerciseParameters parameters;
-    @ManyToMany(mappedBy = "exercises")
-    @Valid
-    private List<Training> trainings = new ArrayList<>();
     @OneToMany(mappedBy = "exercise")
     private List<TrainingExercise> trainingExercises = new ArrayList<>();
 
@@ -48,6 +45,12 @@ public class Exercise extends ExerciseSchema {
         this.parameters = parameters;
     }
 
+    public List<Training> getTrainings() {
+        return trainingExercises.stream()
+            .map(TrainingExercise::getTraining)
+            .toList();
+    }
+
     public void setId(int id) {
         this.id = id;
     }
@@ -62,13 +65,6 @@ public class Exercise extends ExerciseSchema {
 
     public void setBodyPart(BodyPart bodyPart) {
         this.bodyPart = bodyPart;
-    }
-
-    public void setTrainingExercises(List<TrainingExercise> trainingExercises) {
-        this.trainingExercises = trainingExercises;
-        this.trainings = trainingExercises.stream()
-            .map(TrainingExercise::getTraining)
-            .toList();
     }
 
     // Might be used in PUT but NOT PATCH!!
@@ -86,8 +82,8 @@ public class Exercise extends ExerciseSchema {
         );
         bodyPart = toEdit.bodyPart;
         defaultBurnedKcal = toEdit.defaultBurnedKcal;
-        trainings = toEdit.trainings == null || toEdit.trainings.isEmpty() ?
+        trainingExercises = toEdit.trainingExercises == null || toEdit.trainingExercises.isEmpty() ?
             null :
-            toEdit.trainings;
+            toEdit.trainingExercises;
     }
 }

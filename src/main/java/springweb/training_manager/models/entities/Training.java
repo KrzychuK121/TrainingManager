@@ -1,7 +1,9 @@
 package springweb.training_manager.models.entities;
 
-import jakarta.persistence.*;
-import jakarta.validation.Valid;
+import jakarta.persistence.Entity;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -18,15 +20,6 @@ import java.util.Set;
 @Entity
 @Table(name = "training")
 public class Training extends TrainingSchema {
-    @ManyToMany
-    @JoinTable(
-        name = "training_exercise",
-        joinColumns = @JoinColumn(name = "training_id"),
-        inverseJoinColumns = @JoinColumn(name = "exercise_id")
-    )
-    @Valid
-    private List<Exercise> exercises = new ArrayList<>();
-
     @OneToMany(mappedBy = "training")
     private List<TrainingExercise> trainingExercises = new ArrayList<>();
 
@@ -42,6 +35,12 @@ public class Training extends TrainingSchema {
             title,
             description
         );
+    }
+
+    public List<Exercise> getExercises() {
+        return trainingExercises.stream()
+            .map(TrainingExercise::getExercise)
+            .toList();
     }
 
     public void setId(int id) {
@@ -60,8 +59,11 @@ public class Training extends TrainingSchema {
     public void copy(Training toCopy) {
         this.title = toCopy.title;
         this.description = toCopy.description;
-        this.exercises = toCopy.exercises == null || toCopy.exercises.isEmpty() ?
-            null :
-            toCopy.exercises;
+        this.trainingExercises = toCopy.trainingExercises == null || toCopy.trainingExercises.isEmpty()
+            ? null
+            : toCopy.trainingExercises;
+        this.users = toCopy.users == null || toCopy.users.isEmpty()
+            ? null
+            : toCopy.users;
     }
 }
