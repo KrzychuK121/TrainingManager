@@ -61,9 +61,11 @@ public class TrainingControllerAPI {
             found = service.getById(id, UserService.getUserIdByAuth(auth));
         } catch (IllegalArgumentException e) {
             logger.error("Wystąpił wyjątek: {}", e.getMessage());
-            if (e.getMessage().contains("Nie masz dostępu"))
+            if (e.getMessage()
+                .contains("Nie masz dostępu"))
                 return new ResponseEntity(e.getMessage(), HttpStatus.FORBIDDEN);
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.notFound()
+                .build();
         }
         return ResponseEntity.ok(new TrainingRead(found));
     }
@@ -86,14 +88,16 @@ public class TrainingControllerAPI {
     ) {
         var validationErrors = service.validateAndPrepareTraining(toCreate, result);
         if (validationErrors != null)
-            return ResponseEntity.badRequest().body(validationErrors);
+            return ResponseEntity.badRequest()
+                .body(validationErrors);
 
         var userId = UserService.getUserIdByAuth(auth);
         Training created = service.create(toCreate.getToSave(), userId);
         var trainingRead = new TrainingRead(created);
         return ResponseEntity.created(
-            URI.create("/api/training/" + created.getId())
-        ).body(trainingRead);
+                URI.create("/api/training/" + created.getId())
+            )
+            .body(trainingRead);
     }
 
     @PutMapping("/{id}")
@@ -107,16 +111,19 @@ public class TrainingControllerAPI {
         var userId = UserService.getUserIdByAuth(auth);
         var validationErrors = service.validateAndPrepareTraining(data, result);
         if (validationErrors != null)
-            return ResponseEntity.badRequest().body(validationErrors);
+            return ResponseEntity.badRequest()
+                .body(validationErrors);
         try {
             var toEdit = data.getToSave();
             service.edit(toEdit, id, userId);
         } catch (IllegalArgumentException e) {
             logger.error("Wystąpił wyjątek: " + e.getMessage());
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.notFound()
+                .build();
         }
 
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.noContent()
+            .build();
     }
 
     @DeleteMapping("/{id}")
@@ -129,13 +136,16 @@ public class TrainingControllerAPI {
         try {
             service.delete(id, userId);
         } catch (NotOwnedByUserException e) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.badRequest()
+                .build();
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.notFound()
+                .build();
         } catch (Exception ex) {
             logger.error("Wystąpił nieoczekiwany wyjątek: {}", ex.getMessage(), ex);
         }
 
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.noContent()
+            .build();
     }
 }
