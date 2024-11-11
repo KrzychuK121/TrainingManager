@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Range;
 import org.springframework.format.annotation.DateTimeFormat;
+import springweb.training_manager.models.validation.exercise_parameters.RepetitionOrTimeRequired;
 
 import java.time.LocalTime;
 
@@ -15,6 +16,7 @@ import java.time.LocalTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode
+@RepetitionOrTimeRequired
 public class ExerciseParametersSchema implements Identificable<Integer> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
