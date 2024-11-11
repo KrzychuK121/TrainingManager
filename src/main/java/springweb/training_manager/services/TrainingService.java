@@ -2,6 +2,7 @@ package springweb.training_manager.services;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -30,6 +31,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class TrainingService {
     private final ExerciseRepository exerciseRepository;
     private final ExerciseParametersService parametersService;
@@ -153,13 +155,41 @@ public class TrainingService {
         BindingResult result
     ) {
         var toSave = data.getToSave();
+        var selectedExercises = data.getSelectedExercises();
 
         if (result.hasErrors()) {
             var validation = ValidationErrors.createFrom(result, "toSave.");
-            return validation.getErrors();
+
+            var newValidationErrors = new HashMap<String, List<String>>(validation.getErrors()
+                .size());
+            var prefix = "selectedExercises";
+            for (int i = 0; i < selectedExercises.size(); i++) {
+                var exerciseId = selectedExercises.get(i)
+                    .getSelectedId();
+                var oldPrefix = String.format("selectedExercises[%s].parameters.", i + "");
+                var newPrefix = String.format("parameters.%s.", "" + exerciseId);
+                validation.getErrors()
+                    .forEach(
+                        (field, errors) -> {
+                            if (
+                                field.startsWith(prefix)
+                            )
+                                newValidationErrors.put(
+                                    field.replace(oldPrefix, newPrefix),
+                                    errors
+                                );
+                            else
+                                newValidationErrors.put(field, errors);
+                        }
+                    );
+
+            }
+
+            return new ValidationErrors(newValidationErrors).getErrors();
         }
 
         setExercisesById(toSave, data.getSelectedExercises());
+
         return null;
     }
 
