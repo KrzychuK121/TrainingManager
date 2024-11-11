@@ -1,5 +1,6 @@
 package springweb.training_manager.models.viewmodels.training_exercise;
 
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,6 +15,7 @@ import springweb.training_manager.models.viewmodels.exercise_parameters.Exercise
 @Getter
 public class CustomTrainingParametersWrite {
     private ExerciseTraining exerciseWrite;
+    @Valid
     private ExerciseParametersWrite parameters;
 
     public ExerciseParameters getParameters() {

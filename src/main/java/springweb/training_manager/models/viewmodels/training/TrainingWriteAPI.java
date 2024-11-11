@@ -14,5 +14,5 @@ import java.util.List;
 @Getter
 public class TrainingWriteAPI {
     private @Valid TrainingWrite toSave;
-    private List<SelectedExerciseWrite> selectedExercises;
+    private List<@Valid SelectedExerciseWrite> selectedExercises;
 }

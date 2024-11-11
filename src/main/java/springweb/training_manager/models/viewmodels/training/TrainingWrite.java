@@ -1,5 +1,6 @@
 package springweb.training_manager.models.viewmodels.training;
 
+import jakarta.validation.Valid;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -16,6 +17,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 public class TrainingWrite extends TrainingSchema implements Castable<Training> {
+    @Valid
     private List<CustomTrainingParametersWrite> exercises = new ArrayList<>();
 
     public void setTitle(String title) {
