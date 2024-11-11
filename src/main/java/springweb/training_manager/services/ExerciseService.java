@@ -9,7 +9,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 import springweb.training_manager.models.entities.Exercise;
 import springweb.training_manager.models.entities.Training;
 import springweb.training_manager.models.viewmodels.exercise.ExerciseCreate;
@@ -117,14 +116,6 @@ public class ExerciseService {
     ) {
         final var ENTITY_PREFIX = "toSave.";
         var toSave = data.getToSave();
-        var parameters = toSave.getParameters();
-
-        if (parameters.getRepetition() == 0 && parameters.getTime() == null) {
-            final var FIELD_PREFIX = ENTITY_PREFIX + "parameters.";
-            var message = "Wpisz wartość w polu 'Powtórzenia' lub 'Czas wykonania'";
-            result.addError(new FieldError("data", FIELD_PREFIX + "repetition", message));
-            result.addError(new FieldError("data", FIELD_PREFIX + "time", message));
-        }
 
         if (result.hasErrors()) {
             var validation = ValidationErrors.createFrom(result, ENTITY_PREFIX);
