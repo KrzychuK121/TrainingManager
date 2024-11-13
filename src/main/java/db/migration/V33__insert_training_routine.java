@@ -1,13 +1,15 @@
 package db.migration;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 import org.flywaydb.core.api.migration.BaseJavaMigration;
 import org.flywaydb.core.api.migration.Context;
-import springweb.training_manager.models.entities.TrainingRoutine;
-import springweb.training_manager.models.entities.User;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 
 public class V33__insert_training_routine extends BaseJavaMigration {
     @Override
@@ -15,39 +17,50 @@ public class V33__insert_training_routine extends BaseJavaMigration {
         String sql = "INSERT INTO TRAINING_ROUTINE (ID, ACTIVE, IDENTITY_USER_ID) VALUES (?, ?, ?)";
         var trainingRoutines = trainingRoutinesToCreate();
 
-        try (PreparedStatement statement = context.getConnection().prepareStatement(sql)) {
+        try (PreparedStatement statement = context.getConnection()
+            .prepareStatement(sql)) {
             for (var trainingRoutine : trainingRoutines) {
                 statement.setInt(1, trainingRoutine.getId());
                 statement.setBoolean(2, trainingRoutine.isActive());
-                statement.setString(3, trainingRoutine.getOwner().getId());
+                statement.setString(3, trainingRoutine.getUserId());
 
                 statement.addBatch();
             }
 
             statement.executeBatch();
-        } catch(SQLException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    private ArrayList<TrainingRoutine> trainingRoutinesToCreate(){
-        var toReturn  = new ArrayList<TrainingRoutine>();
-        User defaultUser = new User();
-        defaultUser.setId("1953e65b-d3a2-48d4-8b34-21e5ae75828a");
+    private List<TrainingRoutine_V33> trainingRoutinesToCreate() {
+        var toReturn = new ArrayList<TrainingRoutine_V33>(2);
+        var defaultUserId = "1953e65b-d3a2-48d4-8b34-21e5ae75828a";
 
-        toReturn.add(createNewTrainingRoutine(1, true, defaultUser));
-        toReturn.add(createNewTrainingRoutine(2, false, defaultUser));
+        toReturn.add(
+            new TrainingRoutine_V33(
+                1,
+                true,
+                defaultUserId
+            )
+        );
+        toReturn.add(
+            new TrainingRoutine_V33(
+                2,
+                false,
+                defaultUserId
+            )
+        );
 
         return toReturn;
     }
+}
 
-    private TrainingRoutine createNewTrainingRoutine(int id, boolean active, User owner){
-        var toReturn = new TrainingRoutine();
-
-        toReturn.setId(id);
-        toReturn.setActive(active);
-        toReturn.setOwner(owner);
-
-        return toReturn;
-    }
+@AllArgsConstructor
+@Getter
+@Setter
+class TrainingRoutine_V33 {
+    private int id;
+    private boolean active;
+    private String userId;
 }

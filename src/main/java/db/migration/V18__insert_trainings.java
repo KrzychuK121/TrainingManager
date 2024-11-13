@@ -1,8 +1,12 @@
 package db.migration;
 
+import jakarta.validation.constraints.NotBlank;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 import org.flywaydb.core.api.migration.BaseJavaMigration;
 import org.flywaydb.core.api.migration.Context;
-import springweb.training_manager.models.entities.Training;
+import org.hibernate.validator.constraints.Length;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -15,8 +19,9 @@ public class V18__insert_trainings extends BaseJavaMigration {
         String sql = "INSERT INTO PUBLIC.TRAINING (ID, TITLE, DESCRIPTION) VALUES (?, ?, ?)";
         var trainings = trainingsToCreate();
 
-        try (PreparedStatement statement = context.getConnection().prepareStatement(sql)) {
-            for (Training training : trainings) {
+        try (PreparedStatement statement = context.getConnection()
+            .prepareStatement(sql)) {
+            for (var training : trainings) {
 
                 statement.setInt(1, training.getId());
                 statement.setString(2, training.getTitle());
@@ -25,50 +30,51 @@ public class V18__insert_trainings extends BaseJavaMigration {
             }
 
             statement.executeBatch();
-        } catch(SQLException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    private List<Training> trainingsToCreate(){
-        List<Training> toReturn = new ArrayList<>(4);
+    private List<Training_V18> trainingsToCreate() {
+        List<Training_V18> toReturn = new ArrayList<>(4);
 
-        createNewTraining(
-            1,
-            "Klatka piersiowa",
-            "Ćwiczenia na rozwój klatki piersiowej",
-            toReturn
+        toReturn.add(
+            new Training_V18(
+                1,
+                "Klatka piersiowa",
+                "Ćwiczenia na rozwój klatki piersiowej"
+            )
         );
 
-        createNewTraining(
-            2,
-            "Trening brzucha",
-            "Zbiór ćwiczeń na brzuch",
-            toReturn
+        toReturn.add(
+            new Training_V18(
+                2,
+                "Trening brzucha",
+                "Zbiór ćwiczeń na brzuch"
+            )
         );
 
-        createNewTraining(
-            3,
-            "Klatka + brzuch",
-            "Lista ćwiczeń na brzuch i klatkę piersiową",
-            toReturn
+        toReturn.add(
+            new Training_V18(
+                3,
+                "Klatka + brzuch",
+                "Lista ćwiczeń na brzuch i klatkę piersiową"
+            )
         );
 
         return toReturn;
     }
+}
 
-    private void createNewTraining(
-        int id,
-        String title,
-        String description,
-        List<Training> toReturn
-    ) {
-        Training training = new Training();
-
-        training.setId(id);
-        training.setTitle(title);
-        training.setDescription(description);
-
-        toReturn.add(training);
-    }
+@AllArgsConstructor
+@Getter
+@Setter
+class Training_V18 {
+    protected int id;
+    @NotBlank(message = "Tytuł treningu jest wymagany")
+    @Length(min = 3, max = 100, message = "Tytuł musi mieścić się między 3 a 100 znaków")
+    protected String title;
+    @NotBlank(message = "Opis nie może być pusty")
+    @Length(min = 3, max = 300, message = "Opis musi mieścić się między 3 a 300 znaków")
+    protected String description;
 }

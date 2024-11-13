@@ -1,9 +1,10 @@
 package db.migration;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 import org.flywaydb.core.api.migration.BaseJavaMigration;
 import org.flywaydb.core.api.migration.Context;
-import springweb.training_manager.models.entities.Exercise;
-import springweb.training_manager.models.entities.ExerciseParameters;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -21,23 +22,19 @@ public class V10__insert_exercises extends BaseJavaMigration {
 
         try (PreparedStatement statement = context.getConnection()
             .prepareStatement(sql)) {
-            for (Exercise exercise : exercises) {
+            for (var exercise : exercises) {
 
                 statement.setString(1, exercise.getName());
                 statement.setString(2, exercise.getDescription());
-                statement.setInt(3, exercise.getParameters()
-                    .getRounds());
-                statement.setInt(4, exercise.getParameters()
-                    .getRepetition());
-                if (exercise.getParameters()
-                    .getTime() == null)
+                statement.setInt(3, exercise.getRounds());
+                statement.setInt(4, exercise.getRepetition());
+                if (exercise.getTime() == null)
                     statement.setNull(5, Types.TIME);
                 else
                     statement.setTime(
                         5,
                         Time.valueOf(
-                            exercise.getParameters()
-                                .getTime()
+                            exercise.getTime()
                         )
                     );
                 statement.setInt(6, exercise.getId());
@@ -50,77 +47,66 @@ public class V10__insert_exercises extends BaseJavaMigration {
         }
     }
 
-    private List<Exercise> exercisesToCreate() {
-        List<Exercise> toReturn = new ArrayList<>(4);
+    private List<Exercise_V10> exercisesToCreate() {
+        List<Exercise_V10> toReturn = new ArrayList<>(4);
 
-        createNewExercise(
-            1,
-            "Pompki",
-            "Zwyczajne pompki, bez utrudnień",
-            3,
-            20,
-            null,
-            toReturn
+        toReturn.add(
+            new Exercise_V10(
+                1,
+                "Pompki",
+                "Zwyczajne pompki, bez utrudnień",
+                3,
+                20,
+                null
+            )
         );
 
-        createNewExercise(
-            2,
-            "Brzuszki",
-            "Brzuszki z obciążeniem 4kg/rękę",
-            4,
-            20,
-            null,
-            toReturn
+        toReturn.add(
+            new Exercise_V10(
+                2,
+                "Brzuszki",
+                "Brzuszki z obciążeniem 4kg/rękę",
+                4,
+                20,
+                null
+            )
         );
 
-        createNewExercise(
-            3,
-            "Przeciąganie liny",
-            "Ćw na brzuch, udawane przeciąganie liny",
-            3,
-            0,
-            LocalTime.of(0, 0, 45),
-            toReturn
+        toReturn.add(
+            new Exercise_V10(
+                3,
+                "Przeciąganie liny",
+                "Ćw na brzuch, udawane przeciąganie liny",
+                3,
+                0,
+                LocalTime.of(0, 0, 45)
+            )
         );
 
-        createNewExercise(
-            4,
-            "Rozpiętki",
-            "Przy obciążeniu 5kg/rękę",
-            3,
-            22,
-            LocalTime.of(0, 1, 30),
-            toReturn
+        toReturn.add(
+            new Exercise_V10(
+                4,
+                "Rozpiętki",
+                "Przy obciążeniu 5kg/rękę",
+                3,
+                22,
+                LocalTime.of(0, 1, 30)
+            )
         );
 
         return toReturn;
     }
 
-    private void createNewExercise(
-        int id,
-        String name,
-        String description,
-        int rounds,
-        int repetition,
-        LocalTime time,
-        List<Exercise> toReturn
-    ) {
-        Exercise ex = new Exercise(
-            name,
-            description,
-            null,
-            new ExerciseParameters(
-                0,
-                rounds,
-                repetition,
-                (short) 0,
-                time
-            ),
-            1
-        );
-        ex.setId(id);
+}
 
-        toReturn.add(ex);
-    }
-
+@AllArgsConstructor
+@Getter
+@Setter
+class Exercise_V10 {
+    private int id;
+    private String name;
+    private String description;
+    private int rounds;
+    private int repetition;
+    private LocalTime time;
 }

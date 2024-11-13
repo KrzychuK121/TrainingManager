@@ -1,28 +1,27 @@
 package db.migration;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 import org.flywaydb.core.api.migration.BaseJavaMigration;
 import org.flywaydb.core.api.migration.Context;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 public class V13__change_username_users extends BaseJavaMigration {
     @Override
     public void migrate(Context context) throws Exception {
-        HashMap<String, String> usersNewUsernames = newUsernames();
+        var usersNewUsernames = newUsernames();
 
         String sql = "UPDATE PUBLIC.IDENTITY_USER SET USERNAME = ? WHERE PUBLIC.IDENTITY_USER.ID = ?";
-        try (PreparedStatement statement = context.getConnection().prepareStatement(sql)) {
-            for (Map.Entry<String, String> entry : usersNewUsernames.entrySet()) {
-                String userId = entry.getKey();
-                String newUsername = entry.getValue();
-
-                statement.setString(1, newUsername);
-                statement.setString(2, userId);
+        try (PreparedStatement statement = context.getConnection()
+            .prepareStatement(sql)) {
+            for (var row : usersNewUsernames) {
+                statement.setString(1, row.getNewUsername());
+                statement.setString(2, row.getUserId());
 
                 statement.addBatch();
             }
@@ -32,14 +31,32 @@ public class V13__change_username_users extends BaseJavaMigration {
         }
     }
 
-    private HashMap<String, String> newUsernames(){
-        HashMap<String, String> usersNewUsernames = new HashMap<>(2);
+    private List<NewUsernames_V13> newUsernames() {
+        List<NewUsernames_V13> usersNewUsernames = new ArrayList<>(2);
 
         // Admin
-        usersNewUsernames.put("078c75cf-ba30-42d0-bfd6-619b89a39093", "Administrator");
+        usersNewUsernames.add(
+            new NewUsernames_V13(
+                "078c75cf-ba30-42d0-bfd6-619b89a39093",
+                "Administrator"
+            )
+        );
         // User
-        usersNewUsernames.put("1953e65b-d3a2-48d4-8b34-21e5ae75828a", "Uzytkownik");
+        usersNewUsernames.add(
+            new NewUsernames_V13(
+                "1953e65b-d3a2-48d4-8b34-21e5ae75828a",
+                "Uzytkownik"
+            )
+        );
 
         return usersNewUsernames;
     }
+}
+
+@AllArgsConstructor
+@Getter
+@Setter
+class NewUsernames_V13 {
+    private String userId;
+    private String newUsername;
 }
