@@ -1,25 +1,28 @@
 package db.migration;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 import org.flywaydb.core.api.migration.BaseJavaMigration;
 import org.flywaydb.core.api.migration.Context;
-import springweb.training_manager.models.entities.TrainingPlan;
-import springweb.training_manager.models.schemas.TrainingPlanId;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Time;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.List;
 
 public class V35__insert_training_plan extends BaseJavaMigration {
     @Override
     public void migrate(Context context) throws Exception {
         String sql = "insert into TRAINING_PLAN (ROUTINE_ID, SCHEDULE_ID, TRAINING_TIME) values (?, ?, ?)";
         var trainingPlans = trainingPlansToCreate();
-        try (PreparedStatement statement = context.getConnection().prepareStatement(sql)) {
+        try (PreparedStatement statement = context.getConnection()
+            .prepareStatement(sql)) {
             for (var trainingPlan : trainingPlans) {
-                statement.setInt(1, trainingPlan.getTrainingRoutineId());
-                statement.setInt(2, trainingPlan.getTrainingScheduleId());
+                statement.setInt(1, trainingPlan.getRoutineId());
+                statement.setInt(2, trainingPlan.getScheduleId());
                 statement.setTime(
                     3,
                     Time.valueOf(trainingPlan.getTrainingTime())
@@ -28,13 +31,13 @@ public class V35__insert_training_plan extends BaseJavaMigration {
             }
 
             statement.executeBatch();
-        } catch(SQLException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    private ArrayList<TrainingPlan> trainingPlansToCreate(){
-        var toReturn  = new ArrayList<TrainingPlan>();
+    private List<TrainingPlan_V35> trainingPlansToCreate() {
+        var toReturn = new ArrayList<TrainingPlan_V35>();
         var idRoutine1 = 1;
         var idRoutine2 = 2;
 
@@ -53,62 +56,66 @@ public class V35__insert_training_plan extends BaseJavaMigration {
 
         // Routine 1
         toReturn.add(
-            createNewTrainingPlan(
-                new TrainingPlanId(idRoutine1, 1),
+            new TrainingPlan_V35(
+                idRoutine1,
+                1,
                 LocalTime.now()
             )
         );
         toReturn.add(
-            createNewTrainingPlan(
-                new TrainingPlanId(idRoutine1, 2),
+            new TrainingPlan_V35(
+                idRoutine1,
+                2,
                 LocalTime.now()
             )
         );
         toReturn.add(
-            createNewTrainingPlan(
-                new TrainingPlanId(idRoutine1, 3),
+            new TrainingPlan_V35(
+                idRoutine1,
+                3,
                 LocalTime.now()
             )
         );
 
         // Routine 2
         toReturn.add(
-            createNewTrainingPlan(
-                new TrainingPlanId(idRoutine2, 1),
+            new TrainingPlan_V35(
+                idRoutine2,
+                1,
                 LocalTime.now()
             )
         );
         toReturn.add(
-            createNewTrainingPlan(
-                new TrainingPlanId(idRoutine2, 2),
+            new TrainingPlan_V35(
+                idRoutine2,
+                2,
                 LocalTime.now()
             )
         );
         toReturn.add(
-            createNewTrainingPlan(
-                new TrainingPlanId(idRoutine2, 4),
+            new TrainingPlan_V35(
+                idRoutine2,
+                4,
                 LocalTime.now()
             )
         );
         toReturn.add(
-            createNewTrainingPlan(
-                new TrainingPlanId(idRoutine2, 5),
+            new TrainingPlan_V35(
+                idRoutine2,
+                5,
                 LocalTime.now()
             )
         );
 
         return toReturn;
     }
+}
 
-    private TrainingPlan createNewTrainingPlan(
-        TrainingPlanId id,
-        LocalTime trainingTime
-    ){
-        var toReturn = new TrainingPlan();
-
-        toReturn.setId(id);
-        toReturn.setTrainingTime(trainingTime);
-
-        return toReturn;
-    }
+@AllArgsConstructor
+@Getter
+@Setter
+class TrainingPlan_V35 {
+    private int routineId;
+    private int scheduleId;
+    private LocalTime trainingTime;
 }
