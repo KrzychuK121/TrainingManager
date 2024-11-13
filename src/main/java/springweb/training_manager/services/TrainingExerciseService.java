@@ -23,40 +23,26 @@ public class TrainingExerciseService {
         Training training,
         Map<Exercise, ExerciseParameters> exercises
     ) {
-        // Delete all connections with this training
-        // because it is not linked with any exercise
-        if (exercises == null || exercises.isEmpty()) {
-            repository.deleteByTrainingId(training.getId());
-            return new ArrayList<>();
-        }
+        repository.deleteByTrainingId(training.getId());
 
         // Add missing connections and return them
-        var newConnections = exercises.entrySet()
+        return exercises.entrySet()
             .stream()
             .map(
                 entry -> {
                     var exercise = entry.getKey();
                     var parameters = entry.getValue();
 
-                    return updateTrainingExerciseConnection(
-                        training,
-                        exercise,
-                        parameters
+                    return repository.save(
+                        new TrainingExercise(
+                            training,
+                            exercise,
+                            parameters
+                        )
                     );
                 }
             )
             .toList();
-
-        // Remove old connections that are no longer established.
-        // It has to be now so entityManager will not create his own connections
-        // with null parameters.
-        var exercisesIds = exercises.keySet()
-            .stream()
-            .map(Exercise::getId)
-            .toList();
-        repository.deleteIfExercisesNotIn(training.getId(), exercisesIds);
-
-        return newConnections;
     }
 
     public List<TrainingExercise> updateTrainingExerciseConnection(

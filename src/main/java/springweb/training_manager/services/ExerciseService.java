@@ -231,6 +231,7 @@ public class ExerciseService {
             toSave.getParameters()
         );
         toSave.copy(toEdit.toEntity());
+        toSave.setTrainingExercises(null);
         toSave.setParameters(preparedParameters);
 
         var saved = repository.save(toSave);

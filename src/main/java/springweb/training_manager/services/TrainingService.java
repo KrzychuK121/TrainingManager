@@ -428,6 +428,7 @@ public class TrainingService {
         var oldParametersList = getOldParametersList(toSave);
         toSave.copy(toEdit.toEntity());
 
+        toSave.setTrainingExercises(null);
         var saved = repository.save(toSave);
         trainingExerciseService.updateTrainingExerciseConnection(
             saved,
