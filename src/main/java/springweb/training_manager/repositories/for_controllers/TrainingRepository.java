@@ -9,6 +9,10 @@ import java.util.List;
 import java.util.Optional;
 
 public interface TrainingRepository {
+    Optional<List<Training>> findAllByOwnerId(String id);
+
+    Optional<List<Training>> findAllPublicOrOwnedBy(String id);
+
     Page<Integer> findAllIds(Pageable page);
 
     List<Training> findAllByIdIn(List<Integer> ids);

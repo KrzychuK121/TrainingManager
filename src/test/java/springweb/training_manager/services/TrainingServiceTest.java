@@ -98,6 +98,8 @@ class TrainingServiceTest {
                 List.of(false, false)
             ),
             null,
+            null,
+            null,
             null
         );
         var result = service.prepExercises(

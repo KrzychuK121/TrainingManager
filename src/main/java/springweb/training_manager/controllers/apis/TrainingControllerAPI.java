@@ -2,8 +2,7 @@ package springweb.training_manager.controllers.apis;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -34,9 +33,9 @@ import java.util.List;
     consumes = MediaType.APPLICATION_JSON_VALUE
 )
 @RequiredArgsConstructor
+@Slf4j
 public class TrainingControllerAPI {
     private final TrainingService service;
-    private static final Logger logger = LoggerFactory.getLogger(TrainingControllerAPI.class);
 
     @GetMapping()
     @ResponseBody
@@ -50,6 +49,15 @@ public class TrainingControllerAPI {
         return ResponseEntity.ok(service.getAll());
     }
 
+    @GetMapping("/publicOrOwned")
+    @ResponseBody
+    ResponseEntity<List<TrainingRead>> getPublicOrOwner(
+        Authentication auth
+    ) {
+        var userId = UserService.getUserIdByAuth(auth);
+        return ResponseEntity.ok(service.getPublicOrOwnerBy(userId));
+    }
+
     @GetMapping("/{id}")
     @ResponseBody
     ResponseEntity<TrainingRead> getById(
@@ -60,7 +68,7 @@ public class TrainingControllerAPI {
         try {
             found = service.getById(id, UserService.getUserIdByAuth(auth));
         } catch (IllegalArgumentException e) {
-            logger.error("Wystąpił wyjątek: {}", e.getMessage());
+            log.error("Wystąpił wyjątek: {}", e.getMessage());
             if (e.getMessage()
                 .contains("Nie masz dostępu"))
                 return new ResponseEntity(e.getMessage(), HttpStatus.FORBIDDEN);
@@ -117,7 +125,7 @@ public class TrainingControllerAPI {
             var toEdit = data.getToSave();
             service.edit(toEdit, id, userId);
         } catch (IllegalArgumentException e) {
-            logger.error("Wystąpił wyjątek: " + e.getMessage());
+            log.error("Wystąpił wyjątek: " + e.getMessage());
             return ResponseEntity.notFound()
                 .build();
         }
@@ -142,7 +150,7 @@ public class TrainingControllerAPI {
             return ResponseEntity.notFound()
                 .build();
         } catch (Exception ex) {
-            logger.error("Wystąpił nieoczekiwany wyjątek: {}", ex.getMessage(), ex);
+            log.error("Wystąpił nieoczekiwany wyjątek: {}", ex.getMessage(), ex);
         }
 
         return ResponseEntity.noContent()

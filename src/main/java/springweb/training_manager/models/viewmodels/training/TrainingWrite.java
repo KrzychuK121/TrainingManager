@@ -19,6 +19,7 @@ import java.util.List;
 public class TrainingWrite extends TrainingSchema implements Castable<Training> {
     @Valid
     private List<CustomTrainingParametersWrite> exercises = new ArrayList<>();
+    private boolean trainingPrivate;
 
     public void setTitle(String title) {
         this.title = title;

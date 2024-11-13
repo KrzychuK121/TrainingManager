@@ -16,6 +16,18 @@ import java.util.Optional;
 interface SqlTrainingRepository extends TrainingRepository, JpaRepository<Training, Integer> {
 
     @Override
+    Optional<List<Training>> findAllByOwnerId(String id);
+
+    @Override
+    @Query("""
+            SELECT t
+            FROM Training t
+            WHERE t.owner.id IS NULL 
+                OR t.owner.id = :ownerId
+        """)
+    Optional<List<Training>> findAllPublicOrOwnedBy(@Param("ownerId") String ownerId);
+
+    @Override
     @Query("SELECT t.id FROM Training t")
     Page<Integer> findAllIds(Pageable page);
 
@@ -25,7 +37,6 @@ interface SqlTrainingRepository extends TrainingRepository, JpaRepository<Traini
             SELECT t 
             FROM Training t
                 LEFT JOIN FETCH t.trainingExercises
-                LEFT JOIN FETCH t.users
             WHERE t.id in :ids
             """
     )
@@ -34,8 +45,7 @@ interface SqlTrainingRepository extends TrainingRepository, JpaRepository<Traini
     @Override
     @Query("""
         SELECT t FROM Training t 
-            LEFT JOIN FETCH t.trainingExercises 
-            LEFT JOIN FETCH t.users
+            LEFT JOIN FETCH t.trainingExercises
         """)
     List<Training> findAll();
 
@@ -44,8 +54,7 @@ interface SqlTrainingRepository extends TrainingRepository, JpaRepository<Traini
         value = """
             SELECT t 
             FROM Training t 
-                LEFT JOIN FETCH t.trainingExercises 
-                LEFT JOIN FETCH t.users
+                LEFT JOIN FETCH t.trainingExercises
             """,
         countQuery = """
             SELECT DISTINCT COUNT(t)

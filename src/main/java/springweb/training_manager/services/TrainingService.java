@@ -193,22 +193,24 @@ public class TrainingService {
         return null;
     }
 
+    private User getUserById(String userId) {
+        return userRepository.findById(userId)
+            .orElseThrow(
+                () -> new NotOwnedByUserException("Nie istnieje użytkownik o takim numerze ID.")
+            );
+    }
+
     @Transactional
     public Training create(TrainingWrite toSave, String userId) {
         var preparedExerciseList = prepExercisesAndParametersMap(toSave.getExercises());
 
-        var created = repository.save(toSave.toEntity());
-
-        if (userId != null) {
-            User loggedUser = userRepository.findById(userId)
-                .orElseThrow(
-                    () -> new NotOwnedByUserException("Nie istnieje użytkownik o takim numerze ID.")
-                );
-            Set<Training> oldUsersTrainings = loggedUser.getTrainings();
-            oldUsersTrainings.add(created);
-            loggedUser.setTrainings(oldUsersTrainings);
-            userRepository.save(loggedUser);
+        var entityToSave = toSave.toEntity();
+        if (userId != null && toSave.isTrainingPrivate()) {
+            var loggedUser = getUserById(userId);
+            entityToSave.setOwner(loggedUser);
         }
+
+        var created = repository.save(entityToSave);
 
         if (preparedExerciseList != null)
             created.setTrainingExercises(
@@ -219,61 +221,6 @@ public class TrainingService {
             );
 
         return created;
-    }
-
-    /**
-     * This method <b>SHOULD</b> be used after creating/editing <code>Training</code>. It
-     * is responsible for adding <code>toAddOrRemove</code> to every <code>toEdit</code>
-     * element and then saving the changes in the database. This operation is required to
-     * create proper many to many row between <code>Exercise</code> and
-     * <code>Training</code>
-     *
-     * @param toAddOrRemove <code>Training</code> with id which should be connected with
-     *                      <code>Exercise</code>
-     * @param toEdit        list of <code>Exercise</code> objects which should be
-     *                      connected with <code>Training</code>
-     * @param ifAdd         when true, it will add <code>toAddOrRemove</code> to
-     *                      <code>toEdit</code>, otherwise it will remove
-     *                      <code>toAddOrRemove</code> from <code>toEdit</code>.
-     */
-    private void editTrainingInExercises(
-        Training toAddOrRemove,
-        List<Exercise> toEdit,
-        boolean ifAdd
-    ) {
-        if (toEdit == null)
-            return;
-        toEdit.forEach(
-            exercise -> {
-                if (ifAdd)
-                    exercise.getTrainings()
-                        .add(toAddOrRemove);
-                else
-                    exercise.getTrainings()
-                        .remove(toAddOrRemove);
-                exerciseRepository.save(exercise);
-            }
-        );
-    }
-
-    private void editTrainingInUsers(
-        Training toAddOrRemove,
-        Set<User> toEdit,
-        boolean ifAdd
-    ) {
-        if (toEdit == null)
-            return;
-        toEdit.forEach(
-            user -> {
-                if (ifAdd)
-                    user.getTrainings()
-                        .add(toAddOrRemove);
-                else
-                    user.getTrainings()
-                        .remove(toAddOrRemove);
-                userRepository.save(user);
-            }
-        );
     }
 
     public <TR> List<TR> getAll(Function<Training, TR> mapper) {
@@ -367,29 +314,32 @@ public class TrainingService {
             return found;
 
         if (
-            found.getUsers()
-                .stream()
-                .anyMatch(
-                    user -> user.getId()
-                        .equals(userId)
-                )
+            found.getOwner()
+                .getId()
+                .equals(userId)
         )
             return found;
         else
             throw new NotOwnedByUserException("Nie masz dostępu do tego treningu.");
     }
 
+    public List<TrainingRead> getPublicOrOwnerBy(String userId) {
+        return repository.findAllPublicOrOwnedBy(userId)
+            .orElse(new ArrayList<>())
+            .stream()
+            .map(TrainingRead::new)
+            .toList();
+    }
+
     // TODO: Use it in controller when ROLE_USER registered, otherwise normal getAll
     public List<TrainingRead> getByUserId(String userId) {
-        List<TrainingRead> usersTrainings = userRepository.findById(userId)
+        return repository.findAllByOwnerId(userId)
             .orElseThrow(
-                () -> new NotOwnedByUserException("Użytkownik o takim numerze id nie istnieje.")
+                () -> new NotOwnedByUserException("User does not exist or owns no trainings.")
             )
-            .getTrainings()
             .stream()
             .map(TrainingRead::new)
             .collect(Collectors.toList());
-        return usersTrainings;
     }
 
     public TrainingCreate getCreateModel(Integer id, String userId) {
@@ -419,16 +369,28 @@ public class TrainingService {
     }
 
     @Transactional
-    public void edit(TrainingWrite toEdit, int id, String userId) {
+    public void edit(
+        TrainingWrite toEdit,
+        int id,
+        String ownerId
+    ) {
         Map<Exercise, ExerciseParameters> preparedExerciseList = prepExercisesAndParametersMap(
             toEdit.getExercises()
         );
 
-        Training toSave = getById(id, userId);
+        Training toSave = getById(id, ownerId);
+        var owner = toSave.getOwner();
         var oldParametersList = getOldParametersList(toSave);
-        toSave.copy(toEdit.toEntity());
 
+        toSave.copy(toEdit.toEntity());
+        toSave.setOwner(
+            !toEdit.isTrainingPrivate()
+                ? null
+                : owner
+        );
+        toSave.setOwner(null);
         toSave.setTrainingExercises(null);
+
         var saved = repository.save(toSave);
         trainingExerciseService.updateTrainingExerciseConnection(
             saved,
@@ -441,7 +403,6 @@ public class TrainingService {
     public void delete(int id, String userId) {
         var toDelete = getById(id, userId);
         var oldParametersList = getOldParametersList(toDelete);
-        editTrainingInUsers(toDelete, toDelete.getUsers(), false);
 
         trainingExerciseService.deleteByTrainingId(toDelete);
         repository.deleteById(id);

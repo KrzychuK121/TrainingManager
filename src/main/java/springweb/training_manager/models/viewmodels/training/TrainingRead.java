@@ -11,6 +11,7 @@ import java.util.List;
 @Getter
 public class TrainingRead extends TrainingSchema {
     protected List<ExerciseTraining> exercises;
+    private final boolean trainingPrivate;
 
     public TrainingRead(Training training) {
         super(
@@ -21,6 +22,7 @@ public class TrainingRead extends TrainingSchema {
         this.exercises = toExerciseTrainingList(
             training.getTrainingExercises()
         );
+        this.trainingPrivate = training.getOwner() != null;
     }
 
     public static List<ExerciseTraining> toExerciseTrainingList(List<TrainingExercise> toMap) {

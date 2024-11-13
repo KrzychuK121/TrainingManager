@@ -27,14 +27,6 @@ public class User extends UserSchema {
 
     @ManyToMany
     @JoinTable(
-        name = "users_trainings",
-        joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
-        inverseJoinColumns = @JoinColumn(name = "training_id", referencedColumnName = "id")
-    )
-    private Set<Training> trainings = new HashSet<>();
-
-    @ManyToMany
-    @JoinTable(
         name = "users_exercises",
         joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
         inverseJoinColumns = @JoinColumn(name = "exercise_id", referencedColumnName = "id")

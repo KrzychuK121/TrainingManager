@@ -19,7 +19,7 @@ import springweb.training_manager.models.schemas.TrainingRoutineSchema;
 public class TrainingRoutine extends TrainingRoutineSchema {
     @ManyToOne
     @JoinColumn(
-        name = "identity_user_id",
+        name = "owner_id",
         referencedColumnName = "id",
         nullable = false
     )

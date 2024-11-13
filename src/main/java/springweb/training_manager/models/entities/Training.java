@@ -1,18 +1,13 @@
 package springweb.training_manager.models.entities;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import springweb.training_manager.models.schemas.TrainingSchema;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Setter
 @Getter
@@ -23,8 +18,12 @@ public class Training extends TrainingSchema {
     @OneToMany(mappedBy = "training")
     private List<TrainingExercise> trainingExercises = new ArrayList<>();
 
-    @ManyToMany(mappedBy = "trainings")
-    private Set<User> users = new HashSet<>();
+    @ManyToOne
+    @JoinColumn(
+        name = "owner_id",
+        referencedColumnName = "id"
+    )
+    private User owner;
 
     public Training(
         String title,
@@ -62,8 +61,6 @@ public class Training extends TrainingSchema {
         this.trainingExercises = toCopy.trainingExercises == null || toCopy.trainingExercises.isEmpty()
             ? null
             : toCopy.trainingExercises;
-        this.users = toCopy.users == null || toCopy.users.isEmpty()
-            ? null
-            : toCopy.users;
+        this.owner = toCopy.owner;
     }
 }
