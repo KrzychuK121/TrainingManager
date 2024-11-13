@@ -14,22 +14,19 @@ import java.util.Optional;
 @Repository
 interface SqlExerciseRepository extends ExerciseRepository, JpaRepository<Exercise, Integer> {
     @Override
-    @Query("SELECT e FROM Exercise e LEFT JOIN FETCH e.trainings")
+    @Query("SELECT e FROM Exercise e LEFT JOIN FETCH e.trainingExercises")
     List<Exercise> findAll();
 
     @Override
     @Query(
         """
-        SELECT e FROM Exercise e LEFT JOIN FETCH e.trainings 
-        WHERE e.name = :#{#exercise.name} AND 
-        e.description = :#{#exercise.description} AND 
-        e.rounds = :#{#exercise.rounds} AND
-        e.repetition = :#{#exercise.repetition} AND 
-        e.time = :#{#exercise.time} AND 
-        e.bodyPart = :#{#exercise.bodyPart} AND 
-        e.weights = :#{#exercise.weights} AND 
-        e.difficulty = :#{#exercise.difficulty}
-        """
+            SELECT e FROM Exercise e LEFT JOIN FETCH e.trainingExercises
+            WHERE e.name = :#{#exercise.name} AND 
+            e.description = :#{#exercise.description} AND 
+            e.bodyPart = :#{#exercise.bodyPart} AND
+            e.parameters = :#{#exercise.parameters} AND 
+            e.defaultBurnedKcal = :#{#exercise.defaultBurnedKcal}
+            """
     )
     Optional<Exercise> findByExercise(@Param("exercise") Exercise exercise);
 }

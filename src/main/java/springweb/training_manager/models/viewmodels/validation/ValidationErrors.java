@@ -28,25 +28,31 @@ public class ValidationErrors {
     ) {
         Map<String, List<String>> errors = new HashMap<>();
 
-        result.getFieldErrors().forEach(
-            error -> {
-                var field = error.getField();
-                if (prefixToRemove != null && !prefixToRemove.isEmpty())
-                    field = field.substring(prefixToRemove.length());
+        result.getFieldErrors()
+            .forEach(
+                error -> {
+                    var field = error.getField();
+                    if (
+                        prefixToRemove != null
+                            && !prefixToRemove.isEmpty()
+                            && field.startsWith(prefixToRemove)
+                    )
+                        field = field.substring(prefixToRemove.length());
 
-                var message = error.getDefaultMessage();
-                if (message == null)
-                    message = "Pole nie spełnia wymagań.";
+                    var message = error.getDefaultMessage();
+                    if (message == null)
+                        message = "Pole nie spełnia wymagań.";
 
-                if (errors.containsKey(field)) {
-                    errors.get(field).add(message);
-                    return;
+                    if (errors.containsKey(field)) {
+                        errors.get(field)
+                            .add(message);
+                        return;
+                    }
+
+                    var messages = new ArrayList<>(List.of(message));
+                    errors.put(field, messages);
                 }
-
-                var messages = new ArrayList<>(List.of(message));
-                errors.put(field, messages);
-            }
-        );
+            );
 
         return new ValidationErrors(errors);
     }

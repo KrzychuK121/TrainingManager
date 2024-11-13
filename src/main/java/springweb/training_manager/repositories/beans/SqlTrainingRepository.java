@@ -24,7 +24,7 @@ interface SqlTrainingRepository extends TrainingRepository, JpaRepository<Traini
         """
             SELECT t 
             FROM Training t
-                LEFT JOIN FETCH t.exercises
+                LEFT JOIN FETCH t.trainingExercises
                 LEFT JOIN FETCH t.users
             WHERE t.id in :ids
             """
@@ -32,7 +32,11 @@ interface SqlTrainingRepository extends TrainingRepository, JpaRepository<Traini
     List<Training> findAllByIdIn(@Param("ids") List<Integer> ids);
 
     @Override
-    @Query("SELECT t FROM Training t LEFT JOIN FETCH t.exercises LEFT JOIN FETCH t.users")
+    @Query("""
+        SELECT t FROM Training t 
+            LEFT JOIN FETCH t.trainingExercises 
+            LEFT JOIN FETCH t.users
+        """)
     List<Training> findAll();
 
     @Override
@@ -40,7 +44,7 @@ interface SqlTrainingRepository extends TrainingRepository, JpaRepository<Traini
         value = """
             SELECT t 
             FROM Training t 
-                LEFT JOIN FETCH t.exercises 
+                LEFT JOIN FETCH t.trainingExercises 
                 LEFT JOIN FETCH t.users
             """,
         countQuery = """
@@ -53,7 +57,7 @@ interface SqlTrainingRepository extends TrainingRepository, JpaRepository<Traini
     @Override
     @Query(
         """
-            SELECT t FROM Training t LEFT JOIN FETCH t.exercises 
+            SELECT t FROM Training t LEFT JOIN FETCH t.trainingExercises 
             WHERE t.title = :#{#training.title} AND 
             t.description = :#{#training.description}
             """

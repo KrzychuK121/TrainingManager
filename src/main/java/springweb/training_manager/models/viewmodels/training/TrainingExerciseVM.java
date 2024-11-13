@@ -9,8 +9,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @NoArgsConstructor
-public class TrainingExercise extends TrainingSchema implements Castable<Training> {
-    public TrainingExercise(Training training) {
+public class TrainingExerciseVM extends TrainingSchema implements Castable<Training> {
+    public TrainingExerciseVM(Training training) {
         super(
             training.getId(),
             training.getTitle(),
@@ -18,16 +18,20 @@ public class TrainingExercise extends TrainingSchema implements Castable<Trainin
         );
     }
 
-    public static List<TrainingExercise> toTrainingExerciseList(final List<Training> list) {
-        return list.stream().map(
-            TrainingExercise::new
-        ).collect(Collectors.toList());
+    public static List<TrainingExerciseVM> toTrainingExerciseVMList(final List<Training> list) {
+        return list.stream()
+            .map(
+                TrainingExerciseVM::new
+            )
+            .collect(Collectors.toList());
     }
 
-    public static List<Training> toTrainingList(final List<TrainingExercise> list) {
-        return list.stream().map(
-            TrainingExercise::toEntity
-        ).collect(Collectors.toList());
+    public static List<Training> toTrainingList(final List<TrainingExerciseVM> list) {
+        return list.stream()
+            .map(
+                TrainingExerciseVM::toEntity
+            )
+            .collect(Collectors.toList());
     }
 
     public void setTitle(String title) {

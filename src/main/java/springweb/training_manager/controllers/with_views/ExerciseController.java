@@ -17,7 +17,7 @@ import springweb.training_manager.models.entities.Difficulty;
 import springweb.training_manager.models.schemas.RoleSchema;
 import springweb.training_manager.models.viewmodels.exercise.ExerciseRead;
 import springweb.training_manager.models.viewmodels.exercise.ExerciseWrite;
-import springweb.training_manager.models.viewmodels.training.TrainingExercise;
+import springweb.training_manager.models.viewmodels.training.TrainingExerciseVM;
 import springweb.training_manager.repositories.for_controllers.TrainingRepository;
 import springweb.training_manager.services.ExerciseService;
 import springweb.training_manager.services.PageSortService;
@@ -64,7 +64,7 @@ public class ExerciseController {
     }
 
     private void prepTrainingSelect(Model model, String[] selected) {
-        List<TrainingExercise> trainingSelectList = TrainingExercise.toTrainingExerciseList(trainingRepo.findAll());
+        List<TrainingExerciseVM> trainingSelectList = TrainingExerciseVM.toTrainingExerciseVMList(trainingRepo.findAll());
 
         if (selected.length > trainingSelectList.size())
             throw new IllegalStateException("Lista zaznaczonych elementów nie może być większa jak lista wszystkich elementów.");

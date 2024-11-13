@@ -15,11 +15,14 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import springweb.training_manager.models.entities.Exercise;
 import springweb.training_manager.models.entities.Training;
 import springweb.training_manager.models.schemas.RoleSchema;
 import springweb.training_manager.models.viewmodels.exercise.ExerciseTraining;
+import springweb.training_manager.models.viewmodels.exercise_parameters.ExerciseParametersWrite;
 import springweb.training_manager.models.viewmodels.training.TrainingRead;
 import springweb.training_manager.models.viewmodels.training.TrainingWrite;
+import springweb.training_manager.models.viewmodels.training_exercise.CustomTrainingParametersWrite;
 import springweb.training_manager.repositories.for_controllers.ExerciseRepository;
 import springweb.training_manager.services.PageSortService;
 import springweb.training_manager.services.TrainingService;
@@ -106,7 +109,15 @@ public class TrainingController {
     ) {
         logger.info("Training create addExercise with action: " + action);
         prepExerciseSelect(model, exerciseIds);
-        current.getExercises().add(new ExerciseTraining("", ""));
+        current.getExercises()
+            .add(
+                new CustomTrainingParametersWrite(
+                    new ExerciseTraining(
+                        new Exercise()
+                    ),
+                    new ExerciseParametersWrite()
+                )
+            );
         return "training/save";
     }
 
@@ -186,7 +197,8 @@ public class TrainingController {
             return "training/index";
         }
 
-        if (found.getExercises().isEmpty()) {
+        if (found.getExercises()
+            .isEmpty()) {
             logger.warn("Wystąpił problem: brak ćwiczeń");
             model.addAttribute("messType", "danger");
             model.addAttribute("mess", "Wybierz trening zawierający ćwiczenia!");
@@ -231,7 +243,8 @@ public class TrainingController {
         List<ExerciseTraining> toEditList = toEdit.getExercises();
         String[] selected = new String[toEditList.size()];
         for (int i = 0; i < toEditList.size(); i++) {
-            selected[i] = toEditList.get(i).getId() + "";
+            selected[i] = toEditList.get(i)
+                .getId() + "";
         }
         return selected;
     }

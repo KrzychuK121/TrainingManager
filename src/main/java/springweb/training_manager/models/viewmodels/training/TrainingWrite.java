@@ -1,12 +1,14 @@
 package springweb.training_manager.models.viewmodels.training;
 
+import jakarta.validation.Valid;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import springweb.training_manager.models.entities.Training;
+import springweb.training_manager.models.entities.TrainingExercise;
 import springweb.training_manager.models.schemas.TrainingSchema;
 import springweb.training_manager.models.viewmodels.Castable;
-import springweb.training_manager.models.viewmodels.exercise.ExerciseTraining;
+import springweb.training_manager.models.viewmodels.training_exercise.CustomTrainingParametersWrite;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +17,8 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 public class TrainingWrite extends TrainingSchema implements Castable<Training> {
-    private List<ExerciseTraining> exercises = new ArrayList<>();
+    @Valid
+    private List<CustomTrainingParametersWrite> exercises = new ArrayList<>();
 
     public void setTitle(String title) {
         this.title = title;
@@ -25,15 +28,30 @@ public class TrainingWrite extends TrainingSchema implements Castable<Training> 
         this.description = description;
     }
 
+    private List<TrainingExercise> toTrainingExercise(Training toMap) {
+        return exercises.stream()
+            .map(
+                customData -> new TrainingExercise(
+                    toMap,
+                    customData.getExerciseWrite()
+                        .toEntity(),
+                    customData.getParameters()
+                )
+            )
+            .toList();
+    }
+
     @Override
     public Training toEntity() {
         var toReturn = new Training(
             title,
             description
         );
-        
+
         if (exercises != null)
-            toReturn.setExercises(ExerciseTraining.toExerciseList(exercises));
+            toReturn.setTrainingExercises(
+                toTrainingExercise(toReturn)
+            );
 
         return toReturn;
     }
