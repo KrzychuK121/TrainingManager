@@ -18,6 +18,9 @@ interface SqlExerciseRepository extends ExerciseRepository, JpaRepository<Exerci
     List<Exercise> findAll();
 
     @Override
+    Optional<Exercise> findByIdAndOwnerId(int id, String ownerId);
+
+    @Override
     @Query(
         """
             SELECT e FROM Exercise e LEFT JOIN FETCH e.trainingExercises

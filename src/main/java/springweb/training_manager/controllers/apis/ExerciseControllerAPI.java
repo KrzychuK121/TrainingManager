@@ -10,6 +10,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.core.Authentication;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import springweb.training_manager.models.entities.Exercise;
@@ -18,6 +19,7 @@ import springweb.training_manager.models.viewmodels.exercise.ExerciseCreate;
 import springweb.training_manager.models.viewmodels.exercise.ExerciseRead;
 import springweb.training_manager.models.viewmodels.exercise.ExerciseWriteAPI;
 import springweb.training_manager.services.ExerciseService;
+import springweb.training_manager.services.UserService;
 
 import java.net.URI;
 
@@ -41,9 +43,13 @@ public class ExerciseControllerAPI {
 
     @GetMapping("/{id}")
     @ResponseBody
-    public ResponseEntity<ExerciseRead> getById(@PathVariable int id) {
+    public ResponseEntity<ExerciseRead> getById(
+        @PathVariable int id,
+        Authentication auth
+    ) {
         try {
-            Exercise found = service.getById(id);
+            var loggedUser = UserService.getUserByAuth(auth);
+            Exercise found = service.getById(id, loggedUser);
             var foundRead = new ExerciseRead(found);
             return ResponseEntity.ok(foundRead);
         } catch (IllegalArgumentException e) {
@@ -53,21 +59,35 @@ public class ExerciseControllerAPI {
     }
 
     @GetMapping(value = {"/createModel", "/createModel/{id}"})
-    public ResponseEntity<ExerciseCreate> getCreateModel(@PathVariable(required = false) Integer id) {
-        return ResponseEntity.ok(service.getCreateModel(id));
+    public ResponseEntity<ExerciseCreate> getCreateModel(
+        @PathVariable(required = false) Integer id,
+        Authentication auth
+    ) {
+        var loggedUser = UserService.getUserByAuth(auth);
+        return ResponseEntity.ok(
+            service.getCreateModel(
+                id,
+                loggedUser
+            )
+        );
     }
 
     @PostMapping()
     @ResponseBody
     public ResponseEntity<?> create(
         @RequestBody @Valid ExerciseWriteAPI data,
-        BindingResult result
+        BindingResult result,
+        Authentication auth
     ) {
         var validationErrors = service.validateAndPrepareExercise(data, result);
         if (validationErrors != null)
             return ResponseEntity.badRequest().body(validationErrors);
 
-        Exercise created = service.create(data.getToSave());
+        var loggedUser = UserService.getUserByAuth(auth);
+        Exercise created = service.create(
+            data.getToSave(),
+            loggedUser
+        );
 
         var exerciseRead = new ExerciseRead(created);
         return ResponseEntity.created(
@@ -80,14 +100,20 @@ public class ExerciseControllerAPI {
     public ResponseEntity<?> edit(
         @RequestBody @Valid ExerciseWriteAPI data,
         BindingResult result,
-        @PathVariable int id
+        @PathVariable int id,
+        Authentication auth
     ) {
         var validationErrors = service.validateAndPrepareExercise(data, result);
         if (validationErrors != null)
             return ResponseEntity.badRequest().body(validationErrors);
         try {
             var toEdit = data.getToSave();
-            service.edit(toEdit, id);
+            var loggedUser = UserService.getUserByAuth(auth);
+            service.edit(
+                toEdit,
+                id,
+                loggedUser
+            );
         } catch (IllegalArgumentException e) {
             logger.error("Wystąpił wyjątek: " + e.getMessage());
             return ResponseEntity.notFound().build();
@@ -98,9 +124,13 @@ public class ExerciseControllerAPI {
 
     @DeleteMapping("/{id}")
     @ResponseBody
-    public ResponseEntity<?> delete(@PathVariable int id) {
+    public ResponseEntity<?> delete(
+        @PathVariable int id,
+        Authentication auth
+    ) {
         try {
-            service.delete(id);
+            var loggedUser = UserService.getUserByAuth(auth);
+            service.delete(id, loggedUser);
         } catch (IllegalArgumentException e) {
             logger.error("Wystąpił wyjątek: " + e.getMessage());
             return ResponseEntity.notFound().build();

@@ -25,14 +25,6 @@ public class User extends UserSchema {
     )
     private Set<Role> roles;
 
-    @ManyToMany
-    @JoinTable(
-        name = "users_exercises",
-        joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
-        inverseJoinColumns = @JoinColumn(name = "exercise_id", referencedColumnName = "id")
-    )
-    private Set<Exercise> exercises = new HashSet<>();
-
     public User(
         String firstName,
         String lastName,

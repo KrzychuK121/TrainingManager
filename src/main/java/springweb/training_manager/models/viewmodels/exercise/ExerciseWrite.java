@@ -24,6 +24,7 @@ public class ExerciseWrite extends ExerciseSchema implements Castable<Exercise> 
     private List<TrainingExerciseVM> trainings = new ArrayList<>();
     @Valid
     private ExerciseParametersWrite parameters = new ExerciseParametersWrite();
+    private boolean exercisePrivate;
 
     public static List<Exercise> toExerciseList(final List<ExerciseWrite> list) {
         return list.stream()

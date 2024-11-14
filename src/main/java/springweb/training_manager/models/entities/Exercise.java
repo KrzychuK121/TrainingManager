@@ -27,6 +27,12 @@ public class Exercise extends ExerciseSchema {
     private ExerciseParameters parameters;
     @OneToMany(mappedBy = "exercise")
     private List<TrainingExercise> trainingExercises = new ArrayList<>();
+    @ManyToOne
+    @JoinColumn(
+        name = "owner_id",
+        referencedColumnName = "id"
+    )
+    private User owner;
 
     public Exercise(
         String name,
@@ -85,5 +91,6 @@ public class Exercise extends ExerciseSchema {
         trainingExercises = toEdit.trainingExercises == null || toEdit.trainingExercises.isEmpty() ?
             null :
             toEdit.trainingExercises;
+        owner = toEdit.owner;
     }
 }

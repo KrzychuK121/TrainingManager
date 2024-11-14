@@ -18,6 +18,7 @@ public class ExerciseRead extends ExerciseSchema {
     private final int repetition;
     private final short weights;
     private final LocalTime time;
+    private final boolean exercisePrivate;
 
     public ExerciseRead(Exercise exercise) {
         super(
@@ -38,6 +39,7 @@ public class ExerciseRead extends ExerciseSchema {
         this.time = exercise.getParameters()
             .getTime();
         this.bodyPartDesc = BodyPart.getBodyDesc(bodyPart);
+        this.exercisePrivate = exercise.getOwner() != null;
         this.trainings = TrainingExerciseVM.toTrainingExerciseVMList(exercise.getTrainings());
     }
 }

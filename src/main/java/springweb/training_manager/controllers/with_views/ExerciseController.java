@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -21,6 +22,7 @@ import springweb.training_manager.models.viewmodels.training.TrainingExerciseVM;
 import springweb.training_manager.repositories.for_controllers.TrainingRepository;
 import springweb.training_manager.services.ExerciseService;
 import springweb.training_manager.services.PageSortService;
+import springweb.training_manager.services.UserService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -106,7 +108,8 @@ public class ExerciseController {
         BindingResult result,
         String time,
         String[] trainingIds,
-        Model model
+        Model model,
+        Authentication auth
     ) {
 
         if (result.hasErrors()) {
@@ -121,7 +124,8 @@ public class ExerciseController {
 
         ExerciseService.setTime(toSave, time);
 
-        service.create(toSave);
+        var loggedUser = UserService.getUserByAuth(auth);
+        service.create(toSave, loggedUser);
         prepTrainingSelect(model);
         model.addAttribute("action", "create");
         model.addAttribute("exercise", new ExerciseWrite());
@@ -161,11 +165,18 @@ public class ExerciseController {
     @GetMapping("/edit/{id}")
     public String editView(
         @PathVariable int id,
-        Model model
+        Model model,
+        Authentication auth
     ) {
         ExerciseRead toEdit = null;
         try {
-            toEdit = new ExerciseRead(service.getById(id));
+            var loggedUser = UserService.getUserByAuth(auth);
+            toEdit = new ExerciseRead(
+                service.getById(
+                    id,
+                    loggedUser
+                )
+            );
         } catch (IllegalArgumentException e) {
             logger.error("Wystąpił wyjątek: " + e.getMessage());
             model.addAttribute("messType", "danger");
@@ -193,7 +204,8 @@ public class ExerciseController {
         String time,
         String[] trainingIds,
         Pageable page,
-        Model model
+        Model model,
+        Authentication auth
     ) {
         if (result.hasErrors()) {
             model.addAttribute("action", "edit/" + id);
@@ -207,7 +219,12 @@ public class ExerciseController {
         ExerciseService.setTime(toEdit, time);
 
         try {
-            service.edit(toEdit, id);
+            var loggedUser = UserService.getUserByAuth(auth);
+            service.edit(
+                toEdit,
+                id,
+                loggedUser
+            );
         } catch (IllegalArgumentException e) {
             logger.error("Wystąpił wyjątek: " + e.getMessage());
             model.addAttribute("exercises", getExercises(page, model));
@@ -231,10 +248,12 @@ public class ExerciseController {
     public String deleteView(
         @PathVariable int id,
         Pageable page,
-        Model model
+        Model model,
+        Authentication auth
     ) {
         try {
-            service.delete(id);
+            var loggedUser = UserService.getUserByAuth(auth);
+            service.delete(id, loggedUser);
         } catch (IllegalArgumentException e) {
             logger.error("Wystąpił wyjątek: " + e.getMessage());
             model.addAttribute("messType", "danger");

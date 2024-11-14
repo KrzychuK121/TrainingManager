@@ -14,6 +14,8 @@ public interface ExerciseRepository {
 
     Optional<Exercise> findById(Integer integer);
 
+    Optional<Exercise> findByIdAndOwnerId(int id, String ownerId);
+
     boolean existsById(Integer integer);
 
     Page<Exercise> findAll(Pageable pageable);

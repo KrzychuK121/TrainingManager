@@ -9,8 +9,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
+import springweb.training_manager.exceptions.NotOwnedByUserException;
 import springweb.training_manager.models.entities.Exercise;
 import springweb.training_manager.models.entities.Training;
+import springweb.training_manager.models.entities.User;
 import springweb.training_manager.models.viewmodels.exercise.ExerciseCreate;
 import springweb.training_manager.models.viewmodels.exercise.ExerciseRead;
 import springweb.training_manager.models.viewmodels.exercise.ExerciseWrite;
@@ -128,7 +130,10 @@ public class ExerciseService {
     }
 
     @Transactional
-    public Exercise create(ExerciseWrite toSave) {
+    public Exercise create(
+        ExerciseWrite toSave,
+        User loggedUser
+    ) {
         var preparedParameters = parametersService.prepExerciseParameters(
             toSave.getParameters()
         );
@@ -136,6 +141,8 @@ public class ExerciseService {
 
         var entityToSave = toSave.toEntity();
         entityToSave.setParameters(preparedParameters);
+        if(toSave.isExercisePrivate())
+            entityToSave.setOwner(loggedUser);
 
         var created = repository.save(entityToSave);
         if (preparedTrainingList != null)
@@ -201,36 +208,66 @@ public class ExerciseService {
         return toReturn;
     }
 
-    public Exercise getById(int id) {
-        return repository.findById(id)
+    public Exercise getById(
+        int id,
+        User owner
+    ) {
+        var found = repository.findById(id)
             .orElseThrow(
                 () -> new IllegalArgumentException("Nie znaleziono ćwiczenia o podanym numerze id")
             );
+
+        if(
+            !found.getOwner()
+                 .getId()
+                .equals(owner.getId())
+        )
+            throw new NotOwnedByUserException(
+                "This user is not an owner of exercise with id + " + id
+            );
+
+        return found;
     }
 
-    public ExerciseCreate getCreateModel(Integer id) {
+    public ExerciseCreate getCreateModel(
+        Integer id,
+        User owner
+    ) {
         var allTrainings = trainingService.getAll(TrainingExerciseVM::new);
         if (id == null)
             return new ExerciseCreate(allTrainings);
         try {
-            return new ExerciseCreate(new ExerciseRead(getById(id)), allTrainings);
+            return new ExerciseCreate(
+                new ExerciseRead(
+                    getById(id, owner)
+                ),
+                allTrainings
+            );
         } catch (IllegalArgumentException ex) {
             return new ExerciseCreate(allTrainings);
         }
     }
 
     @Transactional
-    public void edit(ExerciseWrite toEdit, int id) {
+    public void edit(
+        ExerciseWrite toEdit,
+        int id,
+        User loggedUser
+    ) {
         List<Training> preparedTrainingList = prepTrainings(toEdit.getTrainings());
         var preparedParameters = parametersService.prepExerciseParameters(
             toEdit.getParameters()
         );
 
-        Exercise toSave = getById(id);
+        Exercise toSave = getById(id, loggedUser);
+        var oldOwner = toSave.getOwner();
         var oldParametersRead = new ExerciseParametersRead(
             toSave.getParameters()
         );
+
         toSave.copy(toEdit.toEntity());
+        if(toEdit.isExercisePrivate() && oldOwner != null)
+            toSave.setOwner(oldOwner);
         toSave.setTrainingExercises(null);
         toSave.setParameters(preparedParameters);
 
@@ -243,8 +280,11 @@ public class ExerciseService {
     }
 
     @Transactional
-    public void delete(int id) {
-        var toDelete = getById(id);
+    public void delete(
+        int id,
+        User loggedUser
+    ) {
+        var toDelete = getById(id, loggedUser);
         var oldParametersRead = new ExerciseParametersRead(
             toDelete.getParameters()
         );
