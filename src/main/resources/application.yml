@@ -10,6 +10,7 @@ spring:
 #      hibernate:
 #        format_sql: true
 #        generate_statistics: true
+#logging.level.org.hibernate.orm.jdbc.bind: TRACE
 
 security:
   jwt:
