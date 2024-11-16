@@ -360,13 +360,12 @@ public class TrainingService {
             return found;
 
         if (
-            found.getOwner()
+            !found.getOwner()
                 .getId()
                 .equals(userId)
         )
-            return found;
-        else
             throw new NotOwnedByUserException("Nie masz dostępu do tego treningu.");
+        return found;
     }
 
     // TODO: Use it in controller when ROLE_USER registered, otherwise normal getAll
@@ -381,7 +380,12 @@ public class TrainingService {
     }
 
     public TrainingCreate getCreateModel(Integer id, User owner) {
-        var allExerciseTrainings = ExerciseTraining.toExerciseTrainingList(
+        var allExerciseTrainings = UserService.userIsInRole(owner, RoleSchema.ROLE_ADMIN)
+            ? exerciseRepository.findAll()
+            .stream()
+            .map(ExerciseTraining::new)
+            .toList()
+            : ExerciseTraining.toExerciseTrainingList(
             exerciseRepository.findPublicOrOwnedBy(
                 owner.getId()
             )
