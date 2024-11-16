@@ -31,31 +31,43 @@ public class UserService {
     public static final String PASSWORDS_NOT_EQUAL_MESSAGE = "Hasła się różnią. Sprawdź poprawność haseł";
 
     /**
-     * Method that gets authentication object, gets MyUserDetails out
-     * of it and then returns its id.
+     * Method that gets authentication object, gets MyUserDetails out of it and then
+     * returns its id.
      *
      * @param auth Authentication object
-     * @return If logged user is in role ROLE_USER then returns his id.
-     * Otherwise, returns null
+     *
+     * @return If logged user is in role ROLE_USER then returns his id. Otherwise, returns
+     * null
      */
     public static String getUserIdByAuth(Authentication auth) {
         MyUserDetails userDetails = (MyUserDetails) auth.getPrincipal();
         // TODO: Check if the user has role ADMIN. If yes, then return null too (just in case)
         return userDetails.isInRole(RoleSchema.ROLE_USER) ?
-            userDetails.getUser().getId() :
+            userDetails.getUser()
+                .getId() :
             null;
     }
 
     /**
-     * Method that gets authentication object, gets MyUserDetails out
-     * of it and then returns user object.
+     * Method that gets authentication object, gets MyUserDetails out of it and then
+     * returns user object.
      *
      * @param auth Authentication object
+     *
      * @return Logged user object
      */
     public static User getUserByAuth(Authentication auth) {
         MyUserDetails userDetails = (MyUserDetails) auth.getPrincipal();
         return userDetails.getUser();
+    }
+
+    public static boolean userIsInRole(User user, String roleName) {
+        return user.getRoles()
+            .stream()
+            .anyMatch(
+                role -> role.getName()
+                    .equals(roleName)
+            );
     }
 
     public boolean ifPasswordsMatches(String password, String passwordRepeat) {
@@ -65,14 +77,16 @@ public class UserService {
     }
 
     public void register(UserWrite toSave, Set<Role> roles) {
-        if (userDetailsService.userExists(toSave.getUsername().toLowerCase()))
+        if (userDetailsService.userExists(toSave.getUsername()
+            .toLowerCase()))
             throw new IllegalArgumentException("Istnieje już użytkownik o takiej nazwie. Może to Ty?");
         if (!ifPasswordsMatches(toSave.getPassword(), toSave.getPasswordRepeat()))
             throw new IllegalArgumentException(PASSWORDS_NOT_EQUAL_MESSAGE);
 
         Set<Role> rolesToSave = prepRoles(roles);
 
-        toSave.setUsername(toSave.getUsername().toLowerCase());
+        toSave.setUsername(toSave.getUsername()
+            .toLowerCase());
         User userToSave = toSave.toEntity();
         userToSave.setPasswordHashed(encoder.encode(toSave.getPassword()));
         userToSave.setRoles(rolesToSave);
@@ -92,7 +106,8 @@ public class UserService {
 
     public AuthResponse login(UserCredentials credentials) throws UsernameNotFoundException {
         UserDetails details = userDetailsService.loadUserByUsername(
-            credentials.username().toLowerCase()
+            credentials.username()
+                .toLowerCase()
         );
         User foundUser = ((MyUserDetails) details).getUser();
         var foundPassword = foundUser.getPasswordHashed();
