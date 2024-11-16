@@ -157,40 +157,6 @@ public class ExerciseService {
         return created;
     }
 
-    /**
-     * This method <b>SHOULD</b> be used after creating/editing <code>Exercise</code>. It
-     * is responsible for adding <code>toAddOrRemove</code> to every <code>toEdit</code>
-     * element and then saving the changes in the database. This operation is required to
-     * create proper many to many row between
-     * <code>Exercise</code> and <code>Training</code>
-     *
-     * @param toAddOrRemove <code>Exercise</code> with id which should be connected with
-     *                      <code>Training</code>
-     * @param toEdit        list of <code>Training</code> objects which should be
-     *                      connected with <code>Exercise</code>
-     * @param ifAdd         when true, it will add <code>toAddOrRemove</code> to
-     *                      <code>toEdit</code>, otherwise it will remove
-     *                      <code>toAddOrRemove</code> from <code>toEdit</code>.
-     */
-    private void editExerciseInTrainings(
-        Exercise toAddOrRemove,
-        List<Training> toEdit,
-        boolean ifAdd
-    ) {
-        if (toEdit == null)
-            return;
-        toEdit.forEach(
-            training -> {
-                if (ifAdd)
-                    training.getExercises()
-                        .add(toAddOrRemove);
-                else
-                    training.getExercises()
-                        .remove(toAddOrRemove);
-            }
-        );
-    }
-
     private Page<ExerciseRead> getPageBy(
         Pageable page,
         Function<Pageable, Page<Exercise>> find
@@ -258,7 +224,7 @@ public class ExerciseService {
         Integer id,
         User owner
     ) {
-        var allTrainings = trainingService.getAll(TrainingExerciseVM::new);
+        var allTrainings = trainingService.getAllForUser(owner);
         if (id == null)
             return new ExerciseCreate(allTrainings);
         try {

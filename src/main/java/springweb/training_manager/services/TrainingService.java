@@ -15,6 +15,7 @@ import springweb.training_manager.models.entities.Exercise;
 import springweb.training_manager.models.entities.ExerciseParameters;
 import springweb.training_manager.models.entities.Training;
 import springweb.training_manager.models.entities.User;
+import springweb.training_manager.models.schemas.RoleSchema;
 import springweb.training_manager.models.viewmodels.exercise.ExerciseTraining;
 import springweb.training_manager.models.viewmodels.exercise_parameters.ExerciseParametersRead;
 import springweb.training_manager.models.viewmodels.exercise_parameters.ExerciseParametersWrite;
@@ -234,6 +235,15 @@ public class TrainingService {
         return getAll(TrainingRead::new);
     }
 
+    public List<TrainingExerciseVM> getAllForUser(User user) {
+        if (UserService.userIsInRole(user, RoleSchema.ROLE_ADMIN))
+            return getAll(TrainingExerciseVM::new);
+        return repository.findAllPublicOrOwnedBy(user.getId())
+            .stream()
+            .map(TrainingExerciseVM::new)
+            .toList();
+    }
+
     private Page<TrainingRead> getPageBy(
         Pageable page,
         Function<Pageable, Page<Training>> find
@@ -325,6 +335,12 @@ public class TrainingService {
             page,
             pageable -> repository.findPagedPublicOrOwnedBy(pageable, user.getId())
         );
+    }
+
+    public Page<TrainingRead> getPagedForUser(Pageable page, User user) {
+        if (UserService.userIsInRole(user, RoleSchema.ROLE_ADMIN))
+            return getPagedAllAlternative(page);
+        return getPagedPublicOrOwnerBy(page, user);
     }
 
     public List<TrainingRead> getPublicOrOwnerBy(User user) {

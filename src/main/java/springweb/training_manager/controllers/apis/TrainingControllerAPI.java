@@ -44,9 +44,12 @@ public class TrainingControllerAPI {
         Authentication auth
     ) {
         var user = UserService.getUserByAuth(auth);
-        if (UserService.userIsInRole(user, RoleSchema.ROLE_ADMIN))
-            return ResponseEntity.ok(service.getPagedAllAlternative(page));
-        return ResponseEntity.ok(service.getPagedPublicOrOwnerBy(page, user));
+        return ResponseEntity.ok(
+            service.getPagedForUser(
+                page,
+                user
+            )
+        );
     }
 
     @GetMapping("/all")
