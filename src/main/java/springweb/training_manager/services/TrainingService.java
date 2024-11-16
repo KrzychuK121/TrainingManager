@@ -24,7 +24,6 @@ import springweb.training_manager.models.viewmodels.training_exercise.CustomTrai
 import springweb.training_manager.models.viewmodels.validation.ValidationErrors;
 import springweb.training_manager.repositories.for_controllers.ExerciseRepository;
 import springweb.training_manager.repositories.for_controllers.TrainingRepository;
-import springweb.training_manager.repositories.for_controllers.UserRepository;
 
 import java.util.*;
 import java.util.function.Function;
@@ -37,7 +36,6 @@ public class TrainingService {
     private final ExerciseRepository exerciseRepository;
     private final ExerciseParametersService parametersService;
     private final TrainingRepository repository;
-    private final UserRepository userRepository;
     private final TrainingExerciseService trainingExerciseService;
 
     /**
@@ -52,25 +50,25 @@ public class TrainingService {
      * @return prepared list with <code>ExerciseTraining</code> (founded in database or
      * just created)
      */
-    public List<Exercise> prepExercises(List<ExerciseTraining> exercises) {
-        if (exercises == null || exercises.isEmpty())
-            return null;
-
-        List<Exercise> exerciseToSave = new ArrayList<>(exercises.size());
-        exercises.forEach(
-            exerciseTraining -> {
-                Exercise found = exerciseRepository.findByExercise(exerciseTraining.toEntity())
-                    .orElse(exerciseTraining.toEntity());
-
-                if (found.getId() == 0) {
-                    var savedExercise = exerciseRepository.save(found);
-                    exerciseToSave.add(savedExercise);
-                } else
-                    exerciseToSave.add(found);
-
-            }
+    public List<Exercise> prepExercises(
+        List<ExerciseTraining> exercises,
+        User loggedUser
+    ) {
+        var prepared = NoDuplicationService.prepEntitiesWithWriteModel(
+            exercises,
+            exerciseRepository,
+            exerciseRepository::save
         );
-        return exerciseToSave;
+
+        var filtered = prepared.stream()
+            .filter(
+                exercise -> UserService.isAdminOrOwner(loggedUser, exercise.getOwner())
+            )
+            .toList();
+
+        return filtered.isEmpty()
+            ? null
+            : filtered;
     }
 
     public Map<Exercise, ExerciseParameters> prepExercisesAndParametersMap(
@@ -85,7 +83,7 @@ public class TrainingService {
                     data -> NoDuplicationService.prepEntity(
                         data.getExerciseWrite()
                             .toEntity(),
-                        exerciseRepository::findByExercise,
+                        exerciseRepository,
                         exerciseRepository::save
                     ),
                     data -> parametersService.prepExerciseParameters(
@@ -98,7 +96,11 @@ public class TrainingService {
             );
     }
 
-    public void setExercisesById(TrainingWrite toSave, String[] exercisesIds) {
+    public void setExercisesById(
+        TrainingWrite toSave,
+        String[] exercisesIds,
+        User loggedUser
+    ) {
         if (exercisesIds == null || exercisesIds.length == 0)
             return;
         var selectedExercises = Arrays.stream(exercisesIds)
@@ -109,51 +111,67 @@ public class TrainingService {
                 )
             )
             .toList();
-        setExercisesById(toSave, selectedExercises);
+        setExercisesById(
+            toSave,
+            selectedExercises,
+            loggedUser
+        );
     }
 
-    // TODO: Prepare exercise parameters and put them later into TrainingExercise
     public void setExercisesById(
         TrainingWrite toSave,
-        List<SelectedExerciseWrite> selectedExercises
+        List<SelectedExerciseWrite> selectedExercises,
+        User loggedUser
     ) {
         if (selectedExercises == null || selectedExercises.isEmpty())
             return;
 
-        setExercisesBy(toSave, selectedExercises);
+        setExercisesBy(
+            toSave,
+            selectedExercises,
+            loggedUser
+        );
     }
 
     private void setExercisesBy(
         TrainingWrite toSave,
-        List<SelectedExerciseWrite> selectedExercises
+        List<SelectedExerciseWrite> selectedExercises,
+        User loggedUser
     ) {
         List<CustomTrainingParametersWrite> currExercises = toSave.getExercises();
-        currExercises.addAll(
-            selectedExercises.stream()
-                .filter(
-                    selected -> !selected.getSelectedId()
-                        .isEmpty()
+        List<CustomTrainingParametersWrite> toAdd = new ArrayList<>(selectedExercises.size());
+        for (var selected : selectedExercises) {
+            if (
+                selected.getSelectedId()
+                    .isEmpty()
+            )
+                continue;
+            var exerciseID = selected.getSelectedId();
+            int id = Integer.parseInt(exerciseID);
+
+            Exercise found = UserService.userIsInRole(loggedUser, RoleSchema.ROLE_ADMIN)
+                ? exerciseRepository.findById(id)
+                .orElse(null)
+                : exerciseRepository.findByIdAndOwnerId(id, loggedUser.getId())
+                .orElse(null);
+
+            if (found == null)
+                continue;
+            toAdd.add(
+                new CustomTrainingParametersWrite(
+                    new ExerciseTraining(found),
+                    selected.getParameters()
                 )
-                .map(
-                    selected -> {
-                        var exerciseID = selected.getSelectedId();
-                        int id = Integer.parseInt(exerciseID);
-                        Exercise found = exerciseRepository.findById(id)
-                            .get();
-                        return new CustomTrainingParametersWrite(
-                            new ExerciseTraining(found),
-                            selected.getParameters()
-                        );
-                    }
-                )
-                .toList()
-        );
+            );
+        }
+        currExercises.addAll(toAdd);
         toSave.setExercises(currExercises);
     }
 
     public Map<String, List<String>> validateAndPrepareTraining(
         TrainingWriteAPI data,
-        BindingResult result
+        BindingResult result,
+        User loggedUser
     ) {
         var toSave = data.getToSave();
         var selectedExercises = data.getSelectedExercises();
@@ -189,27 +207,25 @@ public class TrainingService {
             return new ValidationErrors(newValidationErrors).getErrors();
         }
 
-        setExercisesById(toSave, data.getSelectedExercises());
+        setExercisesById(
+            toSave,
+            data.getSelectedExercises(),
+            loggedUser
+        );
 
         return null;
     }
 
-    private User getUserById(String userId) {
-        return userRepository.findById(userId)
-            .orElseThrow(
-                () -> new NotOwnedByUserException("Nie istnieje użytkownik o takim numerze ID.")
-            );
-    }
-
     @Transactional
-    public Training create(TrainingWrite toSave, String userId) {
+    public Training create(TrainingWrite toSave, User loggedUser) {
         var preparedExerciseList = prepExercisesAndParametersMap(toSave.getExercises());
 
         var entityToSave = toSave.toEntity();
-        if (userId != null && toSave.isTrainingPrivate()) {
-            var loggedUser = getUserById(userId);
+        if (
+            toSave.isTrainingPrivate()
+                && !UserService.userIsInRole(loggedUser, RoleSchema.ROLE_ADMIN)
+        )
             entityToSave.setOwner(loggedUser);
-        }
 
         var created = repository.save(entityToSave);
 
@@ -350,25 +366,20 @@ public class TrainingService {
             .toList();
     }
 
-    public Training getById(int id, String userId) {
+    public Training getById(
+        int id,
+        User loggedUser
+    ) {
         Training found = repository.findById(id)
             .orElseThrow(
                 () -> new IllegalArgumentException("Nie znaleziono treningu o podanym numerze id.")
             );
 
-        if (userId == null)
-            return found;
-
-        if (
-            !found.getOwner()
-                .getId()
-                .equals(userId)
-        )
+        if (!UserService.isAdminOrOwner(loggedUser, found.getOwner()))
             throw new NotOwnedByUserException("Nie masz dostępu do tego treningu.");
         return found;
     }
 
-    // TODO: Use it in controller when ROLE_USER registered, otherwise normal getAll
     public List<TrainingRead> getByUserId(String userId) {
         return repository.findAllByOwnerId(userId)
             .orElseThrow(
@@ -395,7 +406,7 @@ public class TrainingService {
         try {
             return new TrainingCreate(
                 new TrainingRead(
-                    getById(id, owner.getId())
+                    getById(id, owner)
                 ),
                 allExerciseTrainings
             );
@@ -423,19 +434,20 @@ public class TrainingService {
     public void edit(
         TrainingWrite toEdit,
         int id,
-        String ownerId
+        User loggedUser
     ) {
         Map<Exercise, ExerciseParameters> preparedExerciseList = prepExercisesAndParametersMap(
             toEdit.getExercises()
         );
 
-        Training toSave = getById(id, ownerId);
+        Training toSave = getById(id, loggedUser);
         var owner = toSave.getOwner();
         var oldParametersList = getOldParametersList(toSave);
 
         toSave.copy(toEdit.toEntity());
         toSave.setOwner(
             !toEdit.isTrainingPrivate()
+                || UserService.userIsInRole(loggedUser, RoleSchema.ROLE_ADMIN)
                 ? null
                 : owner
         );
@@ -451,8 +463,8 @@ public class TrainingService {
     }
 
     @Transactional
-    public void delete(int id, String userId) {
-        var toDelete = getById(id, userId);
+    public void delete(int id, User loggedUser) {
+        var toDelete = getById(id, loggedUser);
         var oldParametersList = getOldParametersList(toDelete);
 
         trainingExerciseService.deleteByTrainingId(toDelete);

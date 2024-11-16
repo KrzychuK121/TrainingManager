@@ -4,11 +4,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import springweb.training_manager.models.entities.*;
+import springweb.training_manager.models.entities.BodyPart;
+import springweb.training_manager.models.entities.Exercise;
+import springweb.training_manager.models.entities.ExerciseParameters;
 
 import java.time.LocalTime;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @DataJpaTest
 class ExerciseRepositoryIntegrationTest {
@@ -18,17 +20,20 @@ class ExerciseRepositoryIntegrationTest {
     private TestEntityManager entityManager;
 
     @Test
-    void saveInsertShouldCreateNewExercise(){
+    void saveInsertShouldCreateNewExercise() {
         // given
         var toSave = new Exercise(
             "Test integracyjny",
             "Ćwiczenie z testu integracyjnego",
-            3,
-            0,
-            (short) 0,
-            LocalTime.of(0, 0, 45),
             BodyPart.UPPER_ABS,
-            Difficulty.MEDIUM
+            new ExerciseParameters(
+                0,
+                3,
+                0,
+                (short) 0,
+                LocalTime.of(0, 0, 45)
+            ),
+            2
         );
 
         // when
@@ -43,54 +48,63 @@ class ExerciseRepositoryIntegrationTest {
     }
 
     @Test
-    void findByExerciseShouldFindDuplicate(){
+    void findByExerciseShouldFindDuplicate() {
         // given
         var toSave = new Exercise(
             "Przeciąganie liny",
             "Ćw na brzuch, udawane przeciąganie liny",
-            3,
-            0,
-            (short) 0,
-            LocalTime.of(0, 0, 45),
             BodyPart.UPPER_ABS,
-            Difficulty.MEDIUM
+            new ExerciseParameters(
+                0,
+                3,
+                0,
+                (short) 0,
+                LocalTime.of(0, 0, 45)
+            ),
+            2
         );
 
         // when
         entityManager.persist(toSave);
-        var found = repository.findByExercise(toSave);
+        var found = repository.findDuplication(toSave);
 
         //then
         assertEquals(toSave, found.get());
     }
 
     @Test
-    void findByExerciseShouldNotFoundInDatabase(){
+    void findDuplicationShouldNotFoundInDatabase() {
         // given
         var toSearch = new Exercise(
             "Przeciąganie liny",
             "Ćw na brzuch, udawane przeciąganie liny",
-            3,
-            0,
-            (short) 0,
-            LocalTime.of(0, 0, 45),
             BodyPart.UPPER_ABS,
-            Difficulty.MEDIUM
+            new ExerciseParameters(
+                0,
+                3,
+                0,
+                (short) 0,
+                LocalTime.of(0, 0, 45)
+            ),
+            2
         );
 
         var otherExercise = new Exercise(
             "Inne ćwiczenie",
             "Ćw które zostanie zwrócone w optional",
-            2,
-            1,
-            (short) 6,
-            null,
             BodyPart.HAMS,
-            Difficulty.FOR_BEGINNERS
+            new ExerciseParameters(
+                0,
+                2,
+                1,
+                (short) 6,
+                null
+            ),
+            3
         );
 
         // when
-        var found = repository.findByExercise(toSearch)
+        var found = repository.findDuplication(toSearch)
             .orElse(otherExercise);
 
         //then

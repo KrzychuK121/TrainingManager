@@ -85,12 +85,16 @@ public class ExerciseControllerAPI {
         BindingResult result,
         Authentication auth
     ) {
-        var validationErrors = service.validateAndPrepareExercise(data, result);
+        var loggedUser = UserService.getUserByAuth(auth);
+        var validationErrors = service.validateAndPrepareExercise(
+            data,
+            result,
+            loggedUser
+        );
         if (validationErrors != null)
             return ResponseEntity.badRequest()
                 .body(validationErrors);
 
-        var loggedUser = UserService.getUserByAuth(auth);
         Exercise created = service.create(
             data.getToSave(),
             loggedUser
@@ -111,13 +115,17 @@ public class ExerciseControllerAPI {
         @PathVariable int id,
         Authentication auth
     ) {
-        var validationErrors = service.validateAndPrepareExercise(data, result);
+        var loggedUser = UserService.getUserByAuth(auth);
+        var validationErrors = service.validateAndPrepareExercise(
+            data,
+            result,
+            loggedUser
+        );
         if (validationErrors != null)
             return ResponseEntity.badRequest()
                 .body(validationErrors);
         try {
             var toEdit = data.getToSave();
-            var loggedUser = UserService.getUserByAuth(auth);
             service.edit(
                 toEdit,
                 id,

@@ -70,6 +70,12 @@ public class UserService {
             );
     }
 
+    public static boolean isAdminOrOwner(User toCheck, User owner) {
+        if (userIsInRole(toCheck, RoleSchema.ROLE_ADMIN))
+            return true;
+        return toCheck.equals(owner);
+    }
+
     public boolean ifPasswordsMatches(String password, String passwordRepeat) {
         if (password == null || passwordRepeat == null)
             return false;

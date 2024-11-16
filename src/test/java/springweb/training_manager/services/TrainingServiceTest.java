@@ -2,15 +2,15 @@ package springweb.training_manager.services;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import springweb.training_manager.models.entities.BodyPart;
-import springweb.training_manager.models.entities.Exercise;
-import springweb.training_manager.models.entities.ExerciseParameters;
+import springweb.training_manager.models.entities.*;
+import springweb.training_manager.models.schemas.RoleSchema;
 import springweb.training_manager.models.viewmodels.exercise.ExerciseTraining;
 import springweb.training_manager.repositories.for_controllers.ExerciseRepository;
 
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -25,7 +25,7 @@ class TrainingServiceTest {
         var mock = mock(ExerciseRepository.class);
 
         for (int i = 0; i < toFind.size(); i++) {
-            when(mock.findByExercise(toFind.get(i)))
+            when(mock.findDuplication(toFind.get(i)))
                 .thenReturn(
                     Optional.of(
                         copy(toFind.get(i), found.get(i) ? 9 : 0)
@@ -58,6 +58,19 @@ class TrainingServiceTest {
     @DisplayName("prepExercises should create two new entity and return them")
     void prepExercisesShouldCreateTwoNewEntity() {
         // given
+        var user = new User(
+            "admin",
+            "admin",
+            "administrator",
+            "qwerty123"
+        );
+
+        user.setRoles(
+            Set.of(
+                new Role(RoleSchema.ROLE_ADMIN)
+            )
+        );
+
         var first = new Exercise(
             "pompki",
             "zwykłe pompki",
@@ -99,13 +112,13 @@ class TrainingServiceTest {
             ),
             null,
             null,
-            null,
             null
         );
         var result = service.prepExercises(
             ExerciseTraining.toExerciseTrainingList(
                 exerciseList
-            )
+            ),
+            user
         );
 
         // then

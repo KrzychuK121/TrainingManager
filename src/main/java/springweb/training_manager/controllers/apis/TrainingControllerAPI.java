@@ -71,7 +71,8 @@ public class TrainingControllerAPI {
     ) {
         Training found = null;
         try {
-            found = service.getById(id, UserService.getUserIdByAuth(auth));
+            var loggedUser = UserService.getUserByAuth(auth);
+            found = service.getById(id, loggedUser);
         } catch (IllegalArgumentException e) {
             log.error("Wystąpił wyjątek: {}", e.getMessage());
             if (e.getMessage()
@@ -99,13 +100,17 @@ public class TrainingControllerAPI {
         BindingResult result,
         Authentication auth
     ) {
-        var validationErrors = service.validateAndPrepareTraining(toCreate, result);
+        var loggedUser = UserService.getUserByAuth(auth);
+        var validationErrors = service.validateAndPrepareTraining(
+            toCreate,
+            result,
+            loggedUser
+        );
         if (validationErrors != null)
             return ResponseEntity.badRequest()
                 .body(validationErrors);
 
-        var userId = UserService.getUserIdByAuth(auth);
-        Training created = service.create(toCreate.getToSave(), userId);
+        Training created = service.create(toCreate.getToSave(), loggedUser);
         var trainingRead = new TrainingRead(created);
         return ResponseEntity.created(
                 URI.create("/api/training/" + created.getId())
@@ -121,14 +126,18 @@ public class TrainingControllerAPI {
         @PathVariable int id,
         Authentication auth
     ) {
-        var userId = UserService.getUserIdByAuth(auth);
-        var validationErrors = service.validateAndPrepareTraining(data, result);
+        var loggedUser = UserService.getUserByAuth(auth);
+        var validationErrors = service.validateAndPrepareTraining(
+            data,
+            result,
+            loggedUser
+        );
         if (validationErrors != null)
             return ResponseEntity.badRequest()
                 .body(validationErrors);
         try {
             var toEdit = data.getToSave();
-            service.edit(toEdit, id, userId);
+            service.edit(toEdit, id, loggedUser);
         } catch (IllegalArgumentException e) {
             log.error("Wystąpił wyjątek: " + e.getMessage());
             return ResponseEntity.notFound()
@@ -145,9 +154,9 @@ public class TrainingControllerAPI {
         @PathVariable int id,
         Authentication auth
     ) {
-        var userId = UserService.getUserIdByAuth(auth);
+        var loggedUser = UserService.getUserByAuth(auth);
         try {
-            service.delete(id, userId);
+            service.delete(id, loggedUser);
         } catch (NotOwnedByUserException e) {
             return ResponseEntity.badRequest()
                 .build();

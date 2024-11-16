@@ -8,7 +8,7 @@ import springweb.training_manager.models.entities.Training;
 import java.util.List;
 import java.util.Optional;
 
-public interface TrainingRepository {
+public interface TrainingRepository extends DuplicationRepository<Training> {
     Optional<List<Training>> findAllByOwnerId(String id);
 
     List<Training> findAllPublicOrOwnedBy(String userId);
@@ -28,7 +28,10 @@ public interface TrainingRepository {
 
     Optional<Training> findById(Integer integer);
 
-    Optional<Training> findByTraining(Training training);
+    @Override
+    Optional<Training> findDuplication(Training training);
+
+    Optional<Training> findByIdAndOwnerId(Integer id, String ownerId);
 
     Training save(Training entity);
 

@@ -13,7 +13,8 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-interface SqlTrainingRepository extends TrainingRepository, JpaRepository<Training, Integer> {
+interface SqlTrainingRepository extends TrainingRepository,
+    JpaRepository<Training, Integer> {
 
     @Override
     Optional<List<Training>> findAllByOwnerId(String id);
@@ -83,5 +84,8 @@ interface SqlTrainingRepository extends TrainingRepository, JpaRepository<Traini
             t.description = :#{#training.description}
             """
     )
-    Optional<Training> findByTraining(@Param("training") Training training);
+    Optional<Training> findDuplication(@Param("training") Training training);
+
+    @Override
+    Optional<Training> findByIdAndOwnerId(Integer id, String ownerId);
 }

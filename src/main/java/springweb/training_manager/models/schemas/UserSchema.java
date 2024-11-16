@@ -57,4 +57,25 @@ public abstract class UserSchema implements Identificable<String> {
     public void setLastName(String lastName) {
         this.lastName = lastName;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        UserSchema that = (UserSchema) o;
+        return id.equals(that.id)
+            && firstName.equals(that.firstName)
+            && lastName.equals(that.lastName)
+            && username.equals(that.username);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id.hashCode();
+        result = 31 * result + firstName.hashCode();
+        result = 31 * result + lastName.hashCode();
+        result = 31 * result + username.hashCode();
+        return result;
+    }
 }

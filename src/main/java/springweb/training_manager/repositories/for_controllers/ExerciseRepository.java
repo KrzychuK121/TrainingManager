@@ -8,7 +8,7 @@ import springweb.training_manager.models.entities.Exercise;
 import java.util.List;
 import java.util.Optional;
 
-public interface ExerciseRepository {
+public interface ExerciseRepository extends DuplicationRepository<Exercise> {
     List<Exercise> findAll();
 
     Exercise save(Exercise entity);
@@ -26,7 +26,8 @@ public interface ExerciseRepository {
 
     Page<Exercise> findAll(Pageable pageable);
 
-    Optional<Exercise> findByExercise(Exercise exercise);
+    @Override
+    Optional<Exercise> findDuplication(Exercise exercise);
 
     boolean existsById(Integer integer);
 

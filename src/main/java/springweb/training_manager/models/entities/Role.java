@@ -19,4 +19,13 @@ import java.util.Set;
 public class Role extends RoleSchema {
     @ManyToMany(mappedBy = "roles")
     private Set<User> users = new HashSet<>();
+
+    public Role(
+        String name
+    ) {
+        super(
+            0,
+            name
+        );
+    }
 }

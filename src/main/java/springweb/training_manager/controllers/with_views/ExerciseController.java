@@ -111,6 +111,7 @@ public class ExerciseController {
         Model model,
         Authentication auth
     ) {
+        var loggedUser = UserService.getUserByAuth(auth);
 
         if (result.hasErrors()) {
             model.addAttribute("action", "create");
@@ -120,11 +121,14 @@ public class ExerciseController {
             return "exercise/save";
         }
 
-        service.setTrainingsById(toSave, trainingIds);
+        service.setTrainingsById(
+            toSave,
+            trainingIds,
+            loggedUser
+        );
 
         ExerciseService.setTime(toSave, time);
 
-        var loggedUser = UserService.getUserByAuth(auth);
         service.create(toSave, loggedUser);
         prepTrainingSelect(model);
         model.addAttribute("action", "create");
@@ -207,6 +211,8 @@ public class ExerciseController {
         Model model,
         Authentication auth
     ) {
+        var loggedUser = UserService.getUserByAuth(auth);
+
         if (result.hasErrors()) {
             model.addAttribute("action", "edit/" + id);
             setDifficulty(model);
@@ -215,11 +221,14 @@ public class ExerciseController {
             return "exercise/save";
         }
 
-        service.setTrainingsById(toEdit, trainingIds);
+        service.setTrainingsById(
+            toEdit,
+            trainingIds,
+            loggedUser
+        );
         ExerciseService.setTime(toEdit, time);
 
         try {
-            var loggedUser = UserService.getUserByAuth(auth);
             service.edit(
                 toEdit,
                 id,

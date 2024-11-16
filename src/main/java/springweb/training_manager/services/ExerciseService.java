@@ -48,44 +48,65 @@ public class ExerciseService {
      *                  <code>create(ExerciseWrite toSave)</code> method.
      *
      * @return prepared list with
-     * <code>TrainingExerciseVM</code> (founded in database
-     * or just created)
+     * <code>TrainingExerciseVM</code> (founded in database or just created)
      */
-    private List<Training> prepTrainings(List<TrainingExerciseVM> trainings) {
+    private List<Training> prepTrainings(
+        List<TrainingExerciseVM> trainings,
+        User loggedUser
+    ) {
         if (trainings == null || trainings.isEmpty())
             return null;
 
-        List<Training> trainingToSave = new ArrayList<>(trainings.size());
-        trainings.forEach(
-            trainingExercise -> {
-                Training found = trainingRepository.findByTraining(trainingExercise.toEntity())
-                    .orElse(trainingExercise.toEntity());
-
-                if (found.getId() == 0) {
-                    var savedTraining = trainingRepository.save(found);
-                    trainingToSave.add(savedTraining);
-                } else
-                    trainingToSave.add(found);
-
-            }
+        List<Training> trainingsToSave = NoDuplicationService.prepEntitiesWithWriteModel(
+            trainings,
+            trainingRepository,
+            trainingRepository::save
         );
-        return trainingToSave;
+
+        var filteredTrainings = trainingsToSave.stream()
+            .filter(
+                training -> UserService.isAdminOrOwner(loggedUser, training.getOwner())
+            )
+            .toList();
+        return filteredTrainings.isEmpty() ? null : filteredTrainings;
     }
 
-    public void setTrainingsById(ExerciseWrite toSave, String[] trainingIds) {
-        if (trainingIds != null && trainingIds.length != 0) {
-            List<TrainingExerciseVM> trainingsToSave = new ArrayList<>(trainingIds.length);
-            for (String trainingID : trainingIds) {
-                if (trainingID.isEmpty())
-                    continue;
-                int id = Integer.parseInt(trainingID);
-                Training found = trainingRepository.findById(id)
-                    .get();
-                TrainingExerciseVM viewModel = new TrainingExerciseVM(found);
-                trainingsToSave.add(viewModel);
-            }
-            toSave.setTrainings(trainingsToSave);
+    /**
+     * This method fetches trainings objects based on provided training ids. It expands
+     * previous table with fetched trainings instead of replacing.
+     *
+     * @param toSave      write model to set fetched trainings
+     * @param trainingIds ids of trainings to fetch
+     */
+    public void setTrainingsById(
+        ExerciseWrite toSave,
+        String[] trainingIds,
+        User user
+    ) {
+        if (trainingIds == null || trainingIds.length == 0)
+            return;
+
+        List<TrainingExerciseVM> trainingsToSave = new ArrayList<>(trainingIds.length);
+        for (String trainingID : trainingIds) {
+            if (trainingID.isEmpty())
+                continue;
+            int id = Integer.parseInt(trainingID);
+            Training found = UserService.userIsInRole(user, RoleSchema.ROLE_ADMIN)
+                ? trainingRepository.findById(id)
+                .orElse(null)
+                : trainingRepository.findByIdAndOwnerId(id, user.getId())
+                .orElse(null);
+            if (found == null)
+                continue;
+            TrainingExerciseVM viewModel = new TrainingExerciseVM(found);
+            trainingsToSave.add(viewModel);
         }
+        if (toSave.getTrainings() == null || toSave.getTrainings()
+            .isEmpty())
+            toSave.setTrainings(trainingsToSave);
+        else
+            toSave.getTrainings()
+                .addAll(trainingsToSave);
     }
 
     public static void setTime(ExerciseWrite toSave) {
@@ -115,7 +136,8 @@ public class ExerciseService {
 
     public Map<String, List<String>> validateAndPrepareExercise(
         ExerciseWriteAPI data,
-        BindingResult result
+        BindingResult result,
+        User user
     ) {
         final var ENTITY_PREFIX = "toSave.";
         var toSave = data.getToSave();
@@ -125,7 +147,11 @@ public class ExerciseService {
             return validation.getErrors();
         }
 
-        setTrainingsById(toSave, data.getSelectedTrainings());
+        setTrainingsById(
+            toSave,
+            data.getSelectedTrainings(),
+            user
+        );
         setTime(toSave);
         return null;
     }
@@ -138,7 +164,10 @@ public class ExerciseService {
         var preparedParameters = parametersService.prepExerciseParameters(
             toSave.getParameters()
         );
-        List<Training> preparedTrainingList = prepTrainings(toSave.getTrainings());
+        List<Training> preparedTrainingList = prepTrainings(
+            toSave.getTrainings(),
+            loggedUser
+        );
 
         var entityToSave = toSave.toEntity();
         entityToSave.setParameters(preparedParameters);
@@ -198,21 +227,14 @@ public class ExerciseService {
 
     public Exercise getById(
         int id,
-        User owner
+        User loggedUser
     ) {
         var found = repository.findById(id)
             .orElseThrow(
                 () -> new IllegalArgumentException("Nie znaleziono ćwiczenia o podanym numerze id")
             );
 
-        if (UserService.userIsInRole(owner, RoleSchema.ROLE_ADMIN))
-            return found;
-
-        if (
-            !found.getOwner()
-                .getId()
-                .equals(owner.getId())
-        )
+        if (!UserService.isAdminOrOwner(loggedUser, found.getOwner()))
             throw new NotOwnedByUserException(
                 "This user is not an owner of exercise with id + " + id
             );
@@ -245,7 +267,10 @@ public class ExerciseService {
         int id,
         User loggedUser
     ) {
-        List<Training> preparedTrainingList = prepTrainings(toEdit.getTrainings());
+        List<Training> preparedTrainingList = prepTrainings(
+            toEdit.getTrainings(),
+            loggedUser
+        );
         var preparedParameters = parametersService.prepExerciseParameters(
             toEdit.getParameters()
         );

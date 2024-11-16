@@ -6,7 +6,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import springweb.training_manager.models.schemas.UserSchema;
 
-import java.util.HashSet;
 import java.util.Set;
 
 @Setter
@@ -38,5 +37,22 @@ public class User extends UserSchema {
             username,
             password
         );
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+
+        User user = (User) o;
+        return passwordHashed.equals(user.passwordHashed) && super.equals(user);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + passwordHashed.hashCode();
+        return result;
     }
 }

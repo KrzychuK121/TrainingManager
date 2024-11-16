@@ -52,5 +52,5 @@ interface SqlExerciseRepository extends ExerciseRepository, JpaRepository<Exerci
             e.defaultBurnedKcal = :#{#exercise.defaultBurnedKcal}
             """
     )
-    Optional<Exercise> findByExercise(@Param("exercise") Exercise exercise);
+    Optional<Exercise> findDuplication(@Param("exercise") Exercise exercise);
 }

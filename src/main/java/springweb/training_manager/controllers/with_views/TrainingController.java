@@ -140,9 +140,14 @@ public class TrainingController {
             return "training/save";
         }
 
-        service.setExercisesById(toSave, exerciseIds);
+        var loggedUser = UserService.getUserByAuth(auth);
+        service.setExercisesById(
+            toSave,
+            exerciseIds,
+            loggedUser
+        );
 
-        service.create(toSave, UserService.getUserIdByAuth(auth));
+        service.create(toSave, loggedUser);
         prepExerciseSelect(model);
         model.addAttribute("action", "create");
         model.addAttribute("training", new TrainingWrite());
@@ -186,9 +191,10 @@ public class TrainingController {
         Authentication auth,
         @PageableDefault(size = 2) Pageable page
     ) {
-        Training found = null;
+        Training found;
         try {
-            found = service.getById(id, UserService.getUserIdByAuth(auth));
+            var loggedUser = UserService.getUserByAuth(auth);
+            found = service.getById(id, loggedUser);
         } catch (IllegalArgumentException e) {
             logger.error("Wystąpił wyjątek: " + e.getMessage());
             model.addAttribute("messType", "danger");
@@ -218,9 +224,10 @@ public class TrainingController {
         Authentication auth,
         @PageableDefault(size = 2) Pageable page
     ) {
-        TrainingRead toEdit = null;
+        TrainingRead toEdit;
         try {
-            toEdit = new TrainingRead(service.getById(id, UserService.getUserIdByAuth(auth)));
+            var loggedUser = UserService.getUserByAuth(auth);
+            toEdit = new TrainingRead(service.getById(id, loggedUser));
         } catch (IllegalArgumentException e) {
             logger.error("Wystąpił wyjątek: " + e.getMessage());
             model.addAttribute("messType", "danger");
@@ -269,10 +276,15 @@ public class TrainingController {
             return "training/save";
         }
 
-        service.setExercisesById(toEdit, exerciseIds);
+        var loggedUser = UserService.getUserByAuth(auth);
+        service.setExercisesById(
+            toEdit,
+            exerciseIds,
+            loggedUser
+        );
 
         try {
-            service.edit(toEdit, id, UserService.getUserIdByAuth(auth));
+            service.edit(toEdit, id, loggedUser);
         } catch (IllegalArgumentException e) {
             logger.error("Wystąpił wyjątek: " + e.getMessage());
             model.addAttribute("message", "Wystąpił problem przy edycji. " + e.getMessage());
@@ -296,7 +308,8 @@ public class TrainingController {
         @PageableDefault(size = 2) Pageable page
     ) {
         try {
-            service.delete(id, UserService.getUserIdByAuth(auth));
+            var loggedUser = UserService.getUserByAuth(auth);
+            service.delete(id, loggedUser);
         } catch (IllegalArgumentException e) {
             logger.error("Wystąpił wyjątek: " + e.getMessage());
             model.addAttribute("messType", "danger");
