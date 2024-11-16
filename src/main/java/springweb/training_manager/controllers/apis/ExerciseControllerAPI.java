@@ -35,10 +35,15 @@ public class ExerciseControllerAPI {
     private final ExerciseService service;
     private static final Logger logger = LoggerFactory.getLogger(ExerciseControllerAPI.class);
 
-    @GetMapping()
+    @GetMapping("/paged")
     @ResponseBody
-    public ResponseEntity<Page<ExerciseRead>> getAll(@PageableDefault(size = 2) Pageable page) {
-        return ResponseEntity.ok(service.getAll(page));
+    public ResponseEntity<Page<ExerciseRead>> getPagedForUser(
+        @PageableDefault(size = 2) Pageable page,
+        Authentication auth
+    ) {
+        var loggedUser = UserService.getUserByAuth(auth);
+        var paged = service.getPagedForUser(page, loggedUser);
+        return ResponseEntity.ok(paged);
     }
 
     @GetMapping("/{id}")
@@ -54,7 +59,8 @@ public class ExerciseControllerAPI {
             return ResponseEntity.ok(foundRead);
         } catch (IllegalArgumentException e) {
             logger.error("Wystąpił wyjątek: " + e.getMessage());
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.notFound()
+                .build();
         }
     }
 
@@ -81,7 +87,8 @@ public class ExerciseControllerAPI {
     ) {
         var validationErrors = service.validateAndPrepareExercise(data, result);
         if (validationErrors != null)
-            return ResponseEntity.badRequest().body(validationErrors);
+            return ResponseEntity.badRequest()
+                .body(validationErrors);
 
         var loggedUser = UserService.getUserByAuth(auth);
         Exercise created = service.create(
@@ -91,8 +98,9 @@ public class ExerciseControllerAPI {
 
         var exerciseRead = new ExerciseRead(created);
         return ResponseEntity.created(
-            URI.create("/exercise/" + created.getId())
-        ).body(exerciseRead);
+                URI.create("/exercise/" + created.getId())
+            )
+            .body(exerciseRead);
     }
 
     @PutMapping("/{id}")
@@ -105,7 +113,8 @@ public class ExerciseControllerAPI {
     ) {
         var validationErrors = service.validateAndPrepareExercise(data, result);
         if (validationErrors != null)
-            return ResponseEntity.badRequest().body(validationErrors);
+            return ResponseEntity.badRequest()
+                .body(validationErrors);
         try {
             var toEdit = data.getToSave();
             var loggedUser = UserService.getUserByAuth(auth);
@@ -116,10 +125,12 @@ public class ExerciseControllerAPI {
             );
         } catch (IllegalArgumentException e) {
             logger.error("Wystąpił wyjątek: " + e.getMessage());
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.notFound()
+                .build();
         }
 
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.noContent()
+            .build();
     }
 
     @DeleteMapping("/{id}")
@@ -133,10 +144,12 @@ public class ExerciseControllerAPI {
             service.delete(id, loggedUser);
         } catch (IllegalArgumentException e) {
             logger.error("Wystąpił wyjątek: " + e.getMessage());
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.notFound()
+                .build();
         }
 
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.noContent()
+            .build();
     }
 
 }

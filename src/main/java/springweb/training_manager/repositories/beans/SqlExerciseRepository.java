@@ -19,6 +19,7 @@ interface SqlExerciseRepository extends ExerciseRepository, JpaRepository<Exerci
     @Query("SELECT e FROM Exercise e LEFT JOIN FETCH e.trainingExercises")
     List<Exercise> findAll();
 
+    @Override
     @Query("""
             SELECT e FROM Exercise e
             WHERE e.owner IS NULL
@@ -26,6 +27,7 @@ interface SqlExerciseRepository extends ExerciseRepository, JpaRepository<Exerci
         """)
     List<Exercise> findPublicOrOwnedBy(@Param("ownerId") String ownerId);
 
+    @Override
     @Query("""
             SELECT e FROM Exercise e
             WHERE e.owner IS NULL

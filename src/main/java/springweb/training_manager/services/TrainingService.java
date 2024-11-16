@@ -234,6 +234,19 @@ public class TrainingService {
         return getAll(TrainingRead::new);
     }
 
+    private Page<TrainingRead> getPageBy(
+        Pageable page,
+        Function<Pageable, Page<Training>> find
+    ) {
+        return PageSortService.getPageBy(
+            Training.class,
+            page,
+            find,
+            TrainingRead::new,
+            log
+        );
+    }
+
     /**
      * More effective but less elegant than <code>getAll(Pageable page)</code> method.
      *
@@ -241,9 +254,9 @@ public class TrainingService {
      *
      * @return Paged list of <code>TrainingRead</code> objects.
      *
-     * @see #getAllPaged(Pageable page)
+     * @see #getPagedAll(Pageable page)
      */
-    public Page<TrainingRead> getAllPagedAlternative(Pageable page) {
+    public Page<TrainingRead> getPagedAllAlternative(Pageable page) {
         page = PageSortService.validateSort(
             Training.class,
             page,
@@ -279,9 +292,9 @@ public class TrainingService {
      *
      * @return Paged list of <code>TrainingRead</code> objects.
      *
-     * @see #getAllPagedAlternative(Pageable page)
+     * @see #getPagedAllAlternative(Pageable page)
      */
-    public Page<TrainingRead> getAllPaged(Pageable page) {
+    public Page<TrainingRead> getPagedAll(Pageable page) {
         page = PageSortService.validateSort(
             Training.class,
             page,
@@ -304,6 +317,23 @@ public class TrainingService {
         return toReturn;
     }
 
+    public Page<TrainingRead> getPagedPublicOrOwnerBy(
+        Pageable page,
+        User user
+    ) {
+        return getPageBy(
+            page,
+            pageable -> repository.findPagedPublicOrOwnedBy(pageable, user.getId())
+        );
+    }
+
+    public List<TrainingRead> getPublicOrOwnerBy(User user) {
+        return repository.findAllPublicOrOwnedBy(user.getId())
+            .stream()
+            .map(TrainingRead::new)
+            .toList();
+    }
+
     public Training getById(int id, String userId) {
         Training found = repository.findById(id)
             .orElseThrow(
@@ -323,14 +353,6 @@ public class TrainingService {
             throw new NotOwnedByUserException("Nie masz dostępu do tego treningu.");
     }
 
-    public List<TrainingRead> getPublicOrOwnerBy(String userId) {
-        return repository.findAllPublicOrOwnedBy(userId)
-            .orElse(new ArrayList<>())
-            .stream()
-            .map(TrainingRead::new)
-            .toList();
-    }
-
     // TODO: Use it in controller when ROLE_USER registered, otherwise normal getAll
     public List<TrainingRead> getByUserId(String userId) {
         return repository.findAllByOwnerId(userId)
@@ -342,12 +364,21 @@ public class TrainingService {
             .collect(Collectors.toList());
     }
 
-    public TrainingCreate getCreateModel(Integer id, String userId) {
-        var allExerciseTrainings = ExerciseTraining.toExerciseTrainingList(exerciseRepository.findAll());
+    public TrainingCreate getCreateModel(Integer id, User owner) {
+        var allExerciseTrainings = ExerciseTraining.toExerciseTrainingList(
+            exerciseRepository.findPublicOrOwnedBy(
+                owner.getId()
+            )
+        );
         if (id == null)
             return new TrainingCreate(allExerciseTrainings);
         try {
-            return new TrainingCreate(new TrainingRead(getById(id, userId)), allExerciseTrainings);
+            return new TrainingCreate(
+                new TrainingRead(
+                    getById(id, owner.getId())
+                ),
+                allExerciseTrainings
+            );
         } catch (IllegalArgumentException ex) {
             return new TrainingCreate(allExerciseTrainings);
         }

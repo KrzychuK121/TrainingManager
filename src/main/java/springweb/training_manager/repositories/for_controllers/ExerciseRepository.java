@@ -2,6 +2,7 @@ package springweb.training_manager.repositories.for_controllers;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.repository.query.Param;
 import springweb.training_manager.models.entities.Exercise;
 
 import java.util.List;
@@ -16,11 +17,18 @@ public interface ExerciseRepository {
 
     Optional<Exercise> findByIdAndOwnerId(int id, String ownerId);
 
-    boolean existsById(Integer integer);
+    List<Exercise> findPublicOrOwnedBy(@Param("ownerId") String ownerId);
+
+    Page<Exercise> findPublicOrOwnedBy(
+        @Param("ownerId") String ownerId,
+        Pageable pageable
+    );
 
     Page<Exercise> findAll(Pageable pageable);
 
     Optional<Exercise> findByExercise(Exercise exercise);
+
+    boolean existsById(Integer integer);
 
     void deleteById(Integer integer);
 

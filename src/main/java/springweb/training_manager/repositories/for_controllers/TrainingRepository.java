@@ -11,7 +11,12 @@ import java.util.Optional;
 public interface TrainingRepository {
     Optional<List<Training>> findAllByOwnerId(String id);
 
-    Optional<List<Training>> findAllPublicOrOwnedBy(String id);
+    List<Training> findAllPublicOrOwnedBy(String userId);
+
+    Page<Training> findPagedPublicOrOwnedBy(
+        Pageable page,
+        String userId
+    );
 
     Page<Integer> findAllIds(Pageable page);
 

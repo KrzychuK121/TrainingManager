@@ -37,25 +37,27 @@ import java.util.List;
 public class TrainingControllerAPI {
     private final TrainingService service;
 
-    @GetMapping()
+    @GetMapping("/paged")
     @ResponseBody
-    ResponseEntity<Page<TrainingRead>> getAll(@PageableDefault(size = 2) Pageable page) {
-        return ResponseEntity.ok(service.getAllPagedAlternative(page));
+    ResponseEntity<Page<TrainingRead>> getAll(
+        @PageableDefault(size = 2) Pageable page,
+        Authentication auth
+    ) {
+        var user = UserService.getUserByAuth(auth);
+        if (UserService.userIsInRole(user, RoleSchema.ROLE_ADMIN))
+            return ResponseEntity.ok(service.getPagedAllAlternative(page));
+        return ResponseEntity.ok(service.getPagedPublicOrOwnerBy(page, user));
     }
 
     @GetMapping("/all")
     @ResponseBody
-    ResponseEntity<List<TrainingRead>> getAll() {
-        return ResponseEntity.ok(service.getAll());
-    }
-
-    @GetMapping("/publicOrOwned")
-    @ResponseBody
-    ResponseEntity<List<TrainingRead>> getPublicOrOwner(
+    ResponseEntity<List<TrainingRead>> getAll(
         Authentication auth
     ) {
-        var userId = UserService.getUserIdByAuth(auth);
-        return ResponseEntity.ok(service.getPublicOrOwnerBy(userId));
+        var user = UserService.getUserByAuth(auth);
+        if (UserService.userIsInRole(user, RoleSchema.ROLE_ADMIN))
+            return ResponseEntity.ok(service.getAll());
+        return ResponseEntity.ok(service.getPublicOrOwnerBy(user));
     }
 
     @GetMapping("/{id}")
@@ -83,8 +85,8 @@ public class TrainingControllerAPI {
         @PathVariable(required = false) Integer id,
         Authentication auth
     ) {
-        var userId = UserService.getUserIdByAuth(auth);
-        return ResponseEntity.ok(service.getCreateModel(id, userId));
+        var loggedUser = UserService.getUserByAuth(auth);
+        return ResponseEntity.ok(service.getCreateModel(id, loggedUser));
     }
 
     @PostMapping()

@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
@@ -13,6 +12,7 @@ import springweb.training_manager.exceptions.NotOwnedByUserException;
 import springweb.training_manager.models.entities.Exercise;
 import springweb.training_manager.models.entities.Training;
 import springweb.training_manager.models.entities.User;
+import springweb.training_manager.models.schemas.RoleSchema;
 import springweb.training_manager.models.viewmodels.exercise.ExerciseCreate;
 import springweb.training_manager.models.viewmodels.exercise.ExerciseRead;
 import springweb.training_manager.models.viewmodels.exercise.ExerciseWrite;
@@ -26,6 +26,7 @@ import springweb.training_manager.repositories.for_controllers.TrainingRepositor
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 @Service
 @RequiredArgsConstructor
@@ -141,7 +142,7 @@ public class ExerciseService {
 
         var entityToSave = toSave.toEntity();
         entityToSave.setParameters(preparedParameters);
-        if(toSave.isExercisePrivate())
+        if (toSave.isExercisePrivate())
             entityToSave.setOwner(loggedUser);
 
         var created = repository.save(entityToSave);
@@ -190,22 +191,43 @@ public class ExerciseService {
         );
     }
 
-    public Page<ExerciseRead> getAll(Pageable page) {
-        page = PageSortService.validateSort(Exercise.class, page, logger);
+    private Page<ExerciseRead> getPageBy(
+        Pageable page,
+        Function<Pageable, Page<Exercise>> find
+    ) {
+        return PageSortService.getPageBy(
+            Exercise.class,
+            page,
+            find,
+            ExerciseRead::new,
+            logger
+        );
+    }
 
-        Page<ExerciseRead> toReturn = repository.findAll(page)
-            .map(ExerciseRead::new);
-        if (toReturn.getContent()
-            .isEmpty())
-            toReturn = repository.findAll(
-                    PageRequest.of(
-                        PageSortService.getPageNumber(toReturn),
-                        toReturn.getSize(),
-                        page.getSort()
-                    )
-                )
-                .map(ExerciseRead::new);
-        return toReturn;
+    public Page<ExerciseRead> getPagedAll(Pageable page) {
+        return getPageBy(page, repository::findAll);
+    }
+
+    public Page<ExerciseRead> getPagedPublicOrOwnedBy(
+        Pageable page,
+        User owner
+    ) {
+        return getPageBy(
+            page,
+            pageable -> repository.findPublicOrOwnedBy(
+                owner.getId(),
+                pageable
+            )
+        );
+    }
+
+    public Page<ExerciseRead> getPagedForUser(
+        Pageable page,
+        User owner
+    ) {
+        return UserService.userIsInRole(owner, RoleSchema.ROLE_ADMIN)
+            ? getPagedAll(page)
+            : getPagedPublicOrOwnedBy(page, owner);
     }
 
     public Exercise getById(
@@ -217,9 +239,12 @@ public class ExerciseService {
                 () -> new IllegalArgumentException("Nie znaleziono ćwiczenia o podanym numerze id")
             );
 
-        if(
+        if (UserService.userIsInRole(owner, RoleSchema.ROLE_ADMIN))
+            return found;
+
+        if (
             !found.getOwner()
-                 .getId()
+                .getId()
                 .equals(owner.getId())
         )
             throw new NotOwnedByUserException(
@@ -266,7 +291,7 @@ public class ExerciseService {
         );
 
         toSave.copy(toEdit.toEntity());
-        if(toEdit.isExercisePrivate() && oldOwner != null)
+        if (toEdit.isExercisePrivate() && oldOwner != null)
             toSave.setOwner(oldOwner);
         toSave.setTrainingExercises(null);
         toSave.setParameters(preparedParameters);

@@ -20,7 +20,6 @@ import springweb.training_manager.models.viewmodels.training_routine.TrainingRou
 import springweb.training_manager.models.viewmodels.training_schedule.TrainingScheduleRead;
 import springweb.training_manager.models.viewmodels.validation.ValidationErrors;
 import springweb.training_manager.services.TrainingPlanService;
-import springweb.training_manager.services.TrainingRoutineService;
 import springweb.training_manager.services.UserService;
 
 import java.net.URI;
@@ -53,11 +52,13 @@ public class TrainingPlanControllerAPI {
         String userId = UserService.getUserIdByAuth(auth);
         try {
             List<TrainingPlan> activePlans = service.getUserActivePlans(userId);
-            var routineId = activePlans.get(0).getTrainingRoutineId();
+            var routineId = activePlans.get(0)
+                .getTrainingRoutineId();
             var readModel = new TrainingRoutineReadIndex(routineId, true);
             activePlans.forEach(
                 trainingPlan -> readModel.putSchedule(
-                    trainingPlan.getTrainingSchedule().getWeekday(),
+                    trainingPlan.getTrainingSchedule()
+                        .getWeekday(),
                     new TrainingScheduleRead(
                         trainingPlan.getTrainingSchedule()
                     )
@@ -70,7 +71,8 @@ public class TrainingPlanControllerAPI {
                 )
             );
         } catch (IllegalStateException ex) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.notFound()
+                .build();
         }
     }
 
@@ -80,20 +82,9 @@ public class TrainingPlanControllerAPI {
         var userId = UserService.getUserIdByAuth(auth);
         var training = service.getUserActiveTraining(userId);
         if (training == null)
-            return ResponseEntity.noContent().build();
+            return ResponseEntity.noContent()
+                .build();
         return ResponseEntity.ok(training);
-    }
-
-    @GetMapping("/id")
-    public ResponseEntity<TrainingPlansRead> getById(
-        @PathVariable int id,
-        Authentication auth
-    ) {
-        var loggedUser = UserService.getUserByAuth(auth);
-        List<TrainingRoutineReadIndex> plans = service.getAllByUser(loggedUser);
-        return ResponseEntity.ok(
-            new TrainingPlansRead(plans)
-        );
     }
 
     @GetMapping("/editModel/{id}")
@@ -113,7 +104,8 @@ public class TrainingPlanControllerAPI {
                 plans
             );
         } catch (IllegalArgumentException ex) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.badRequest()
+                .build();
         }
     }
 
@@ -126,9 +118,10 @@ public class TrainingPlanControllerAPI {
     ) {
         if (result.hasErrors()) {
             var validation = ValidationErrors.createFrom(result, "planWriteMap.");
-            return ResponseEntity.badRequest().body(
-                validation.getErrors()
-            );
+            return ResponseEntity.badRequest()
+                .body(
+                    validation.getErrors()
+                );
         }
 
         try {
@@ -138,10 +131,14 @@ public class TrainingPlanControllerAPI {
             );
 
             return ResponseEntity.created(
-                URI.create("/api/plans/" + created.get(0).getTrainingRoutine().getId())
-            ).body(service.getMapFromPlans(created));
+                    URI.create("/api/plans/" + created.get(0)
+                        .getTrainingRoutine()
+                        .getId())
+                )
+                .body(service.getMapFromPlans(created));
         } catch (IllegalStateException ex) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.badRequest()
+                .build();
         }
     }
 
@@ -155,18 +152,21 @@ public class TrainingPlanControllerAPI {
         var user = UserService.getUserByAuth(auth);
         if (result.hasErrors()) {
             var validation = ValidationErrors.createFrom(result, "planWriteMap.");
-            return ResponseEntity.badRequest().body(
-                validation.getErrors()
-            );
+            return ResponseEntity.badRequest()
+                .body(
+                    validation.getErrors()
+                );
         }
 
         try {
             service.edit(schedulesList, id, user);
         } catch (IllegalArgumentException e) {
             logger.error("Wystąpił wyjątek: " + e.getMessage());
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.notFound()
+                .build();
         }
 
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.noContent()
+            .build();
     }
 }

@@ -25,7 +25,19 @@ interface SqlTrainingRepository extends TrainingRepository, JpaRepository<Traini
             WHERE t.owner.id IS NULL 
                 OR t.owner.id = :ownerId
         """)
-    Optional<List<Training>> findAllPublicOrOwnedBy(@Param("ownerId") String ownerId);
+    List<Training> findAllPublicOrOwnedBy(@Param("ownerId") String ownerId);
+
+    @Override
+    @Query("""
+            SELECT t
+            FROM Training t
+            WHERE t.owner.id IS NULL 
+                OR t.owner.id = :ownerId
+        """)
+    Page<Training> findPagedPublicOrOwnedBy(
+        Pageable page,
+        String userId
+    );
 
     @Override
     @Query("SELECT t.id FROM Training t")

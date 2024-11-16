@@ -56,7 +56,7 @@ public class ExerciseController {
         Pageable page,
         Model model
     ) {
-        Page<ExerciseRead> pagedList = service.getAll(page);
+        Page<ExerciseRead> pagedList = service.getPagedAll(page);
         model.addAttribute("pages", pagedList);
         return pagedList.getContent();
     }

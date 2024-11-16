@@ -52,7 +52,7 @@ public class TrainingController {
         String userId = UserService.getUserIdByAuth(auth);
         Page<TrainingRead> pagedList = null;
         if (userId == null) {
-            pagedList = service.getAllPaged(page);
+            pagedList = service.getPagedAll(page);
             model.addAttribute("pages", pagedList);
         }
 
