@@ -50,22 +50,25 @@ public class ExerciseService {
      * @return prepared list with
      * <code>TrainingExerciseVM</code> (founded in database or just created)
      */
-    private List<Training> prepTrainings(
+    public List<Training> prepTrainings(
         List<TrainingExerciseVM> trainings,
         User loggedUser
     ) {
-        if (trainings == null || trainings.isEmpty())
-            return null;
-
         List<Training> trainingsToSave = NoDuplicationService.prepEntitiesWithWriteModel(
             trainings,
             trainingRepository,
             trainingRepository::save
         );
 
+        if (trainingsToSave == null)
+            return null;
+
         var filteredTrainings = trainingsToSave.stream()
             .filter(
-                training -> UserService.isAdminOrOwner(loggedUser, training.getOwner())
+                training -> UserService.isPermittedFor(
+                    loggedUser,
+                    training.getOwner()
+                )
             )
             .toList();
         return filteredTrainings.isEmpty() ? null : filteredTrainings;
@@ -87,26 +90,24 @@ public class ExerciseService {
             return;
 
         List<TrainingExerciseVM> trainingsToSave = new ArrayList<>(trainingIds.length);
+        if (toSave.getTrainings() != null)
+            trainingsToSave.addAll(toSave.getTrainings());
         for (String trainingID : trainingIds) {
             if (trainingID.isEmpty())
                 continue;
             int id = Integer.parseInt(trainingID);
-            Training found = UserService.userIsInRole(user, RoleSchema.ROLE_ADMIN)
-                ? trainingRepository.findById(id)
-                .orElse(null)
-                : trainingRepository.findByIdAndOwnerId(id, user.getId())
+            Training found = trainingRepository.findById(id)
                 .orElse(null);
-            if (found == null)
+            if (
+                found == null
+                    || !UserService.isPermittedFor(user, found.getOwner())
+            )
                 continue;
             TrainingExerciseVM viewModel = new TrainingExerciseVM(found);
             trainingsToSave.add(viewModel);
         }
-        if (toSave.getTrainings() == null || toSave.getTrainings()
-            .isEmpty())
-            toSave.setTrainings(trainingsToSave);
-        else
-            toSave.getTrainings()
-                .addAll(trainingsToSave);
+
+        toSave.setTrainings(trainingsToSave);
     }
 
     public static void setTime(ExerciseWrite toSave) {
@@ -231,12 +232,15 @@ public class ExerciseService {
     ) {
         var found = repository.findById(id)
             .orElseThrow(
-                () -> new IllegalArgumentException("Nie znaleziono ćwiczenia o podanym numerze id")
+                () -> new IllegalArgumentException(
+                    "Exercise with provided id(" + id + ") does not exist."
+                )
             );
 
-        if (!UserService.isAdminOrOwner(loggedUser, found.getOwner()))
+        if (!UserService.isPermittedFor(loggedUser, found.getOwner()))
             throw new NotOwnedByUserException(
-                "This user is not an owner of exercise with id + " + id
+                "This user(" + loggedUser.getUsername() + ") is not " +
+                    "an owner of exercise with id(" + id + ")."
             );
 
         return found;
