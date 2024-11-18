@@ -113,7 +113,7 @@ class NoDuplicationServiceTest {
         );
 
         // Then
-        assertEquals(found, existingEntity, "Found should be the same as existing one.");
+        assertEquals(existingEntity, found, "Found should be the same as existing one.");
         verify(repository).findDuplication(toBeFound);
         verify(save, never()).save(any());
     }
@@ -139,7 +139,7 @@ class NoDuplicationServiceTest {
         );
 
         // Then
-        assertEquals(shouldBeCreated, expectedCreated, "Entity should be created, not fetched");
+        assertEquals(expectedCreated, shouldBeCreated, "Entity should be created, not fetched");
         verify(repository).findDuplication(toCreate);
         verify(save).save(toCreate);
     }
@@ -212,8 +212,8 @@ class NoDuplicationServiceTest {
             var existing = existingList.get(i);
 
             assertEquals(
-                found,
                 existing,
+                found,
                 String.format(
                     "Found (id: %d, name: %s) should contains the same values as Existing (id: %d, name: %s)",
                     found.getId(),
@@ -263,8 +263,8 @@ class NoDuplicationServiceTest {
             var valid = validList.get(i);
 
             assertEquals(
-                created,
                 valid,
+                created,
                 String.format(
                     "Created (id: %d, name: %s) should contains the same values as Valid (id: %d, name: %s)",
                     created.getId(),
