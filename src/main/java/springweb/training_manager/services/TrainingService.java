@@ -62,13 +62,14 @@ public class TrainingService {
 
         var filtered = prepared.stream()
             .filter(
-                exercise -> UserService.isAdminOrOwner(loggedUser, exercise.getOwner())
+                exercise -> UserService.isPermittedFor(
+                    loggedUser,
+                    exercise.getOwner()
+                )
             )
             .toList();
 
-        return filtered.isEmpty()
-            ? null
-            : filtered;
+        return filtered.isEmpty() ? null : filtered;
     }
 
     public Map<Exercise, ExerciseParameters> prepExercisesAndParametersMap(
@@ -149,13 +150,13 @@ public class TrainingService {
             var exerciseID = selected.getSelectedId();
             int id = Integer.parseInt(exerciseID);
 
-            Exercise found = UserService.userIsInRole(loggedUser, RoleSchema.ROLE_ADMIN)
-                ? exerciseRepository.findById(id)
-                .orElse(null)
-                : exerciseRepository.findByIdAndOwnerId(id, loggedUser.getId())
+            Exercise found = exerciseRepository.findById(id)
                 .orElse(null);
 
-            if (found == null)
+            if (
+                found == null
+                    || !UserService.isPermittedFor(loggedUser, found.getOwner())
+            )
                 continue;
             toAdd.add(
                 new CustomTrainingParametersWrite(
@@ -375,7 +376,7 @@ public class TrainingService {
                 () -> new IllegalArgumentException("Nie znaleziono treningu o podanym numerze id.")
             );
 
-        if (!UserService.isAdminOrOwner(loggedUser, found.getOwner()))
+        if (!UserService.isPermittedFor(loggedUser, found.getOwner()))
             throw new NotOwnedByUserException("Nie masz dostępu do tego treningu.");
         return found;
     }
