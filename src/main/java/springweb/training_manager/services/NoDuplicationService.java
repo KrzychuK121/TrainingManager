@@ -5,8 +5,8 @@ import springweb.training_manager.models.viewmodels.Castable;
 import springweb.training_manager.repositories.for_controllers.DuplicationRepository;
 import springweb.training_manager.repositories.for_controllers.Saveable;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class NoDuplicationService {
@@ -76,13 +76,15 @@ public class NoDuplicationService {
         if (entities == null || entities.isEmpty())
             return null;
 
-        List<E> preparedEntities = new ArrayList<>(entities.size());
-
-        entities.forEach(
-            writeModel -> prepEntity(writeModel, repository, savable)
-        );
-
-        return preparedEntities;
+        var toReturn = entities.stream()
+            .map(
+                writeModel -> prepEntity(writeModel, repository, savable)
+            )
+            .filter(Objects::nonNull)
+            .toList();
+        return toReturn.isEmpty()
+            ? null
+            : toReturn;
     }
 
     public static <
@@ -95,8 +97,11 @@ public class NoDuplicationService {
         R repository,
         Saveable<E> savable
     ) {
+        if (writeModels == null)
+            return null;
         return prepEntities(
             writeModels.stream()
+                .filter(Objects::nonNull)
                 .map(Castable::toEntity)
                 .collect(Collectors.toList()),
             repository,
