@@ -62,7 +62,7 @@ public class TrainingService {
 
         var filtered = prepared.stream()
             .filter(
-                exercise -> UserService.isPermittedFor(
+                exercise -> UserService.isPermittedToReadFor(
                     loggedUser,
                     exercise.getOwner()
                 )
@@ -155,7 +155,7 @@ public class TrainingService {
 
             if (
                 found == null
-                    || !UserService.isPermittedFor(loggedUser, found.getOwner())
+                    || !UserService.isPermittedToReadFor(loggedUser, found.getOwner())
             )
                 continue;
             toAdd.add(
@@ -367,17 +367,37 @@ public class TrainingService {
             .toList();
     }
 
-    public Training getById(
-        int id,
-        User loggedUser
-    ) {
-        Training found = repository.findById(id)
+    public Training getById(int id) {
+        return repository.findById(id)
             .orElseThrow(
                 () -> new IllegalArgumentException("Nie znaleziono treningu o podanym numerze id.")
             );
+    }
 
-        if (!UserService.isPermittedFor(loggedUser, found.getOwner()))
-            throw new NotOwnedByUserException("Nie masz dostępu do tego treningu.");
+    public Training getByIdForUse(
+        int id,
+        User loggedUser
+    ) {
+        var found = getById(id);
+        if (!UserService.isPermittedToReadFor(loggedUser, found.getOwner()))
+            throw new NotOwnedByUserException(
+                "This user(" + loggedUser.getUsername() + ") can't access " +
+                    "training with id(" + id + ") which is private."
+            );
+
+        return found;
+    }
+
+    public Training getByIdForModify(
+        int id,
+        User loggedUser
+    ) {
+        var found = getById(id);
+        if (!UserService.isPermittedToModifyFor(loggedUser, found.getOwner()))
+            throw new NotOwnedByUserException(
+                "This user(" + loggedUser.getUsername() + ") is not " +
+                    "an owner of training with id(" + id + ")."
+            );
         return found;
     }
 
@@ -407,17 +427,13 @@ public class TrainingService {
         try {
             return new TrainingCreate(
                 new TrainingRead(
-                    getById(id, owner)
+                    getByIdForModify(id, owner)
                 ),
                 allExerciseTrainings
             );
         } catch (IllegalArgumentException ex) {
             return new TrainingCreate(allExerciseTrainings);
         }
-    }
-
-    public boolean existsById(int trainingId) {
-        return repository.existsById(trainingId);
     }
 
     private static List<ExerciseParametersRead> getOldParametersList(Training toDelete) {
@@ -441,18 +457,16 @@ public class TrainingService {
             toEdit.getExercises()
         );
 
-        Training toSave = getById(id, loggedUser);
-        var owner = toSave.getOwner();
+        Training toSave = getByIdForModify(id, loggedUser);
+        var oldOwner = toSave.getOwner();
         var oldParametersList = getOldParametersList(toSave);
 
         toSave.copy(toEdit.toEntity());
         toSave.setOwner(
             !toEdit.isTrainingPrivate()
-                || UserService.userIsInRole(loggedUser, RoleSchema.ROLE_ADMIN)
                 ? null
-                : owner
+                : oldOwner
         );
-        toSave.setOwner(null);
         toSave.setTrainingExercises(null);
 
         var saved = repository.save(toSave);
@@ -465,7 +479,7 @@ public class TrainingService {
 
     @Transactional
     public void delete(int id, User loggedUser) {
-        var toDelete = getById(id, loggedUser);
+        var toDelete = getByIdForModify(id, loggedUser);
         var oldParametersList = getOldParametersList(toDelete);
 
         trainingExerciseService.deleteByTrainingId(toDelete);

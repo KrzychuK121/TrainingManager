@@ -13,6 +13,7 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import springweb.training_manager.exceptions.NotOwnedByUserException;
 import springweb.training_manager.models.entities.Exercise;
 import springweb.training_manager.models.schemas.RoleSchema;
 import springweb.training_manager.models.viewmodels.exercise.ExerciseCreate;
@@ -54,7 +55,7 @@ public class ExerciseControllerAPI {
     ) {
         try {
             var loggedUser = UserService.getUserByAuth(auth);
-            Exercise found = service.getById(id, loggedUser);
+            Exercise found = service.getByIdForUse(id, loggedUser);
             var foundRead = new ExerciseRead(found);
             return ResponseEntity.ok(foundRead);
         } catch (IllegalArgumentException e) {
@@ -150,6 +151,10 @@ public class ExerciseControllerAPI {
         try {
             var loggedUser = UserService.getUserByAuth(auth);
             service.delete(id, loggedUser);
+        } catch (NotOwnedByUserException e) {
+            logger.error("Wystąpił wyjątek: " + e.getMessage());
+            return ResponseEntity.badRequest()
+                .build();
         } catch (IllegalArgumentException e) {
             logger.error("Wystąpił wyjątek: " + e.getMessage());
             return ResponseEntity.notFound()

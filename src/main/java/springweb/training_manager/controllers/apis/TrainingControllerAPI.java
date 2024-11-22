@@ -69,10 +69,13 @@ public class TrainingControllerAPI {
         @PathVariable int id,
         Authentication auth
     ) {
-        Training found = null;
         try {
             var loggedUser = UserService.getUserByAuth(auth);
-            found = service.getById(id, loggedUser);
+            return ResponseEntity.ok(
+                new TrainingRead(
+                    service.getByIdForUse(id, loggedUser)
+                )
+            );
         } catch (IllegalArgumentException e) {
             log.error("Wystąpił wyjątek: {}", e.getMessage());
             if (e.getMessage()
@@ -81,7 +84,6 @@ public class TrainingControllerAPI {
             return ResponseEntity.notFound()
                 .build();
         }
-        return ResponseEntity.ok(new TrainingRead(found));
     }
 
     @GetMapping(value = {"/createModel", "/createModel/{id}"})

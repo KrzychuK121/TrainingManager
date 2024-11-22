@@ -194,7 +194,7 @@ public class TrainingController {
         Training found;
         try {
             var loggedUser = UserService.getUserByAuth(auth);
-            found = service.getById(id, loggedUser);
+            found = service.getByIdForUse(id, loggedUser);
         } catch (IllegalArgumentException e) {
             logger.error("Wystąpił wyjątek: " + e.getMessage());
             model.addAttribute("messType", "danger");
@@ -227,7 +227,9 @@ public class TrainingController {
         TrainingRead toEdit;
         try {
             var loggedUser = UserService.getUserByAuth(auth);
-            toEdit = new TrainingRead(service.getById(id, loggedUser));
+            toEdit = new TrainingRead(
+                service.getByIdForModify(id, loggedUser)
+            );
         } catch (IllegalArgumentException e) {
             logger.error("Wystąpił wyjątek: " + e.getMessage());
             model.addAttribute("messType", "danger");

@@ -72,7 +72,7 @@ public class UserService {
 
     /**
      * This method checks logic if <code>requesting</code> can access resource that
-     * contains reference to <code>owner</code>.
+     * contains reference to <code>owner</code> for edit/delete operations.
      *
      * @param requesting user (e.g. logged to app) that wants to access resource
      * @param owner      user that is an owner of requesting resource
@@ -80,16 +80,33 @@ public class UserService {
      * @return <strong>True</strong> when <strong>one</strong> of conditions are
      * fulfilled: <ul>
      * <li><code>Requesting</code> user is an administrator</li>
-     * <li><code>Owner</code> is null (resource not owned by anybody - public)</li>
      * <li><code>Requesting</code> is equal to <code>owner</code></li>
      * </ul> Otherwise, returns <strong>false</strong>
      */
-    public static boolean isPermittedFor(User requesting, User owner) {
+    public static boolean isPermittedToModifyFor(User requesting, User owner) {
         if (userIsInRole(requesting, RoleSchema.ROLE_ADMIN))
             return true;
-        if (owner == null)
-            return true;
         return requesting.equals(owner);
+    }
+
+    /**
+     * This method checks logic if <code>requesting</code> can access resource that
+     * contains reference to <code>owner</code> for display/use in other entities
+     * operations.
+     *
+     * @param requesting user (e.g. logged to app) that wants to access resource
+     * @param owner      user that is an owner of requesting resource
+     *
+     * @return <strong>True</strong> when <strong>one</strong> of conditions are
+     * fulfilled: <ul>
+     * <li><code>Requesting</code> user can modify resource</li>
+     * <li><code>Owner</code> is null (resource not owned by anybody - public)</li>
+     * </ul> Otherwise, returns <strong>false</strong>
+     *
+     * @see #isPermittedToModifyFor(User, User)
+     */
+    public static boolean isPermittedToReadFor(User requesting, User owner) {
+        return isPermittedToModifyFor(requesting, owner) || owner == null;
     }
 
     public boolean ifPasswordsMatches(String password, String passwordRepeat) {

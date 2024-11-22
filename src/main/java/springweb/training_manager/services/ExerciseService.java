@@ -65,7 +65,7 @@ public class ExerciseService {
 
         var filteredTrainings = trainingsToSave.stream()
             .filter(
-                training -> UserService.isPermittedFor(
+                training -> UserService.isPermittedToReadFor(
                     loggedUser,
                     training.getOwner()
                 )
@@ -100,7 +100,7 @@ public class ExerciseService {
                 .orElse(null);
             if (
                 found == null
-                    || !UserService.isPermittedFor(user, found.getOwner())
+                    || !UserService.isPermittedToReadFor(user, found.getOwner())
             )
                 continue;
             TrainingExerciseVM viewModel = new TrainingExerciseVM(found);
@@ -172,7 +172,10 @@ public class ExerciseService {
 
         var entityToSave = toSave.toEntity();
         entityToSave.setParameters(preparedParameters);
-        if (toSave.isExercisePrivate())
+        if (
+            toSave.isExercisePrivate()
+                && !UserService.userIsInRole(loggedUser, RoleSchema.ROLE_ADMIN)
+        )
             entityToSave.setOwner(loggedUser);
 
         var created = repository.save(entityToSave);
@@ -226,23 +229,39 @@ public class ExerciseService {
             : getPagedPublicOrOwnedBy(page, owner);
     }
 
-    public Exercise getById(
-        int id,
-        User loggedUser
-    ) {
-        var found = repository.findById(id)
+    public Exercise getById(int id) {
+        return repository.findById(id)
             .orElseThrow(
                 () -> new IllegalArgumentException(
                     "Exercise with provided id(" + id + ") does not exist."
                 )
             );
+    }
 
-        if (!UserService.isPermittedFor(loggedUser, found.getOwner()))
+    public Exercise getByIdForUse(
+        int id,
+        User loggedUser
+    ) {
+        var found = getById(id);
+        if (!UserService.isPermittedToReadFor(loggedUser, found.getOwner()))
+            throw new NotOwnedByUserException(
+                "This user(" + loggedUser.getUsername() + ") can't access " +
+                    "exercise with id(" + id + ") which is private."
+            );
+
+        return found;
+    }
+
+    public Exercise getByIdForModify(
+        int id,
+        User loggedUser
+    ) {
+        var found = getById(id);
+        if (!UserService.isPermittedToModifyFor(loggedUser, found.getOwner()))
             throw new NotOwnedByUserException(
                 "This user(" + loggedUser.getUsername() + ") is not " +
                     "an owner of exercise with id(" + id + ")."
             );
-
         return found;
     }
 
@@ -256,7 +275,7 @@ public class ExerciseService {
         try {
             return new ExerciseCreate(
                 new ExerciseRead(
-                    getById(id, owner)
+                    getByIdForModify(id, owner)
                 ),
                 allTrainings
             );
@@ -271,18 +290,18 @@ public class ExerciseService {
         int id,
         User loggedUser
     ) {
+        Exercise toSave = getByIdForModify(id, loggedUser);
+        var oldOwner = toSave.getOwner();
+        var oldParametersRead = new ExerciseParametersRead(
+            toSave.getParameters()
+        );
+
         List<Training> preparedTrainingList = prepTrainings(
             toEdit.getTrainings(),
             loggedUser
         );
         var preparedParameters = parametersService.prepExerciseParameters(
             toEdit.getParameters()
-        );
-
-        Exercise toSave = getById(id, loggedUser);
-        var oldOwner = toSave.getOwner();
-        var oldParametersRead = new ExerciseParametersRead(
-            toSave.getParameters()
         );
 
         toSave.copy(toEdit.toEntity());
@@ -304,7 +323,7 @@ public class ExerciseService {
         int id,
         User loggedUser
     ) {
-        var toDelete = getById(id, loggedUser);
+        var toDelete = getByIdForModify(id, loggedUser);
         var oldParametersRead = new ExerciseParametersRead(
             toDelete.getParameters()
         );

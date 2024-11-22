@@ -176,7 +176,7 @@ public class ExerciseController {
         try {
             var loggedUser = UserService.getUserByAuth(auth);
             toEdit = new ExerciseRead(
-                service.getById(
+                service.getByIdForModify(
                     id,
                     loggedUser
                 )

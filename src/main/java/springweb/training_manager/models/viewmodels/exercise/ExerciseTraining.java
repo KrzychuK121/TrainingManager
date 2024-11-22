@@ -23,6 +23,7 @@ public class ExerciseTraining extends ExerciseSchema implements Castable<Exercis
     private final int repetition;
     private final short weights;
     private final LocalTime time;
+    private final boolean exercisePrivate;
 
     public ExerciseTraining(Exercise exercise) {
         super(
@@ -42,6 +43,7 @@ public class ExerciseTraining extends ExerciseSchema implements Castable<Exercis
             .getWeights();
         this.time = exercise.getParameters()
             .getTime();
+        this.exercisePrivate = exercise.getOwner() != null;
         this.bodyPartDesc = BodyPart.getBodyDesc(bodyPart);
     }
 
@@ -62,6 +64,7 @@ public class ExerciseTraining extends ExerciseSchema implements Castable<Exercis
         this.weights = parameters.getWeights();
         this.time = parameters.getTime();
         this.bodyPartDesc = BodyPart.getBodyDesc(bodyPart);
+        this.exercisePrivate = exercise.getOwner() != null;
     }
 
     public static List<ExerciseTraining> toExerciseTrainingList(final List<Exercise> list) {

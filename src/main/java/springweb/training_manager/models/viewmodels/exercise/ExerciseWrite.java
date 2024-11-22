@@ -38,6 +38,18 @@ public class ExerciseWrite extends ExerciseSchema implements Castable<Exercise> 
         this.bodyPart = bodyPart;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setDefaultBurnedKcal(int defaultBurnedKcal) {
+        this.defaultBurnedKcal = defaultBurnedKcal;
+    }
+
     public void setTime(LocalTime time) {
         this.parameters.setTime(time);
     }

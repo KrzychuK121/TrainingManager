@@ -1,14 +1,15 @@
 package springweb.training_manager.services;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.MockedStatic;
 import springweb.training_manager.exceptions.NotOwnedByUserException;
 import springweb.training_manager.models.entities.*;
 import springweb.training_manager.models.schemas.RoleSchema;
 import springweb.training_manager.models.viewmodels.exercise.ExerciseWrite;
 import springweb.training_manager.models.viewmodels.exercise_parameters.ExerciseParametersRead;
+import springweb.training_manager.models.viewmodels.exercise_parameters.ExerciseParametersWrite;
 import springweb.training_manager.models.viewmodels.training.TrainingExerciseVM;
 import springweb.training_manager.repositories.for_controllers.ExerciseRepository;
 import springweb.training_manager.repositories.for_controllers.TrainingRepository;
@@ -34,7 +35,6 @@ public class ExerciseServiceTest {
     private TrainingExerciseService trainingExerciseService;
     private TrainingRepository trainingRepository;
     private TrainingService trainingService;
-
 
     @BeforeEach
     void setup() {
@@ -248,7 +248,7 @@ public class ExerciseServiceTest {
 
         try (var mockUserServiceCall = mockStatic(UserService.class)) {
             mockUserServiceCall.when(
-                    () -> UserService.isPermittedFor(any(), any())
+                    () -> UserService.isPermittedToReadFor(any(), any())
                 )
                 .thenReturn(true);
 
@@ -301,7 +301,7 @@ public class ExerciseServiceTest {
 
         try (var mockUserServiceCall = mockStatic(UserService.class)) {
             mockUserServiceCall.when(
-                    () -> UserService.isPermittedFor(any(), any())
+                    () -> UserService.isPermittedToReadFor(any(), any())
                 )
                 .thenReturn(true);
 
@@ -358,7 +358,7 @@ public class ExerciseServiceTest {
 
         try (var mockUserServiceCall = mockStatic(UserService.class)) {
             mockUserServiceCall.when(
-                    () -> UserService.isPermittedFor(any(), any())
+                    () -> UserService.isPermittedToReadFor(any(), any())
                 )
                 .thenReturn(true);
 
@@ -525,7 +525,7 @@ public class ExerciseServiceTest {
 
     @Test
     void create() {
-        // TODO: Implement me pls
+        // TODO: Implement later
         assertTrue(false);
     }
 
@@ -537,7 +537,7 @@ public class ExerciseServiceTest {
 
         // When
         var exception = catchThrowable(
-            () -> exerciseService.getById(0, new User())
+            () -> exerciseService.getById(0)
         );
 
         // Then
@@ -547,7 +547,7 @@ public class ExerciseServiceTest {
     }
 
     @Test
-    void getById_returns_by_id_to_admin() {
+    void getByIdForUse_returns_by_id_to_admin() {
         // Given
         var admin = getAdmin();
         var owner = getUser("owner");
@@ -559,7 +559,7 @@ public class ExerciseServiceTest {
             .thenReturn(Optional.of(fooExercise));
 
         // When
-        var found = exerciseService.getById(0, admin);
+        var found = exerciseService.getByIdForUse(0, admin);
 
         // Then
         assertEquals(
@@ -575,7 +575,7 @@ public class ExerciseServiceTest {
     }
 
     @Test
-    void getById_returns_by_id_to_owner() {
+    void getByIdForUse_returns_by_id_to_owner() {
         // Given
         var owner = getUser("owner");
         var requesting = owner;
@@ -587,7 +587,7 @@ public class ExerciseServiceTest {
             .thenReturn(Optional.of(fooExercise));
 
         // When
-        var found = exerciseService.getById(0, requesting);
+        var found = exerciseService.getByIdForUse(0, requesting);
 
         // Then
         assertEquals(
@@ -603,11 +603,7 @@ public class ExerciseServiceTest {
     }
 
     @Test
-    @DisplayName(
-        "getById throws NotOwnedByUserExercise because " +
-            "loggedUser is not an owner of requested entity"
-    )
-    void getById_throws_NotOwnedByUserException_because_loggedUser_is_not_an_owner() {
+    void getByIdForUse_throws_NotOwnedByUserException_because_loggedUser_is_different_than_actual_owner() {
         // Given
         var requestingUser = getUser("user1");
         var owner = getUser("user2");
@@ -622,7 +618,121 @@ public class ExerciseServiceTest {
 
         // When
         var exception = catchThrowable(
-            () -> exerciseService.getById(0, requestingUser)
+            () -> exerciseService.getByIdForUse(0, requestingUser)
+        );
+
+        // Then
+        assertThat(exception)
+            .isInstanceOf(NotOwnedByUserException.class)
+            .hasMessageContaining("can't access exercise")
+            .hasMessageContaining("which is private.");
+    }
+
+    @Test
+    void getByIdForUse_returns_public_exercise_to_user() {
+        // Given
+        var requestingUser = getUser("user1");
+
+        var fooExercise = new Exercise();
+        fooExercise.setOwner(null);
+
+        when(repository.findById(any()))
+            .thenReturn(
+                Optional.of(fooExercise)
+            );
+
+        // When
+        var found = exerciseService.getByIdForUse(0, requestingUser);
+
+        // Then
+        assertEquals(
+            fooExercise,
+            found,
+            "Expected exercise is different that found exercise"
+        );
+        assertNull(
+            fooExercise.getOwner(),
+            "Expected (fooExercise) exercise contains owner and it shouldn't."
+        );
+        assertNull(
+            found.getOwner(),
+            "Found exercise contains owner and it shouldn't."
+        );
+    }
+
+    @Test
+    void getByIdForModify_returns_by_id_to_admin() {
+        // Given
+        var admin = getAdmin();
+        var owner = getUser("owner");
+
+        var fooExercise = new Exercise();
+        fooExercise.setOwner(owner);
+
+        when(repository.findById(any()))
+            .thenReturn(Optional.of(fooExercise));
+
+        // When
+        var found = exerciseService.getByIdForModify(0, admin);
+
+        // Then
+        assertEquals(
+            fooExercise,
+            found,
+            String.format(
+                "Found with (name: %s) does not match with fooExercise (name: %s)",
+                found.getName(),
+                fooExercise.getName()
+            )
+        );
+
+    }
+
+    @Test
+    void getByIdForModify_returns_by_id_to_owner() {
+        // Given
+        var owner = getUser("owner");
+        var requesting = owner;
+
+        var fooExercise = new Exercise();
+        fooExercise.setOwner(owner);
+
+        when(repository.findById(any()))
+            .thenReturn(Optional.of(fooExercise));
+
+        // When
+        var found = exerciseService.getByIdForModify(0, requesting);
+
+        // Then
+        assertEquals(
+            fooExercise,
+            found,
+            String.format(
+                "Found with (name: %s) does not match with fooExercise (name: %s)",
+                found.getName(),
+                fooExercise.getName()
+            )
+        );
+
+    }
+
+    @Test
+    void getByIdForModify_throws_NotOwnedByUserException_because_loggedUser_is_not_an_owner() {
+        // Given
+        var requestingUser = getUser("user1");
+        var owner = getUser("user2");
+
+        var fooExercise = new Exercise();
+        fooExercise.setOwner(owner);
+
+        when(repository.findById(any()))
+            .thenReturn(
+                Optional.of(fooExercise)
+            );
+
+        // When
+        var exception = catchThrowable(
+            () -> exerciseService.getByIdForModify(0, requestingUser)
         );
 
         // Then
@@ -632,7 +742,95 @@ public class ExerciseServiceTest {
     }
 
     @Test
-    void edit() {
+    void getByIdForModify_throws_NotOwnedByUserException_because_user_cant_modify_public_exercise() {
+        // Given
+        var requestingUser = getUser("user1");
+
+        var fooExercise = new Exercise();
+        fooExercise.setOwner(null);
+
+        when(repository.findById(any()))
+            .thenReturn(
+                Optional.of(fooExercise)
+            );
+
+        // When
+        var exception = catchThrowable(
+            () -> exerciseService.getByIdForModify(0, requestingUser)
+        );
+
+        // Then
+        assertThat(exception)
+            .isInstanceOf(NotOwnedByUserException.class)
+            .hasMessageContaining("is not an owner of exercise");
+    }
+
+    @Test
+    void edit_makes_exercise_public_by_owner() {
+        // Given
+        var owner = getUser("user1");
+
+        final var ORIGINAL_ID = 1;
+        final var ORIGINAL_NAME = "Original name";
+        final var ORIGINAL_DESCRIPTION = "Original description";
+
+        var toEdit = new ExerciseWrite();
+        toEdit.setName(ORIGINAL_NAME);
+        toEdit.setDescription(ORIGINAL_DESCRIPTION);
+        toEdit.setExercisePrivate(false);
+        toEdit.setParameters(new ExerciseParametersWrite());
+
+        var exerciseFromWriteModel = toEdit.toEntity();
+        exerciseFromWriteModel.setId(ORIGINAL_ID);
+
+        var fetchedExercise = new Exercise();
+        fetchedExercise.setId(ORIGINAL_ID);
+        fetchedExercise.setOwner(owner);
+        fetchedExercise.setName(ORIGINAL_NAME);
+        fetchedExercise.setDescription(ORIGINAL_DESCRIPTION);
+        fetchedExercise.setParameters(new ExerciseParameters());
+
+        doReturn(fetchedExercise)
+            .when(exerciseService)
+            .getByIdForModify(anyInt(), any());
+        doReturn(List.of())
+            .when(exerciseService)
+            .prepTrainings(anyList(), any());
+
+        when(parametersService.prepExerciseParameters(any(ExerciseParametersWrite.class)))
+            .thenReturn(new ExerciseParameters());
+        when(repository.save(any()))
+            .thenAnswer(invocation -> invocation.getArgument(0));
+        when(
+            trainingExerciseService.updateTrainingExerciseConnection(
+                any(Exercise.class),
+                any()
+            )
+        ).thenReturn(List.of());
+        doNothing()
+            .when(parametersService)
+            .deleteIfOrphaned(any(ExerciseParametersRead.class));
+
+        // When
+        exerciseService.edit(
+            toEdit,
+            ORIGINAL_ID,
+            owner
+        );
+
+        ArgumentCaptor<Exercise> exerciseCaptor = ArgumentCaptor.forClass(Exercise.class);
+        verify(repository).save(exerciseCaptor.capture());
+        var savedExercise = exerciseCaptor.getValue();
+
+        // Then
+
+        assertEquals(ORIGINAL_ID, savedExercise.getId());
+        assertEquals(ORIGINAL_NAME, savedExercise.getName());
+        assertEquals(ORIGINAL_DESCRIPTION, savedExercise.getDescription());
+        assertNull(
+            savedExercise.getOwner(),
+            "Owner should be null while making exercise public."
+        );
     }
 
     @Test
@@ -708,7 +906,7 @@ public class ExerciseServiceTest {
 
         doReturn(fooExercise)
             .when(exerciseService)
-            .getById(anyInt(), any());
+            .getByIdForModify(anyInt(), any());
         doNothing()
             .when(repository)
             .deleteById(anyInt());
@@ -771,7 +969,7 @@ public class ExerciseServiceTest {
         fooExercise.setParameters(new ExerciseParameters());
         doReturn(fooExercise)
             .when(exerciseService)
-            .getById(anyInt(), any());
+            .getByIdForModify(anyInt(), any());
         doNothing()
             .when(repository)
             .deleteById(anyInt());

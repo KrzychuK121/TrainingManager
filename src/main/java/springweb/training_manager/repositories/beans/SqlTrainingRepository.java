@@ -37,7 +37,7 @@ interface SqlTrainingRepository extends TrainingRepository,
         """)
     Page<Training> findPagedPublicOrOwnedBy(
         Pageable page,
-        String userId
+        @Param("ownerId") String ownerId
     );
 
     @Override
