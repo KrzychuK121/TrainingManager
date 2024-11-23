@@ -4,8 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
+import springweb.training_manager.models.composite_ids.TrainingPlanId;
 import springweb.training_manager.models.entities.*;
-import springweb.training_manager.models.schemas.TrainingPlanId;
 import springweb.training_manager.models.viewmodels.training.TrainingRead;
 import springweb.training_manager.models.viewmodels.training_plan.TrainingPlanWrite;
 import springweb.training_manager.models.viewmodels.training_plan.TrainingPlansEditRead;
@@ -35,12 +35,14 @@ public class TrainingPlanService {
     private final TrainingRepository trainingRepository;
 
     private Map<Weekdays, TrainingPlan> plansToWeekdayMap(List<TrainingPlan> plans) {
-        return plans.stream().collect(
-            Collectors.toMap(
-                plan -> plan.getTrainingSchedule().getWeekday(),
-                plan -> plan
-            )
-        );
+        return plans.stream()
+            .collect(
+                Collectors.toMap(
+                    plan -> plan.getTrainingSchedule()
+                        .getWeekday(),
+                    plan -> plan
+                )
+            );
     }
 
     public Map<Integer, TrainingRoutineReadIndex> getMapFromPlans(List<TrainingPlan> plans) {
@@ -58,13 +60,15 @@ public class TrainingPlanService {
                         )
                     );
 
-                var weekday = trainingPlan.getTrainingSchedule().getWeekday();
-                toReturn.get(routineId).putSchedule(
-                    weekday,
-                    new TrainingScheduleRead(
-                        trainingPlan.getTrainingSchedule()
-                    )
-                );
+                var weekday = trainingPlan.getTrainingSchedule()
+                    .getWeekday();
+                toReturn.get(routineId)
+                    .putSchedule(
+                        weekday,
+                        new TrainingScheduleRead(
+                            trainingPlan.getTrainingSchedule()
+                        )
+                    );
 
             }
         );
@@ -86,13 +90,14 @@ public class TrainingPlanService {
         int routineId
     ) {
         List<TrainingPlan> plans = repository.findByTrainingRoutineOwnerIdAndTrainingRoutineId(
-            ownerId,
-            routineId
-        ).orElseThrow(
-            () -> new IllegalArgumentException(
-                "Podany użytkownik nie istnieje lub nie posiada planu treningowego o podanej nazwie."
+                ownerId,
+                routineId
             )
-        );
+            .orElseThrow(
+                () -> new IllegalArgumentException(
+                    "Podany użytkownik nie istnieje lub nie posiada planu treningowego o podanej nazwie."
+                )
+            );
 
         return new TrainingPlansEditRead(plans);
     }
@@ -119,15 +124,18 @@ public class TrainingPlanService {
 
     private List<TrainingPlan> getTodayPlans(String userId) {
         var plans = getUserActivePlans(userId);
-        var today = LocalDateTime.now().getDayOfWeek();
-        var todayPlans = plans.stream().filter(
-            plan -> (
-                plan.getTrainingSchedule()
-                    .getWeekday()
-                    .toString()
-                    .equals(today.toString())
+        var today = LocalDateTime.now()
+            .getDayOfWeek();
+        var todayPlans = plans.stream()
+            .filter(
+                plan -> (
+                    plan.getTrainingSchedule()
+                        .getWeekday()
+                        .toString()
+                        .equals(today.toString())
+                )
             )
-        ).toList();
+            .toList();
 
         if (todayPlans.isEmpty())
             return null;
@@ -212,7 +220,7 @@ public class TrainingPlanService {
         return null;
     }
 
-    public boolean planInvalid (TrainingPlanWrite planWrite) {
+    public boolean planInvalid(TrainingPlanWrite planWrite) {
         if (planWrite == null)
             return true;
 
@@ -229,7 +237,8 @@ public class TrainingPlanService {
                 int scheduleId = prepared.getId();
 
                 TrainingPlanId planId = new TrainingPlanId(
-                    plan.getTrainingRoutine().getId(),
+                    plan.getTrainingRoutine()
+                        .getId(),
                     scheduleId
                 );
 
@@ -251,8 +260,9 @@ public class TrainingPlanService {
         );
 
         for (var weekday : weekdays) {
-            TrainingPlanWrite planWrite = plansWrite.getPlanWriteMap().get(weekday);
-            if(planInvalid(planWrite))
+            TrainingPlanWrite planWrite = plansWrite.getPlanWriteMap()
+                .get(weekday);
+            if (planInvalid(planWrite))
                 continue;
 
             var timeToSave = TimeService.parseTime(planWrite.getTrainingTime());
@@ -276,7 +286,7 @@ public class TrainingPlanService {
         return createNewPlans(plans, owner);
     }
 
-    public List<TrainingPlan> edit (
+    public List<TrainingPlan> edit(
         TrainingPlansWrite plansWrite,
         int routineId,
         User user
@@ -301,7 +311,7 @@ public class TrainingPlanService {
                 weekday,
                 originalPlan
             );
-            if(edited != null)
+            if (edited != null)
                 plans.add(
                     edited
                 );
@@ -310,25 +320,25 @@ public class TrainingPlanService {
         return plans;
     }
 
-    public TrainingPlan edit (
+    public TrainingPlan edit(
         TrainingPlanWrite toEdit,
         TrainingRoutine routine,
         Weekdays weekday,
         TrainingPlan original
     ) {
-        if(original != null) {
+        if (original != null) {
             repository.delete(original);
 
             var trainingSchedulesCount = repository.countByTrainingScheduleId(
                 original.getTrainingScheduleId()
             );
-            if(trainingSchedulesCount == 0)
+            if (trainingSchedulesCount == 0)
                 scheduleRepository.deleteById(
                     original.getTrainingScheduleId()
                 );
         }
 
-        if(toEdit == null)
+        if (toEdit == null)
             return null;
 
         var timeToSave = TimeService.parseTime(toEdit.getTrainingTime());
