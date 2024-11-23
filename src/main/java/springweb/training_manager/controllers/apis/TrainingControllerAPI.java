@@ -19,6 +19,7 @@ import springweb.training_manager.models.schemas.RoleSchema;
 import springweb.training_manager.models.viewmodels.training.TrainingCreate;
 import springweb.training_manager.models.viewmodels.training.TrainingRead;
 import springweb.training_manager.models.viewmodels.training.TrainingWriteAPI;
+import springweb.training_manager.services.TrainingExerciseService;
 import springweb.training_manager.services.TrainingService;
 import springweb.training_manager.services.UserService;
 
@@ -36,6 +37,7 @@ import java.util.List;
 @Slf4j
 public class TrainingControllerAPI {
     private final TrainingService service;
+    private final TrainingExerciseService trainingExerciseService;
 
     @GetMapping("/paged")
     @ResponseBody
@@ -84,6 +86,13 @@ public class TrainingControllerAPI {
             return ResponseEntity.notFound()
                 .build();
         }
+    }
+
+    @GetMapping("/{id}/hasPrivateExercises")
+    @ResponseBody
+    ResponseEntity<Boolean> hasPrivateExercises(@PathVariable int id) {
+        var hasPrivateExercises = trainingExerciseService.trainingContainsPrivateExercises(id);
+        return ResponseEntity.ok(hasPrivateExercises);
     }
 
     @GetMapping(value = {"/createModel", "/createModel/{id}"})

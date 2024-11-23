@@ -461,6 +461,15 @@ public class TrainingService {
         var oldOwner = toSave.getOwner();
         var oldParametersList = getOldParametersList(toSave);
 
+        if (toSave.getOwner() != null && !toEdit.isTrainingPrivate())
+            preparedExerciseList.keySet()
+                .forEach(
+                    prepExercise -> {
+                        prepExercise.setOwner(null);
+                        exerciseRepository.save(prepExercise);
+                    }
+                );
+
         toSave.copy(toEdit.toEntity());
         toSave.setOwner(
             !toEdit.isTrainingPrivate()

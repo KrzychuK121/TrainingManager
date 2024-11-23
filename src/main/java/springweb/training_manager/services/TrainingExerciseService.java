@@ -19,6 +19,10 @@ import java.util.Map;
 public class TrainingExerciseService {
     private final TrainingExerciseRepository repository;
 
+    public boolean trainingContainsPrivateExercises(int id) {
+        return repository.existsByTrainingIdAndExerciseOwnerIsNotNull(id);
+    }
+
     public List<TrainingExercise> updateTrainingExerciseConnection(
         Training training,
         Map<Exercise, ExerciseParameters> exercises

@@ -27,6 +27,9 @@ public interface SqlTrainingExerciseRepository extends TrainingExerciseRepositor
         int exerciseId
     );
 
+    @Override
+    boolean existsByTrainingIdAndExerciseOwnerIsNotNull(int trainingId);
+
     @Modifying
     @Query("""
             DELETE FROM TrainingExercise t 

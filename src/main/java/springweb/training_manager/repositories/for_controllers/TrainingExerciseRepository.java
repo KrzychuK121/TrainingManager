@@ -18,6 +18,8 @@ public interface TrainingExerciseRepository {
         int exerciseId
     );
 
+    boolean existsByTrainingIdAndExerciseOwnerIsNotNull(int trainingId);
+
     void deleteIfTrainingsNotIn(
         @Param("exerciseId") Integer exerciseId,
         @Param("ids") List<Integer> trainingIds
