@@ -31,7 +31,7 @@ public class User extends UserSchema {
         String password
     ) {
         super(
-            "",
+            null,
             firstName,
             lastName,
             username,

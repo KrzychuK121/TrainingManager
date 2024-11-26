@@ -6,12 +6,14 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 @AllArgsConstructor
 @Getter
 @Setter
 @EqualsAndHashCode
-public class DoneTrainingsId implements Serializable {
+public class DoneTrainingId implements Serializable {
     private int routineId;
     private int trainingId;
+    private LocalDateTime startDate;
 }

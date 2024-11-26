@@ -17,7 +17,6 @@ import springweb.training_manager.models.schemas.Identificable;
 public class DoneExercise implements Identificable<Integer> {
     @Id
     private int id;
-    private int trainingExerciseId;
     @NotNull
     private int doneSeries;
 
@@ -28,6 +27,14 @@ public class DoneExercise implements Identificable<Integer> {
         @JoinColumn(name = "training_id", referencedColumnName = "training_id", nullable = false)
     })
     private DoneTraining doneTraining;
+
+    @NotNull
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(
+        name = "training_exercise_id",
+        referencedColumnName = "id"
+    )
+    private TrainingExercise trainingExercise;
 
     @Override
     public Integer getId() {

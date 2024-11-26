@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import springweb.training_manager.models.composite_ids.DoneTrainingsId;
+import springweb.training_manager.models.composite_ids.DoneTrainingId;
 import springweb.training_manager.models.schemas.Identificable;
 
 import java.time.LocalDateTime;
@@ -16,14 +16,15 @@ import java.util.List;
 @Getter
 @Entity
 @Table(name = "done_training_register")
-@IdClass(DoneTrainingsId.class)
-public class DoneTraining implements Identificable<DoneTrainingsId> {
+@IdClass(DoneTrainingId.class)
+public class DoneTraining implements Identificable<DoneTrainingId> {
     @Id
     @Column(name = "routine_id")
     private int routineId;
     @Id
     @Column(name = "training_id")
     private int trainingId;
+    @Id
     @Setter
     private LocalDateTime startDate;
     @Setter
@@ -39,17 +40,22 @@ public class DoneTraining implements Identificable<DoneTrainingsId> {
     @OneToMany(mappedBy = "doneTraining")
     private List<DoneExercise> doneExercises;
 
-    public void setId(DoneTrainingsId id) {
+    public void setId(DoneTrainingId id) {
         this.routineId = id.getRoutineId();
         this.trainingId = id.getTrainingId();
+        this.startDate = id.getStartDate();
     }
 
-    public DoneTrainingsId getId() {
-        return new DoneTrainingsId(routineId, trainingId);
+    public DoneTrainingId getId() {
+        return new DoneTrainingId(
+            routineId,
+            trainingId,
+            startDate
+        );
     }
 
     @Override
-    public DoneTrainingsId defaultId() {
+    public DoneTrainingId defaultId() {
         return null;
     }
 

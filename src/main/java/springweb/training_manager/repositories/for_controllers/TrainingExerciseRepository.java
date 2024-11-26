@@ -9,6 +9,8 @@ import java.util.Optional;
 public interface TrainingExerciseRepository {
     TrainingExercise save(TrainingExercise entity);
 
+    Optional<TrainingExercise> findById(int id);
+
     Optional<List<TrainingExercise>> findByTrainingId(int trainingId);
 
     Optional<List<TrainingExercise>> findByExerciseId(int trainingExerciseId);

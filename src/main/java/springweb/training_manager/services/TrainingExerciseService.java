@@ -19,6 +19,13 @@ import java.util.Map;
 public class TrainingExerciseService {
     private final TrainingExerciseRepository repository;
 
+    public TrainingExercise getByIdForUse(int id) {
+        return repository.findById(id)
+            .orElseThrow(
+                () -> new IllegalArgumentException("TrainingExercise with provided id does not exist")
+            );
+    }
+
     public boolean trainingContainsPrivateExercises(int id) {
         return repository.existsByTrainingIdAndExerciseOwnerIsNotNull(id);
     }
