@@ -2,8 +2,6 @@ package springweb.training_manager.services;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import springweb.training_manager.exceptions.NotOwnedByUserException;
 import springweb.training_manager.models.entities.TrainingRoutine;
@@ -19,11 +17,11 @@ import java.util.stream.Collectors;
 @Slf4j
 public class TrainingRoutineService {
     private final TrainingRoutineRepository repository;
-    private static final Logger logger = LoggerFactory.getLogger(TrainingRoutineService.class);
 
     public List<TrainingRoutineRead> getAll() {
         return repository.findAll()
-            .stream().map(TrainingRoutineRead::new)
+            .stream()
+            .map(TrainingRoutineRead::new)
             .collect(Collectors.toList());
     }
 
@@ -46,7 +44,8 @@ public class TrainingRoutineService {
         if (userId == null)
             return found;
 
-        var ownerId = found.getOwner().getId();
+        var ownerId = found.getOwner()
+            .getId();
         if (ownerId.equals(userId))
             return found;
         else
