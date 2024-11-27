@@ -8,15 +8,18 @@ import springweb.training_manager.models.entities.DoneTraining;
 import springweb.training_manager.models.entities.Training;
 import springweb.training_manager.models.entities.TrainingRoutine;
 import springweb.training_manager.models.entities.User;
+import springweb.training_manager.models.schemas.RoleSchema;
 import springweb.training_manager.models.viewmodels.done_training.DoneTrainingWrite;
 import springweb.training_manager.repositories.for_controllers.DoneTrainingRepository;
 import springweb.training_manager.repositories.for_controllers.TrainingRoutineRepository;
+
+import java.time.LocalDate;
 
 @RequiredArgsConstructor
 @Service
 @Slf4j
 public class DoneTrainingService {
-    private final DoneTrainingRepository doneTrainingsRepository;
+    private final DoneTrainingRepository repository;
     private final TrainingRoutineRepository trainingRoutineRepository;
     private final TrainingService trainingService;
     private final DoneExerciseService doneExerciseService;
@@ -27,7 +30,7 @@ public class DoneTrainingService {
     ) {
         var doneTraining = new DoneTraining();
 
-        doneTraining.setId(doneTrainingWrite.getId());
+        doneTraining.setStartDate(doneTrainingWrite.getStartDate());
         doneTraining.setEndDate(doneTrainingWrite.getEndDate());
 
         Training foundTraining = trainingService.getByIdForUse(
@@ -45,16 +48,98 @@ public class DoneTrainingService {
         return doneTraining;
     }
 
-    @Transactional
-    public void create(
-        DoneTrainingWrite doneTraining,
+    private DoneTraining getDoneTrainingBy(
+        DoneTrainingWrite doneTrainingWrite,
+        LocalDate date
+    ) {
+        return repository.findExistingRegister(
+                doneTrainingWrite.getRoutineId(),
+                doneTrainingWrite.getTrainingId(),
+                date
+            )
+            .orElseThrow(
+                () -> new IllegalArgumentException(
+                    "Could not find DoneTraining for provided routineId, trainingId and date"
+                )
+            );
+    }
+
+    private void create(
+        DoneTrainingWrite doneTrainingWrite,
         User loggedUser
     ) {
-        var entityToSave = toEntity(doneTraining, loggedUser);
-        var saved = doneTrainingsRepository.save(entityToSave);
+        var entityToSave = toEntity(doneTrainingWrite, loggedUser);
+        var saved = repository.save(entityToSave);
         doneExerciseService.createAllForTrainingRegister(
-            doneTraining.getDoneExercises(),
-            saved
+            doneTrainingWrite.getDoneExercises(),
+            saved,
+            loggedUser
         );
+    }
+
+    @Transactional
+    public void createIfNotExist(
+        DoneTrainingWrite doneTrainingWrite,
+        User loggedUser
+    ) {
+        var nowDate = LocalDate.now();
+        try {
+            getDoneTrainingBy(doneTrainingWrite, nowDate);
+        } catch (IllegalArgumentException ex) {
+            create(doneTrainingWrite, loggedUser);
+        }
+    }
+
+    @Transactional
+    public void edit(
+        DoneTraining toEdit,
+        DoneTrainingWrite doneTrainingWrite,
+        User loggedUser
+    ) {
+        if (
+            toEdit.getDoneExercises() != null
+                && !toEdit.getDoneExercises()
+                .isEmpty()
+        )
+            throw new IllegalStateException(
+                "You can't edit existing done training register " +
+                    "because it contains associated done exercises"
+            );
+        if (
+            toEdit.getEndDate() != null
+                && !UserService.userIsInRole(loggedUser, RoleSchema.ROLE_ADMIN)
+        )
+            throw new IllegalStateException(
+                "You can't edit existing done training register " +
+                    "because this training was finished and you have no permissions to do that."
+            );
+        var entityToEdit = toEntity(doneTrainingWrite, loggedUser);
+        entityToEdit.setId(toEdit.getId());
+        repository.save(entityToEdit);
+
+        doneExerciseService.createAllForTrainingRegister(
+            doneTrainingWrite.getDoneExercises(),
+            entityToEdit,
+            loggedUser
+        );
+    }
+
+    @Transactional
+    public void createOrEdit(
+        DoneTrainingWrite doneTrainingWrite,
+        User loggedUser
+    ) {
+        var nowDate = LocalDate.now();
+        try {
+            var foundRegister = getDoneTrainingBy(doneTrainingWrite, nowDate);
+
+            edit(
+                foundRegister,
+                doneTrainingWrite,
+                loggedUser
+            );
+        } catch (IllegalArgumentException ex) {
+            create(doneTrainingWrite, loggedUser);
+        }
     }
 }

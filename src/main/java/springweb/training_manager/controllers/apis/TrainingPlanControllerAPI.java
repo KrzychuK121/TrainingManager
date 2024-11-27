@@ -12,7 +12,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import springweb.training_manager.models.entities.TrainingPlan;
 import springweb.training_manager.models.schemas.RoleSchema;
-import springweb.training_manager.models.viewmodels.training.TrainingRead;
+import springweb.training_manager.models.viewmodels.training.WorkoutTrainingRead;
 import springweb.training_manager.models.viewmodels.training_plan.TrainingPlansEditRead;
 import springweb.training_manager.models.viewmodels.training_plan.TrainingPlansRead;
 import springweb.training_manager.models.viewmodels.training_plan.TrainingPlansWrite;
@@ -78,7 +78,7 @@ public class TrainingPlanControllerAPI {
 
     @GetMapping("/today-training")
     @ResponseBody
-    public ResponseEntity<TrainingRead> getTodayTraining(Authentication auth) {
+    public ResponseEntity<WorkoutTrainingRead> getTodayTraining(Authentication auth) {
         var userId = UserService.getUserIdByAuth(auth);
         var training = service.getUserActiveTraining(userId);
         if (training == null)

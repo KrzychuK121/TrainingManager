@@ -7,6 +7,7 @@ import org.springframework.validation.BindingResult;
 import springweb.training_manager.models.composite_ids.TrainingPlanId;
 import springweb.training_manager.models.entities.*;
 import springweb.training_manager.models.viewmodels.training.TrainingRead;
+import springweb.training_manager.models.viewmodels.training.WorkoutTrainingRead;
 import springweb.training_manager.models.viewmodels.training_plan.TrainingPlanWrite;
 import springweb.training_manager.models.viewmodels.training_plan.TrainingPlansEditRead;
 import springweb.training_manager.models.viewmodels.training_plan.TrainingPlansWrite;
@@ -176,7 +177,7 @@ public class TrainingPlanService {
         );
     }
 
-    public TrainingRead getUserActiveTraining(String userId) {
+    public WorkoutTrainingRead getUserActiveTraining(String userId) {
         var todayPlans = getTodayPlans(userId);
         if (todayPlans == null)
             return null;
@@ -184,7 +185,12 @@ public class TrainingPlanService {
         Training todayTraining = todayPlans.get(0)
             .getTrainingSchedule()
             .getTraining();
-        return new TrainingRead(todayTraining);
+
+        return new WorkoutTrainingRead(
+            todayPlans.get(0)
+                .getTrainingRoutineId(),
+            new TrainingRead(todayTraining)
+        );
     }
 
     private TrainingSchedule prepTrainingSchedule(TrainingSchedule schedule) {

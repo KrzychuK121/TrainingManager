@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import springweb.training_manager.models.entities.DoneExercise;
 import springweb.training_manager.models.entities.DoneTraining;
 import springweb.training_manager.models.entities.TrainingExercise;
+import springweb.training_manager.models.entities.User;
 import springweb.training_manager.models.viewmodels.done_exercise.DoneExerciseWrite;
 import springweb.training_manager.repositories.for_controllers.DoneExerciseRepository;
 
@@ -19,14 +20,21 @@ class DoneExerciseService {
     private final DoneExerciseRepository doneExerciseRepository;
     private final TrainingExerciseService trainingExerciseService;
 
-    public DoneExercise toEntity(
+    DoneExercise toEntity(
         DoneExerciseWrite doneExerciseWrite,
-        DoneTraining doneTraining
+        DoneTraining doneTraining,
+        User loggedUser
     ) {
         DoneExercise doneExercise = new DoneExercise();
 
-        var trainingExerciseId = doneExerciseWrite.getTrainingExerciseId();
-        TrainingExercise trainingExercise = trainingExerciseService.getByIdForUse(trainingExerciseId);
+        var trainingId = doneTraining.getTraining()
+            .getId();
+        var exerciseId = doneExerciseWrite.getExerciseId();
+        TrainingExercise trainingExercise = trainingExerciseService.getByTrainingIdAndExerciseIdForUse(
+            trainingId,
+            exerciseId,
+            loggedUser
+        );
         doneExercise.setTrainingExercise(trainingExercise);
 
         doneExercise.setDoneTraining(doneTraining);
@@ -35,14 +43,36 @@ class DoneExerciseService {
         return doneExercise;
     }
 
+    List<DoneExercise> toEntities(
+        List<DoneExerciseWrite> doneExercisesWrite,
+        DoneTraining doneTraining,
+        User loggedUser
+    ) {
+        return doneExercisesWrite.stream()
+            .map(
+                doneExerciseWrite -> toEntity(
+                    doneExerciseWrite,
+                    doneTraining,
+                    loggedUser
+                )
+            )
+            .toList();
+    }
+
     @Transactional
     public void createAllForTrainingRegister(
-        List<DoneExerciseWrite> doneExercise,
-        DoneTraining doneTraining
+        List<DoneExerciseWrite> doneExercisesWrite,
+        DoneTraining doneTraining,
+        User loggedUser
     ) {
-        var mapped = doneExercise.stream()
-            .map(doneExerciseWrite -> toEntity(doneExerciseWrite, doneTraining))
-            .toList();
+
+        if (doneExercisesWrite == null || doneExercisesWrite.isEmpty())
+            return;
+        var mapped = toEntities(
+            doneExercisesWrite,
+            doneTraining,
+            loggedUser
+        );
         doneExerciseRepository.saveAll(mapped);
     }
 }

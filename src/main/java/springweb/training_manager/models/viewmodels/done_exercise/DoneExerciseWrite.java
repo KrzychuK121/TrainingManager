@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 @Getter
 public class DoneExerciseWrite {
-    private int trainingExerciseId;
+    private int exerciseId;
     @NotNull
     private int doneSeries;
 }

@@ -16,14 +16,9 @@ interface SqlDoneExerciseRepository extends
     @Query("""
             SELECT DISTINCT de 
             FROM DoneExercise de
-            WHERE (
-                    (
-                        de.trainingExercise IS NULL 
-                        AND :#{#entity.trainingExercise} IS NULL
-                    )
-                    OR de.trainingExercise.id = :#{#entity.trainingExercise.id}
-                )
+            WHERE de.trainingExercise.id = :#{#entity.trainingExercise.id}
                 AND de.doneSeries = :#{#entity.doneSeries}
+                AND de.doneTraining.id = :#{#entity.doneTraining.id}
         """)
     @Override
     Optional<DoneExercise> findDuplication(DoneExercise entity);
