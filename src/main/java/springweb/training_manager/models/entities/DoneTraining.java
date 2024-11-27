@@ -5,59 +5,56 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import springweb.training_manager.models.composite_ids.DoneTrainingId;
 import springweb.training_manager.models.schemas.Identificable;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
+@Setter
 @Entity
 @Table(name = "done_training_register")
-@IdClass(DoneTrainingId.class)
-public class DoneTraining implements Identificable<DoneTrainingId> {
+public class DoneTraining implements Identificable<Integer> {
     @Id
-    @Column(name = "routine_id")
-    private int routineId;
-    @Id
-    @Column(name = "training_id")
-    private int trainingId;
-    @Id
-    @Setter
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
     private LocalDateTime startDate;
-    @Setter
     private LocalDateTime endDate;
 
-    @Setter
     @ManyToOne
+    @JoinColumn(
+        name = "routine_id",
+        referencedColumnName = "id"
+    )
     private TrainingRoutine routine;
-    @Setter
     @ManyToOne
+    @JoinColumn(
+        name = "training_id",
+        referencedColumnName = "id"
+    )
     private Training training;
 
     @OneToMany(mappedBy = "doneTraining")
-    private List<DoneExercise> doneExercises;
+    private List<DoneExercise> doneExercises = new ArrayList<>();
 
-    public void setId(DoneTrainingId id) {
-        this.routineId = id.getRoutineId();
-        this.trainingId = id.getTrainingId();
-        this.startDate = id.getStartDate();
-    }
-
-    public DoneTrainingId getId() {
-        return new DoneTrainingId(
-            routineId,
-            trainingId,
-            startDate
-        );
+    @Override
+    public Integer getId() {
+        return this.id;
     }
 
     @Override
-    public DoneTrainingId defaultId() {
-        return null;
+    public Integer defaultId() {
+        return 0;
     }
 
+    public void addDoneExercise(DoneExercise doneExercise) {
+        doneExercises.add(doneExercise);
+    }
 
+    public void removeDoneExercise(DoneExercise doneExercise) {
+        doneExercises.remove(doneExercise);
+    }
 }

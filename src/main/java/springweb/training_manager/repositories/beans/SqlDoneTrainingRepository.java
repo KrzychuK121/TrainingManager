@@ -8,7 +8,7 @@ import springweb.training_manager.repositories.for_controllers.DoneTrainingRepos
 
 @Repository
 interface SqlDoneTrainingRepository extends
-    JpaRepository<DoneTraining, DoneTrainingId>,
+    JpaRepository<DoneTraining, Integer>,
     DoneTrainingRepository {
 
 }

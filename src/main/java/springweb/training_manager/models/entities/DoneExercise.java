@@ -16,20 +16,21 @@ import springweb.training_manager.models.schemas.Identificable;
 @Table(name = "done_exercise_register")
 public class DoneExercise implements Identificable<Integer> {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     @NotNull
     private int doneSeries;
 
     @NotNull
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumns({
-        @JoinColumn(name = "routine_id", referencedColumnName = "routine_id", nullable = false),
-        @JoinColumn(name = "training_id", referencedColumnName = "training_id", nullable = false)
-    })
+    @ManyToOne(optional = false)
+    @JoinColumn(
+        name = "done_training_register_id",
+        referencedColumnName = "id"
+    )
     private DoneTraining doneTraining;
 
     @NotNull
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(optional = false)
     @JoinColumn(
         name = "training_exercise_id",
         referencedColumnName = "id"
