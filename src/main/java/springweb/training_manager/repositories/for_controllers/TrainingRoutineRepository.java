@@ -27,15 +27,15 @@ public interface TrainingRoutineRepository {
      * @param id      routine to active
      * @param ownerId owner of routine to active
      */
-    void switchActive(Integer id, String ownerId);
+    void switchActive(Integer id, String providedOwnerId);
 
     void delete(TrainingRoutine entity);
 
     /**
      * This method (stored procedure) is responsible for deleting all training plans that
-     * contains provided <code>id</code>, training routine row itself
-     * and all training schedules which are no longer mentioned in
-     * training plan table (last row that used the schedule was removed right now).
+     * contains provided <code>id</code>, training routine row itself and all training
+     * schedules which are no longer mentioned in training plan table (last row that used
+     * the schedule was removed right now).
      *
      * @param id item to delete
      */
