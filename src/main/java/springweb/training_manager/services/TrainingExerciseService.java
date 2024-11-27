@@ -3,10 +3,8 @@ package springweb.training_manager.services;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import springweb.training_manager.models.entities.Exercise;
-import springweb.training_manager.models.entities.ExerciseParameters;
-import springweb.training_manager.models.entities.Training;
-import springweb.training_manager.models.entities.TrainingExercise;
+import springweb.training_manager.exceptions.NotOwnedByUserException;
+import springweb.training_manager.models.entities.*;
 import springweb.training_manager.repositories.for_controllers.TrainingExerciseRepository;
 
 import java.util.ArrayList;
@@ -19,11 +17,33 @@ import java.util.Map;
 public class TrainingExerciseService {
     private final TrainingExerciseRepository repository;
 
-    public TrainingExercise getByIdForUse(int id) {
-        return repository.findById(id)
+    public TrainingExercise getByTrainingIdAndExerciseIdForUse(
+        int trainingId,
+        int exerciseId,
+        User loggedUser
+    ) {
+        var found = repository.findByTrainingIdAndExerciseId(trainingId, exerciseId)
             .orElseThrow(
                 () -> new IllegalArgumentException("TrainingExercise with provided id does not exist")
             );
+
+        if (
+            !UserService.isPermittedToReadFor(
+                loggedUser,
+                found.getExercise()
+                    .getOwner()
+            )
+                || !UserService.isPermittedToReadFor(
+                loggedUser,
+                found.getTraining()
+                    .getOwner()
+            )
+        )
+            throw new NotOwnedByUserException(
+                "User can't access for use training or exercise in TrainingExercise relationship."
+            );
+
+        return found;
     }
 
     public boolean trainingContainsPrivateExercises(int id) {
