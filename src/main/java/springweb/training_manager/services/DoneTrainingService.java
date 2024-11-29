@@ -9,11 +9,13 @@ import springweb.training_manager.models.entities.Training;
 import springweb.training_manager.models.entities.TrainingRoutine;
 import springweb.training_manager.models.entities.User;
 import springweb.training_manager.models.schemas.RoleSchema;
+import springweb.training_manager.models.viewmodels.done_training.DoneTrainingCalendarRead;
 import springweb.training_manager.models.viewmodels.done_training.DoneTrainingWrite;
 import springweb.training_manager.repositories.for_controllers.DoneTrainingRepository;
 import springweb.training_manager.repositories.for_controllers.TrainingRoutineRepository;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @RequiredArgsConstructor
 @Service
@@ -46,6 +48,13 @@ public class DoneTrainingService {
         doneTraining.setRoutine(foundRoutine);
 
         return doneTraining;
+    }
+
+    public List<DoneTrainingCalendarRead> getAllByUser(User loggedUser) {
+        return repository.findAllByRoutineOwnerId(loggedUser.getId())
+            .stream()
+            .map(DoneTrainingCalendarRead::new)
+            .toList();
     }
 
     private DoneTraining getDoneTrainingBy(

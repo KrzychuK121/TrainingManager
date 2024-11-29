@@ -9,9 +9,12 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import springweb.training_manager.models.schemas.RoleSchema;
+import springweb.training_manager.models.viewmodels.done_training.DoneTrainingCalendarRead;
 import springweb.training_manager.models.viewmodels.done_training.DoneTrainingWrite;
 import springweb.training_manager.services.DoneTrainingService;
 import springweb.training_manager.services.UserService;
+
+import java.util.List;
 
 @RestController
 @Secured({RoleSchema.ROLE_ADMIN, RoleSchema.ROLE_USER})
@@ -24,6 +27,16 @@ import springweb.training_manager.services.UserService;
 @Slf4j
 public class DoneTrainingsRegisterAPI {
     private final DoneTrainingService service;
+
+    @GetMapping
+    @ResponseBody
+    public ResponseEntity<List<DoneTrainingCalendarRead>> getAllByUser(
+        Authentication auth
+    ) {
+        var loggedUser = UserService.getUserByAuth(auth);
+        var found = service.getAllByUser(loggedUser);
+        return ResponseEntity.ok(found);
+    }
 
     @PostMapping
     @ResponseBody

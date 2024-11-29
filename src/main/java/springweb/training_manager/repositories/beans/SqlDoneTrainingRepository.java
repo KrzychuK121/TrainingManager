@@ -8,6 +8,7 @@ import springweb.training_manager.models.entities.DoneTraining;
 import springweb.training_manager.repositories.for_controllers.DoneTrainingRepository;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -27,4 +28,7 @@ interface SqlDoneTrainingRepository extends
         @Param("trainingId") int trainingId,
         @Param("startDate") LocalDate startDate
     );
+
+    @Override
+    List<DoneTraining> findAllByRoutineOwnerId(@Param("ownerId") String ownerId);
 }
