@@ -24,8 +24,8 @@ public interface TrainingRoutineRepository {
      * This method (stored procedure) is responsible for switching previous active routine
      * to new routine provided in parameter for specified user.
      *
-     * @param id      routine to active
-     * @param ownerId owner of routine to active
+     * @param id              routine to active
+     * @param providedOwnerId owner of routine to active
      */
     void switchActive(Integer id, String providedOwnerId);
 

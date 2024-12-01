@@ -14,6 +14,11 @@ public interface DoneTrainingRepository {
         LocalDate startDate
     );
 
+    Optional<DoneTraining> findByIdAndRoutineOwnerId(
+        @Param("id") int id,
+        @Param("ownerId") String ownerId
+    );
+
     List<DoneTraining> findAllByRoutineOwnerId(@Param("ownerId") String ownerId);
 
     DoneTraining save(DoneTraining entity);

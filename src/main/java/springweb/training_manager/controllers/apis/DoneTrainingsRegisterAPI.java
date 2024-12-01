@@ -10,6 +10,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import springweb.training_manager.models.schemas.RoleSchema;
 import springweb.training_manager.models.viewmodels.done_training.DoneTrainingCalendarRead;
+import springweb.training_manager.models.viewmodels.done_training.DoneTrainingDetailsRead;
 import springweb.training_manager.models.viewmodels.done_training.DoneTrainingWrite;
 import springweb.training_manager.services.DoneTrainingService;
 import springweb.training_manager.services.UserService;
@@ -35,6 +36,20 @@ public class DoneTrainingsRegisterAPI {
     ) {
         var loggedUser = UserService.getUserByAuth(auth);
         var found = service.getAllByUser(loggedUser);
+        return ResponseEntity.ok(found);
+    }
+
+    @GetMapping("/{id}")
+    @ResponseBody
+    public ResponseEntity<DoneTrainingDetailsRead> getById(
+        @PathVariable int id,
+        Authentication auth
+    ) {
+        var loggedUser = UserService.getUserByAuth(auth);
+        var found = service.getById(
+            id,
+            loggedUser
+        );
         return ResponseEntity.ok(found);
     }
 

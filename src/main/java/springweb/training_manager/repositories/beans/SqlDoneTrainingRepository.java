@@ -30,5 +30,11 @@ interface SqlDoneTrainingRepository extends
     );
 
     @Override
+    Optional<DoneTraining> findByIdAndRoutineOwnerId(
+        @Param("id") int id,
+        @Param("ownerId") String ownerId
+    );
+
+    @Override
     List<DoneTraining> findAllByRoutineOwnerId(@Param("ownerId") String ownerId);
 }

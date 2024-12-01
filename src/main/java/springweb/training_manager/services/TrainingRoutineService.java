@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import springweb.training_manager.exceptions.NotOwnedByUserException;
 import springweb.training_manager.models.entities.TrainingRoutine;
 import springweb.training_manager.models.entities.User;
+import springweb.training_manager.models.schemas.RoleSchema;
 import springweb.training_manager.models.viewmodels.training_routine.TrainingRoutineRead;
 import springweb.training_manager.repositories.for_controllers.TrainingRoutineRepository;
 
@@ -66,14 +67,23 @@ public class TrainingRoutineService {
         return createNew(routine);
     }
 
-    public void switchActive(int id, String userId) {
-        if (userId == null)
+    public void switchActive(
+        int id,
+        User loggedUser
+    ) {
+        if (UserService.userIsInRole(loggedUser, RoleSchema.ROLE_ADMIN))
             return;
-        if (!existsAndIsNotActive(id, userId))
+
+        if (
+            !existsAndIsNotActive(
+                id,
+                loggedUser.getId()
+            )
+        )
             throw new IllegalArgumentException(
                 "Provided user is not an owner of provided routine or routine you want to active is already activated"
             );
-        repository.switchActive(id, userId);
+        repository.switchActive(id, loggedUser.getId());
     }
 
     public void delete(TrainingRoutine toDelete) {

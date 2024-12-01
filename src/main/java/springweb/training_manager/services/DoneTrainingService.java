@@ -10,6 +10,7 @@ import springweb.training_manager.models.entities.TrainingRoutine;
 import springweb.training_manager.models.entities.User;
 import springweb.training_manager.models.schemas.RoleSchema;
 import springweb.training_manager.models.viewmodels.done_training.DoneTrainingCalendarRead;
+import springweb.training_manager.models.viewmodels.done_training.DoneTrainingDetailsRead;
 import springweb.training_manager.models.viewmodels.done_training.DoneTrainingWrite;
 import springweb.training_manager.repositories.for_controllers.DoneTrainingRepository;
 import springweb.training_manager.repositories.for_controllers.TrainingRoutineRepository;
@@ -55,6 +56,20 @@ public class DoneTrainingService {
             .stream()
             .map(DoneTrainingCalendarRead::new)
             .toList();
+    }
+
+    public DoneTrainingDetailsRead getById(
+        int id,
+        User loggedUser
+    ) {
+        var found = repository.findByIdAndRoutineOwnerId(
+                id,
+                loggedUser.getId()
+            )
+            .orElse(null);
+        return found != null
+            ? new DoneTrainingDetailsRead(found)
+            : null;
     }
 
     private DoneTraining getDoneTrainingBy(
