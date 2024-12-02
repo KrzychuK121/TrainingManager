@@ -1,6 +1,6 @@
 spring:
   #  No need to have profile because different databases has to be defined in compose.yaml
-  #  profiles.active: local
+  #  profiles.active: test
   jpa.hibernate.ddl-auto: validate
   main.banner-mode: off
 
