@@ -16,6 +16,9 @@ public interface SqlTrainingExerciseRepository extends TrainingExerciseRepositor
     JpaRepository<TrainingExercise, Integer> {
 
     @Override
+    Optional<TrainingExercise> findById(int id);
+
+    @Override
     Optional<List<TrainingExercise>> findByTrainingId(int trainingId);
 
     @Override

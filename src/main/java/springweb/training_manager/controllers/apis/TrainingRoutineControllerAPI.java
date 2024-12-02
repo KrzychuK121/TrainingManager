@@ -44,8 +44,7 @@ public class TrainingRoutineControllerAPI {
     ) {
         var user = UserService.getUserByAuth(auth);
         try {
-            var userId = user.getId();
-            service.switchActive(id, userId);
+            service.switchActive(id, user);
 
             var newReminder = notificationTimerService.getReminderAndInitRest(auth);
             if (newReminder != null)

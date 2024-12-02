@@ -24,7 +24,7 @@ interface SqlTrainingRoutineRepository
 
     @Override
     @Procedure("switch_active_procedure")
-    void switchActive(Integer id, String ownerId);
+    void switchActive(Integer id, String providedOwnerId);
 
     @Override
     @Procedure("delete_training_routine")

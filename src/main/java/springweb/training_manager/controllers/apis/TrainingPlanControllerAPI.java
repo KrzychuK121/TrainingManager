@@ -12,17 +12,20 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import springweb.training_manager.models.entities.TrainingPlan;
 import springweb.training_manager.models.schemas.RoleSchema;
-import springweb.training_manager.models.viewmodels.training.TrainingRead;
+import springweb.training_manager.models.viewmodels.training.WorkoutTrainingRead;
 import springweb.training_manager.models.viewmodels.training_plan.TrainingPlansEditRead;
 import springweb.training_manager.models.viewmodels.training_plan.TrainingPlansRead;
 import springweb.training_manager.models.viewmodels.training_plan.TrainingPlansWrite;
 import springweb.training_manager.models.viewmodels.training_routine.TrainingRoutineReadIndex;
 import springweb.training_manager.models.viewmodels.training_schedule.TrainingScheduleRead;
 import springweb.training_manager.models.viewmodels.validation.ValidationErrors;
+import springweb.training_manager.repositories.for_controllers.DoneTrainingRepository;
+import springweb.training_manager.services.DoneTrainingService;
 import springweb.training_manager.services.TrainingPlanService;
 import springweb.training_manager.services.UserService;
 
 import java.net.URI;
+import java.time.LocalDate;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -35,7 +38,9 @@ import java.util.List;
 @Secured({RoleSchema.ROLE_ADMIN, RoleSchema.ROLE_USER})
 public class TrainingPlanControllerAPI {
     private final TrainingPlanService service;
+    private final DoneTrainingRepository doneTrainingRepository;
     private final Logger logger = LoggerFactory.getLogger(TrainingPlanControllerAPI.class);
+    private final DoneTrainingService doneTrainingService;
 
     @GetMapping
     public ResponseEntity<TrainingPlansRead> getAll(Authentication auth) {
@@ -78,10 +83,19 @@ public class TrainingPlanControllerAPI {
 
     @GetMapping("/today-training")
     @ResponseBody
-    public ResponseEntity<TrainingRead> getTodayTraining(Authentication auth) {
+    public ResponseEntity<WorkoutTrainingRead> getTodayTraining(Authentication auth) {
         var userId = UserService.getUserIdByAuth(auth);
         var training = service.getUserActiveTraining(userId);
         if (training == null)
+            return ResponseEntity.notFound()
+                .build();
+        var todayDate = LocalDate.now();
+        if (
+            doneTrainingRepository.existsForOwnerForDate(
+                userId,
+                todayDate
+            )
+        )
             return ResponseEntity.noContent()
                 .build();
         return ResponseEntity.ok(training);

@@ -7,7 +7,7 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import springweb.training_manager.models.schemas.TrainingPlanId;
+import springweb.training_manager.models.composite_ids.TrainingPlanId;
 import springweb.training_manager.models.schemas.TrainingPlanSchema;
 
 import java.time.LocalTime;

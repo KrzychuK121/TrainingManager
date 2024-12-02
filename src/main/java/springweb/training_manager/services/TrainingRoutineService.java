@@ -2,12 +2,11 @@ package springweb.training_manager.services;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import springweb.training_manager.exceptions.NotOwnedByUserException;
 import springweb.training_manager.models.entities.TrainingRoutine;
 import springweb.training_manager.models.entities.User;
+import springweb.training_manager.models.schemas.RoleSchema;
 import springweb.training_manager.models.viewmodels.training_routine.TrainingRoutineRead;
 import springweb.training_manager.repositories.for_controllers.TrainingRoutineRepository;
 
@@ -19,11 +18,11 @@ import java.util.stream.Collectors;
 @Slf4j
 public class TrainingRoutineService {
     private final TrainingRoutineRepository repository;
-    private static final Logger logger = LoggerFactory.getLogger(TrainingRoutineService.class);
 
     public List<TrainingRoutineRead> getAll() {
         return repository.findAll()
-            .stream().map(TrainingRoutineRead::new)
+            .stream()
+            .map(TrainingRoutineRead::new)
             .collect(Collectors.toList());
     }
 
@@ -46,7 +45,8 @@ public class TrainingRoutineService {
         if (userId == null)
             return found;
 
-        var ownerId = found.getOwner().getId();
+        var ownerId = found.getOwner()
+            .getId();
         if (ownerId.equals(userId))
             return found;
         else
@@ -67,14 +67,23 @@ public class TrainingRoutineService {
         return createNew(routine);
     }
 
-    public void switchActive(int id, String userId) {
-        if (userId == null)
+    public void switchActive(
+        int id,
+        User loggedUser
+    ) {
+        if (UserService.userIsInRole(loggedUser, RoleSchema.ROLE_ADMIN))
             return;
-        if (!existsAndIsNotActive(id, userId))
+
+        if (
+            !existsAndIsNotActive(
+                id,
+                loggedUser.getId()
+            )
+        )
             throw new IllegalArgumentException(
                 "Provided user is not an owner of provided routine or routine you want to active is already activated"
             );
-        repository.switchActive(id, userId);
+        repository.switchActive(id, loggedUser.getId());
     }
 
     public void delete(TrainingRoutine toDelete) {
