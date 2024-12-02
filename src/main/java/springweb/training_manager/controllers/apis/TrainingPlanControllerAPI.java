@@ -19,10 +19,13 @@ import springweb.training_manager.models.viewmodels.training_plan.TrainingPlansW
 import springweb.training_manager.models.viewmodels.training_routine.TrainingRoutineReadIndex;
 import springweb.training_manager.models.viewmodels.training_schedule.TrainingScheduleRead;
 import springweb.training_manager.models.viewmodels.validation.ValidationErrors;
+import springweb.training_manager.repositories.for_controllers.DoneTrainingRepository;
+import springweb.training_manager.services.DoneTrainingService;
 import springweb.training_manager.services.TrainingPlanService;
 import springweb.training_manager.services.UserService;
 
 import java.net.URI;
+import java.time.LocalDate;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -35,7 +38,9 @@ import java.util.List;
 @Secured({RoleSchema.ROLE_ADMIN, RoleSchema.ROLE_USER})
 public class TrainingPlanControllerAPI {
     private final TrainingPlanService service;
+    private final DoneTrainingRepository doneTrainingRepository;
     private final Logger logger = LoggerFactory.getLogger(TrainingPlanControllerAPI.class);
+    private final DoneTrainingService doneTrainingService;
 
     @GetMapping
     public ResponseEntity<TrainingPlansRead> getAll(Authentication auth) {
@@ -82,6 +87,15 @@ public class TrainingPlanControllerAPI {
         var userId = UserService.getUserIdByAuth(auth);
         var training = service.getUserActiveTraining(userId);
         if (training == null)
+            return ResponseEntity.notFound()
+                .build();
+        var todayDate = LocalDate.now();
+        if (
+            doneTrainingRepository.existsForOwnerForDate(
+                userId,
+                todayDate
+            )
+        )
             return ResponseEntity.noContent()
                 .build();
         return ResponseEntity.ok(training);

@@ -21,5 +21,10 @@ public interface DoneTrainingRepository {
 
     List<DoneTraining> findAllByRoutineOwnerId(@Param("ownerId") String ownerId);
 
+    boolean existsForOwnerForDate(
+        @Param("ownerId") String ownerId,
+        @Param("startDate") LocalDate startDate
+    );
+
     DoneTraining save(DoneTraining entity);
 }

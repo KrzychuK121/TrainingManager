@@ -37,4 +37,19 @@ interface SqlDoneTrainingRepository extends
 
     @Override
     List<DoneTraining> findAllByRoutineOwnerId(@Param("ownerId") String ownerId);
+
+    @Override
+    @Query("""
+            SELECT CASE
+                    WHEN COUNT(1) > 0 THEN TRUE
+                    ELSE FALSE 
+                END
+            FROM DoneTraining dt
+            WHERE dt.routine.owner.id = :ownerId
+                AND FUNCTION('DATE', dt.startDate) = :startDate
+        """)
+    boolean existsForOwnerForDate(
+        @Param("ownerId") String ownerId,
+        @Param("startDate") LocalDate startDate
+    );
 }
