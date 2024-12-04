@@ -1,6 +1,7 @@
 package springweb.training_manager.models.entities;
 
 public enum BodyPart {
+    CARDIO("całe ciało (cardio)"),
     TRAPS("mięsień czworoboczny"),
     DELTS("mięsień naramienny"),
     CHEST("klatka piersiowa"),
@@ -18,12 +19,12 @@ public enum BodyPart {
 
     private final String display;
 
-    private BodyPart(String display){
+    private BodyPart(String display) {
         this.display = display;
     }
 
-    public static String getBodyDesc(BodyPart bodyPart){
-        if(bodyPart == null)
+    public static String getBodyDesc(BodyPart bodyPart) {
+        if (bodyPart == null)
             return "brak";
         return bodyPart.display;
     }
