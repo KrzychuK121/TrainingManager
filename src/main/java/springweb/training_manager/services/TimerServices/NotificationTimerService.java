@@ -8,22 +8,26 @@ import org.springframework.stereotype.Service;
 import springweb.training_manager.controllers.web_sockets.TrainingPlanControllerWS;
 import springweb.training_manager.models.entities.ReminderType;
 import springweb.training_manager.models.viewmodels.training_plan.TrainingReminderRead;
+import springweb.training_manager.repositories.for_controllers.DoneTrainingRepository;
 import springweb.training_manager.services.TrainingPlanService;
 import springweb.training_manager.services.UserService;
 
 import java.security.Principal;
 import java.time.Duration;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 @RequiredArgsConstructor
 @Service
 @Slf4j
 public class NotificationTimerService extends TimerService {
-    private final TrainingPlanService trainingPlanService;
-    private final SimpMessageSendingOperations messageTemplate;
     public static final String FIRST_REMINDER_TITLE = "Przypomnienie o treningu na dziś";
     public static final String BEFORE_TIMER_ID = "before";
     public static final String NOW_TIMER_ID = "now";
+
+    private final TrainingPlanService trainingPlanService;
+    private final DoneTrainingRepository doneTrainingRepository;
+    private final SimpMessageSendingOperations messageTemplate;
 
     private long calculateSecondsBeforeTime(
         int minutesBefore,
@@ -66,14 +70,22 @@ public class NotificationTimerService extends TimerService {
     }
 
     public TrainingReminderRead getReminderAndInitRest(Authentication auth) {
-        int MIN_BEFORE_NOTIFICATION = 5;
-        int NOW_MIN_BEFORE = 0;
+        final int MIN_BEFORE_NOTIFICATION = 5;
+        final int NOW_MIN_BEFORE = 0;
+        var nowDateTime = LocalDateTime.now();
 
         String username = getUsernameFrom(auth);
         if (username == null)
             return null;
 
         var userId = UserService.getUserIdByAuth(auth);
+        if (
+            doneTrainingRepository.existsForOwnerForDate(
+                userId,
+                nowDateTime.toLocalDate()
+            )
+        )
+            return null;
 
         try {
             var initReminder = trainingPlanService.getUserTrainingReminder(
@@ -85,9 +97,10 @@ public class NotificationTimerService extends TimerService {
                 return null;
 
             if (
-                LocalTime.now().isAfter(
-                    initReminder.getTime()
-                )
+                nowDateTime.toLocalTime()
+                    .isAfter(
+                        initReminder.getTime()
+                    )
             )
                 return new TrainingReminderRead(
                     "Przegapiłeś trening",
