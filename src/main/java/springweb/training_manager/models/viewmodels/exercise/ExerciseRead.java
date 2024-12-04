@@ -13,7 +13,7 @@ import java.util.List;
 public class ExerciseRead extends ExerciseSchema {
     private final List<TrainingExerciseVM> trainings;
     private final String bodyPartDesc;
-    private final int parameters_id;
+    private final int parametersId;
     private final int rounds;
     private final int repetition;
     private final short weights;
@@ -28,7 +28,7 @@ public class ExerciseRead extends ExerciseSchema {
             exercise.getBodyPart(),
             exercise.getDefaultBurnedKcal()
         );
-        this.parameters_id = exercise.getParameters()
+        this.parametersId = exercise.getParameters()
             .getId();
         this.rounds = exercise.getParameters()
             .getRounds();

@@ -37,6 +37,23 @@ public class ExerciseParametersService {
         return prepExerciseParameters(parametersWrite.toEntity());
     }
 
+    public static int calcTotalBurnedKcal(
+        int defaultBurnedKcal,
+        ExerciseParametersRead parametersRead
+    ) {
+        float amount = parametersRead.getRepetition() != 0
+            ? parametersRead.getRepetition()
+            : (float) parametersRead.getTime()
+            .toSecondOfDay() / 60;
+        return (int) (
+            Math.ceil(
+                defaultBurnedKcal
+                    * (amount * parametersRead.getRounds())
+                    * (1 + parametersRead.getWeights())
+            )
+        );
+    }
+
     public boolean parametersAreOrphaned(ExerciseParametersRead parametersRead) {
         return !repository.referencedInExercise(parametersRead.getId()) &&
             !repository.referencedInTrainingExercise(parametersRead.getId());

@@ -241,6 +241,22 @@ public class TrainingService {
         return created;
     }
 
+    public int getTotalBurnedKcal(TrainingRead training) {
+        var sum = 0;
+        if (training == null)
+            return 0;
+        var exercises = training.getExercises();
+        if (
+            exercises == null
+                || exercises.isEmpty()
+        )
+            return 0;
+
+        for (var exercise : exercises)
+            sum += ExerciseService.getTotalBurnedKcal(exercise);
+        return sum;
+    }
+
     public <TR> List<TR> getAll(Function<Training, TR> mapper) {
         return repository.findAll()
             .stream()
