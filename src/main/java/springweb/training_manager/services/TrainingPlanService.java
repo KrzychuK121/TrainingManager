@@ -193,7 +193,7 @@ public class TrainingPlanService {
         );
     }
 
-    private TrainingSchedule prepTrainingSchedule(TrainingSchedule schedule) {
+    public TrainingSchedule prepTrainingSchedule(TrainingSchedule schedule) {
         TrainingSchedule prepared = NoDuplicationService.prepEntity(
             schedule,
             scheduleRepository,
