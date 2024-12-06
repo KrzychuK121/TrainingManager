@@ -241,7 +241,7 @@ public class TrainingService {
         return created;
     }
 
-    public int getTotalBurnedKcal(TrainingRead training) {
+    public static int getTotalBurnedKcal(TrainingRead training) {
         var sum = 0;
         if (training == null)
             return 0;
