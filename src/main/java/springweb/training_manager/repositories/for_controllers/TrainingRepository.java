@@ -22,6 +22,12 @@ public interface TrainingRepository extends DuplicationRepository<Training> {
 
     List<Training> findAllByIdIn(List<Integer> ids);
 
+    List<Training> findForUseByMostBodyPart(
+        String ownerId,
+        String bodyPart,
+        int bodyPartCount
+    );
+
     List<Training> findAll();
 
     Page<Training> findAll(Pageable pageable);

@@ -56,6 +56,30 @@ interface SqlTrainingRepository extends TrainingRepository,
     List<Training> findAllByIdIn(@Param("ids") List<Integer> ids);
 
     @Override
+    @Query(value = """
+            SELECT t.* 
+            FROM training t,
+                (
+                    SELECT ite.training_id as tId, COUNT(*) as bp_count
+                        FROM training_exercise ite, exercise e
+                        WHERE e.id = ite.exercise_id
+                            AND e.body_part = :bodyPart
+                            AND (
+                                e.owner_id IS NULL
+                                OR e.owner_id = :ownerId
+                            )
+                        GROUP BY ite.training_id
+                ) ct
+            WHERE t.id = ct.tId
+                AND ct.bp_count > :bodyPartCount
+        """, nativeQuery = true)
+    List<Training> findForUseByMostBodyPart(
+        @Param("ownerId") String ownerId,
+        @Param("bodyPart") String bodyPart,
+        @Param("bodyPartCount") int bodyPartCount
+    );
+
+    @Override
     @Query("""
         SELECT t FROM Training t 
             LEFT JOIN FETCH t.trainingExercises
