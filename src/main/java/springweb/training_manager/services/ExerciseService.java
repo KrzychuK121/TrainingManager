@@ -145,13 +145,8 @@ public class ExerciseService {
             return 0;
 
         var parametersRead = new ExerciseParametersRead(
-            exercise.getParametersId(),
-            exercise.getRounds(),
-            exercise.getRepetition(),
-            exercise.getWeights(),
-            exercise.getTime()
+            exercise.getExerciseParameters()
         );
-
         return ExerciseParametersService.calcTotalBurnedKcal(
             exercise.getDefaultBurnedKcal(),
             parametersRead
