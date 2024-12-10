@@ -81,7 +81,7 @@ public class WorkoutAssistantService {
         return toReturn;
     }
 
-    private Map<BodyPart, List<Training>> prepTrainingForUserGoal(
+    private Map<BodyPart, List<Training>> prepTrainingsForUserGoal(
         MuscleGrowWrite muscleGrowWrite,
         Map<BodyPart, List<Training>> bodyPartsTrainings
     ) {
@@ -101,7 +101,7 @@ public class WorkoutAssistantService {
         return kcalDiffAcceptable(kcalDifference, 50);
     }
 
-    private static LocalTime calcNewTrainingTime(
+    /*private static LocalTime calcNewTrainingTime(
         int newAmountCount,
         ExerciseParameters newParams,
         ExerciseParameters oldParams
@@ -116,13 +116,86 @@ public class WorkoutAssistantService {
         var oldTimeMinutes = oldParams.getTime()
             .toSecondOfDay() / 60;
         int newTimeMinutes = newTime.toSecondOfDay() / 60;
-        if (Math.abs(oldTimeMinutes / newTimeMinutes) < 0.5)
+        if (Math.abs(oldTimeMinutes / newTimeMinutes) < AcceptableRanges.TIME.LOWER_LIMIT)
             newTime = LocalTime.of(0, 0)
-                .plusMinutes((int) (oldTimeMinutes * 0.5));
-        else if (Math.abs(oldTimeMinutes / newTimeMinutes) > 1.5)
+                .plusMinutes((int) (oldTimeMinutes * AcceptableRanges.TIME.LOWER_LIMIT));
+        else if (Math.abs(oldTimeMinutes / newTimeMinutes) > AcceptableRanges.TIME.UPPER_LIMIT)
             newTime = LocalTime.of(0, 0)
-                .plusMinutes((int) (oldTimeMinutes * 1.5));
+                .plusMinutes((int) (oldTimeMinutes * AcceptableRanges.TIME.UPPER_LIMIT));
         return newTime;
+    }*/
+
+    private static boolean changeParametersByTime(
+        ExerciseParameters newParams,
+        boolean increase,
+        ExerciseParameters oldParams
+    ) {
+        var oldTime = newParams.getTime();
+
+        LocalTime newTime;
+        if (oldTime.getHour() == 0 && oldTime.getMinute() < 5) {
+            newTime = increase
+                ? oldTime.plusSeconds(30)
+                : oldTime.minusSeconds(30);
+        } else {
+            newTime = increase
+                ? oldTime.plusMinutes(1)
+                : oldTime.minusMinutes(1);
+        }
+
+        if (
+            newTime.toSecondOfDay() < (
+                oldTime.toSecondOfDay() * AcceptableRanges.TIME.LOWER_LIMIT
+            )
+        ) {
+            newTime = oldParams.getTime();
+            newParams.setRounds(newParams.getRounds() - 1);
+        } else if (
+            newTime.toSecondOfDay() > (
+                oldTime.toSecondOfDay() * AcceptableRanges.TIME.UPPER_LIMIT
+            )
+        ) {
+            newTime = oldParams.getTime();
+            newParams.setRounds(newParams.getRounds() + 1);
+        }
+
+        newParams.setTime(newTime);
+        if (
+            newParams.getRounds() == AcceptableRanges.ROUNDS.UPPER_LIMIT
+                && newTime.toSecondOfDay() == (
+                oldTime.toSecondOfDay() * AcceptableRanges.TIME.UPPER_LIMIT
+            )
+        )
+            return true;
+        return newParams.getRounds() == AcceptableRanges.ROUNDS.LOWER_LIMIT
+            && newTime.toSecondOfDay() == (
+            oldTime.toSecondOfDay() * AcceptableRanges.TIME.LOWER_LIMIT
+        );
+    }
+
+    private static boolean changeParametersByRepetition(
+        ExerciseParameters newParams,
+        boolean increase,
+        ExerciseParameters oldParams
+    ) {
+        var newRepetition = newParams.getRepetition() + (increase ? 1 : -1);
+        if (newRepetition < 6) {
+            newRepetition = oldParams.getRepetition();
+            newParams.setRounds(newParams.getRounds() - 1);
+        } else if (newRepetition > 30) {
+            newRepetition = oldParams.getRepetition();
+            newParams.setRounds(newParams.getRounds() + 1);
+        }
+
+        newParams.setRepetition(newRepetition);
+
+        if (
+            newParams.getRounds() == AcceptableRanges.ROUNDS.UPPER_LIMIT
+                && newRepetition == AcceptableRanges.REPETITIONS.UPPER_LIMIT
+        )
+            return true;
+        return newParams.getRounds() == AcceptableRanges.ROUNDS.LOWER_LIMIT
+            && newRepetition == AcceptableRanges.REPETITIONS.LOWER_LIMIT;
     }
 
     private ExerciseParameters calcParamsToTargetKcalForWeightRedu(
@@ -148,53 +221,42 @@ public class WorkoutAssistantService {
             oldParams.getTime()
         );
 
-        var roundBurnedKcal = ExerciseParametersService.calcBurnedKcalPerRound(
+        var targetCalories = ExerciseParametersService.calcTotalBurnedKcal(
             defaultBurnedKcal,
             new ExerciseParametersRead(oldParams)
-        );
-
-        if (Math.abs(kcalDifference) > roundBurnedKcal) {
-            int newRoundsCount = kcalDifference / roundBurnedKcal;
-            var newRounds = newParams.getRounds() + newRoundsCount;
+        ) + kcalDifference;
 
             if (newRounds < 1)
                 newRounds = 1;
             else if (newRounds > 5)
                 newRounds = 5;
+        var difference = targetCalories - ExerciseParametersService.calcTotalBurnedKcal(
+            defaultBurnedKcal,
+            new ExerciseParametersRead(newParams)
+        );
 
-            kcalDifference += -multiplier * roundBurnedKcal * newRoundsCount;
+        var repetitionExercise = newParams.getRepetition() != 0;
 
-            newParams.setRounds(newRounds);
-        }
-
-        if (kcalDiffAcceptable(kcalDifference, acceptableKcalDifference))
-            return newParams;
-
-        int newAmountCount = kcalDifference / defaultBurnedKcal;
-        if (newParams.getRepetition() != 0) {
-            var newRepetition = newParams.getRepetition() + newAmountCount;
-            if (newRepetition < 6)
-                newRepetition = 6;
-            else if (newRepetition > 30)
-                newRepetition = 30;
-
-            kcalDifference += (kcalDifference < 0 ? 1 : -1) * defaultBurnedKcal * newRepetition;
-
-            newParams.setRepetition(newRepetition);
-        } else {
-            var newTime = calcNewTrainingTime(
-                newAmountCount,
-                newParams,
-                oldParams
+        while (Math.abs(targetCalories - difference) > acceptableKcalDifference) {
+            var oldDifference = difference;
+            difference = targetCalories - ExerciseParametersService.calcTotalBurnedKcal(
+                defaultBurnedKcal,
+                new ExerciseParametersRead(newParams)
             );
+            // Checking if we can't match parameters to be in acceptable range.
+            if (
+                oldDifference * difference < 0
+                    && Math.abs(difference) > acceptableKcalDifference
+            )
+                break;
 
-            newParams.setTime(newTime);
+            var increase = difference > 0;
+            if (repetitionExercise) {
+                if (changeParametersByRepetition(newParams, increase, oldParams)) break;
+            } else {
+                if (changeParametersByTime(newParams, increase, oldParams)) break;
+            }
         }
-
-        if (kcalDiffAcceptable(kcalDifference, acceptableKcalDifference))
-            return newParams;
-
-        // TODO: Implement logic with weights
 
         return newParams;
     }
