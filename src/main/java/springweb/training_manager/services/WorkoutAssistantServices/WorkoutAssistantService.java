@@ -203,13 +203,6 @@ public class WorkoutAssistantService {
         int kcalDifference,
         int acceptableKcalDifference
     ) {
-        // rounds range 1-4
-        // reps range 6-30
-        // time 50% range
-        // weight 25% range
-        var multiplier = kcalDifference < 0
-            ? -1
-            : 1;
         var oldParams = trainingExercise.getParameters();
         var defaultBurnedKcal = trainingExercise.getExercise()
             .getDefaultBurnedKcal();
@@ -226,10 +219,6 @@ public class WorkoutAssistantService {
             new ExerciseParametersRead(oldParams)
         ) + kcalDifference;
 
-            if (newRounds < 1)
-                newRounds = 1;
-            else if (newRounds > 5)
-                newRounds = 5;
         var difference = targetCalories - ExerciseParametersService.calcTotalBurnedKcal(
             defaultBurnedKcal,
             new ExerciseParametersRead(newParams)
@@ -410,4 +399,26 @@ public class WorkoutAssistantService {
 enum WorkoutType {
     MUSCLE_GROW,
     WEIGHT_REDUCTION
+}
+
+// rounds range 1-4
+// reps range 6-30
+// time 50% range
+// weight 25% range
+enum AcceptableRanges {
+    ROUNDS(1, 4),
+    REPETITIONS(6, 30),
+    TIME(0.5f, 1.5f),
+    WEIGHT(0.25f, 1.25f);
+
+    final float LOWER_LIMIT;
+    final float UPPER_LIMIT;
+
+    AcceptableRanges(
+        float lowerLimit,
+        float upperLimit
+    ) {
+        this.LOWER_LIMIT = lowerLimit;
+        this.UPPER_LIMIT = upperLimit;
+    }
 }
