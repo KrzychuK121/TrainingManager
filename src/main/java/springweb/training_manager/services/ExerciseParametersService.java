@@ -41,6 +41,29 @@ public class ExerciseParametersService {
         int defaultBurnedKcal,
         ExerciseParametersRead parametersRead
     ) {
+        return calcTotalBurnedKcalForRounds(
+            parametersRead.getRounds(),
+            defaultBurnedKcal,
+            parametersRead
+        );
+    }
+
+    public static int calcBurnedKcalPerRound(
+        int defaultBurnedKcal,
+        ExerciseParametersRead parametersRead
+    ) {
+        return calcTotalBurnedKcalForRounds(
+            1,
+            defaultBurnedKcal,
+            parametersRead
+        );
+    }
+
+    private static int calcTotalBurnedKcalForRounds(
+        int rounds,
+        int defaultBurnedKcal,
+        ExerciseParametersRead parametersRead
+    ) {
         float amount = parametersRead.getRepetition() != 0
             ? parametersRead.getRepetition()
             : (float) parametersRead.getTime()
@@ -48,7 +71,7 @@ public class ExerciseParametersService {
         return (int) (
             Math.ceil(
                 defaultBurnedKcal
-                    * (amount * parametersRead.getRounds())
+                    * (amount * rounds)
                     * (1 + parametersRead.getWeights())
             )
         );
