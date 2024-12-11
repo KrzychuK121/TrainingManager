@@ -58,9 +58,8 @@ public class Training extends TrainingSchema {
     public void copy(Training toCopy) {
         this.title = toCopy.title;
         this.description = toCopy.description;
-        this.trainingExercises = toCopy.trainingExercises == null || toCopy.trainingExercises.isEmpty()
-            ? null
-            : toCopy.trainingExercises;
+        if (toCopy.trainingExercises != null)
+            this.trainingExercises = toCopy.trainingExercises;
         this.owner = toCopy.owner;
     }
 }
