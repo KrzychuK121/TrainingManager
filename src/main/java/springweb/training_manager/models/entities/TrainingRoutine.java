@@ -1,19 +1,19 @@
 package springweb.training_manager.models.entities;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import springweb.training_manager.models.schemas.TrainingRoutineSchema;
 
-@Setter
-@Getter
+import java.util.ArrayList;
+import java.util.List;
+
 @NoArgsConstructor
 @AllArgsConstructor
+@Setter
+@Getter
 @Entity
 @Table(name = "training_routine")
 public class TrainingRoutine extends TrainingRoutineSchema {
@@ -24,6 +24,9 @@ public class TrainingRoutine extends TrainingRoutineSchema {
         nullable = false
     )
     private User owner;
+
+    @OneToMany(mappedBy = "trainingRoutine")
+    private List<TrainingPlan> plans = new ArrayList<>();
 
     public void setId(int id) {
         this.id = id;
