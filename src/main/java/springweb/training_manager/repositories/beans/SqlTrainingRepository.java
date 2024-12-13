@@ -71,7 +71,7 @@ interface SqlTrainingRepository extends TrainingRepository,
                         GROUP BY ite.training_id
                 ) ct
             WHERE t.id = ct.tId
-                AND ct.bp_count > :bodyPartCount
+                AND ct.bp_count >= :bodyPartCount
         """, nativeQuery = true)
     List<Training> findForUseByMostBodyPart(
         @Param("ownerId") String ownerId,
