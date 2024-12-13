@@ -37,12 +37,12 @@ public class WorkoutAssistantAPI {
 
         log.info("validated data: {}", data);
         var user = UserService.getUserByAuth(auth);
-        service.planTrainingRoutine(
-            data,
-            user
-        );
 
-        return ResponseEntity.noContent()
-            .build();
+        return ResponseEntity.ok(
+            service.planTrainingRoutine(
+                data,
+                user
+            )
+        );
     }
 }

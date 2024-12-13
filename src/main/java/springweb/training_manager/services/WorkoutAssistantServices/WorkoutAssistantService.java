@@ -9,18 +9,17 @@ import springweb.training_manager.models.viewmodels.exercise_parameters.Exercise
 import springweb.training_manager.models.viewmodels.training.TrainingRead;
 import springweb.training_manager.models.viewmodels.validation.ValidationErrors;
 import springweb.training_manager.models.viewmodels.workout_assistant.MuscleGrowWrite;
+import springweb.training_manager.models.viewmodels.workout_assistant.PlannedRoutineRead;
 import springweb.training_manager.models.viewmodels.workout_assistant.WeightReductionWrite;
 import springweb.training_manager.models.viewmodels.workout_assistant.WorkoutAssistantWrite;
+import springweb.training_manager.repositories.for_controllers.ExerciseParametersRepository;
 import springweb.training_manager.repositories.for_controllers.TrainingRepository;
+import springweb.training_manager.repositories.for_controllers.TrainingScheduleRepository;
 import springweb.training_manager.services.ExerciseParametersService;
-import springweb.training_manager.services.TrainingPlanService;
 import springweb.training_manager.services.TrainingService;
 
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.*;
 
 @Service
@@ -28,7 +27,10 @@ import java.util.concurrent.*;
 @Slf4j
 public class WorkoutAssistantService {
     private final TrainingRepository trainingRepository;
-    private final TrainingPlanService trainingPlanService;
+    private final TrainingScheduleRepository trainingScheduleRepository;
+    private final ExerciseParametersRepository parametersRepository;
+
+    private static final Map<User, TrainingRoutine> plannedUsersRoutines = Collections.synchronizedMap(new HashMap<>());
 
     public ValidationErrors validateAndPrepare(
         WorkoutAssistantWrite workoutAssistantWrite,
@@ -48,17 +50,20 @@ public class WorkoutAssistantService {
         return null;
     }
 
-    private Map<BodyPart, List<Training>> getTrainingsForMuscleGrow(
+    private Map<BodyPart, List<Training>> getTrainingsForBodyParts(
         List<BodyPart> bodyParts,
+        int bodyPartCount,
         User loggedUser
     ) {
+        if (bodyParts == null || bodyParts.isEmpty())
+            return Collections.emptyMap();
         var toReturn = new HashMap<BodyPart, List<Training>>();
         bodyParts.forEach(
             bodyPart -> {
                 var trainings = trainingRepository.findForUseByMostBodyPart(
                     loggedUser.getId(),
                     bodyPart.name(),
-                    1
+                    bodyPartCount
                 );
 
                 toReturn.put(bodyPart, trainings);
@@ -68,20 +73,26 @@ public class WorkoutAssistantService {
         return toReturn;
     }
 
-    private Map<BodyPart, List<Training>> getTrainingsForCardio(User loggedUser) {
-        var trainings = trainingRepository.findForUseByMostBodyPart(
-            loggedUser.getId(),
-            BodyPart.CARDIO.name(),
-            1
+    private Map<BodyPart, List<Training>> getTrainingsForMuscleGrow(
+        List<BodyPart> bodyParts,
+        User loggedUser
+    ) {
+        return getTrainingsForBodyParts(
+            bodyParts,
+            3,
+            loggedUser
         );
-
-        var toReturn = new HashMap<BodyPart, List<Training>>();
-        toReturn.put(BodyPart.CARDIO, trainings);
-
-        return toReturn;
     }
 
-    private Map<BodyPart, List<Training>> prepTrainingsForUserGoal(
+    private Map<BodyPart, List<Training>> getTrainingsForCardio(User loggedUser) {
+        return getTrainingsForBodyParts(
+            List.of(BodyPart.CARDIO),
+            1,
+            loggedUser
+        );
+    }
+
+    private Map<BodyPart, List<Training>> prepTrainingForUserGoal(
         MuscleGrowWrite muscleGrowWrite,
         Map<BodyPart, List<Training>> bodyPartsTrainings
     ) {
@@ -95,36 +106,6 @@ public class WorkoutAssistantService {
         return Math.abs(kcalDifference) < acceptableDifference;
     }
 
-    private static boolean kcalDiffAcceptableForWeightRedu(
-        int kcalDifference
-    ) {
-        return kcalDiffAcceptable(kcalDifference, 50);
-    }
-
-    /*private static LocalTime calcNewTrainingTime(
-        int newAmountCount,
-        ExerciseParameters newParams,
-        ExerciseParameters oldParams
-    ) {
-        var increase = newAmountCount > 0;
-        var newTime = newParams.getTime();
-        if (increase)
-            newTime = newTime.plusMinutes(newAmountCount);
-        else
-            newTime = newTime.minusMinutes(newAmountCount);
-
-        var oldTimeMinutes = oldParams.getTime()
-            .toSecondOfDay() / 60;
-        int newTimeMinutes = newTime.toSecondOfDay() / 60;
-        if (Math.abs(oldTimeMinutes / newTimeMinutes) < AcceptableRanges.TIME.LOWER_LIMIT)
-            newTime = LocalTime.of(0, 0)
-                .plusMinutes((int) (oldTimeMinutes * AcceptableRanges.TIME.LOWER_LIMIT));
-        else if (Math.abs(oldTimeMinutes / newTimeMinutes) > AcceptableRanges.TIME.UPPER_LIMIT)
-            newTime = LocalTime.of(0, 0)
-                .plusMinutes((int) (oldTimeMinutes * AcceptableRanges.TIME.UPPER_LIMIT));
-        return newTime;
-    }*/
-
     private static boolean changeParametersByTime(
         ExerciseParameters newParams,
         boolean increase,
@@ -133,15 +114,14 @@ public class WorkoutAssistantService {
         var oldTime = newParams.getTime();
 
         LocalTime newTime;
-        if (oldTime.getHour() == 0 && oldTime.getMinute() < 5) {
+        if (oldTime.getHour() == 0 && oldTime.getMinute() < 5)
             newTime = increase
                 ? oldTime.plusSeconds(30)
                 : oldTime.minusSeconds(30);
-        } else {
+        else
             newTime = increase
                 ? oldTime.plusMinutes(1)
                 : oldTime.minusMinutes(1);
-        }
 
         if (
             newTime.toSecondOfDay() < (
@@ -198,7 +178,7 @@ public class WorkoutAssistantService {
             && newRepetition == AcceptableRanges.REPETITIONS.LOWER_LIMIT;
     }
 
-    private ExerciseParameters calcParamsToTargetKcalForWeightRedu(
+    private ExerciseParameters calcParamsForWeightRedu(
         TrainingExercise trainingExercise,
         int kcalDifference,
         int acceptableKcalDifference
@@ -219,19 +199,16 @@ public class WorkoutAssistantService {
             new ExerciseParametersRead(oldParams)
         ) + kcalDifference;
 
-        var difference = targetCalories - ExerciseParametersService.calcTotalBurnedKcal(
+        var currentBurnedKcal = ExerciseParametersService.calcTotalBurnedKcal(
             defaultBurnedKcal,
             new ExerciseParametersRead(newParams)
         );
+        var difference = targetCalories - currentBurnedKcal;
+        var oldDifference = difference;
 
         var repetitionExercise = newParams.getRepetition() != 0;
 
-        while (Math.abs(targetCalories - difference) > acceptableKcalDifference) {
-            var oldDifference = difference;
-            difference = targetCalories - ExerciseParametersService.calcTotalBurnedKcal(
-                defaultBurnedKcal,
-                new ExerciseParametersRead(newParams)
-            );
+        while (Math.abs(difference) > acceptableKcalDifference) {
             // Checking if we can't match parameters to be in acceptable range.
             if (
                 oldDifference * difference < 0
@@ -245,9 +222,54 @@ public class WorkoutAssistantService {
             } else {
                 if (changeParametersByTime(newParams, increase, oldParams)) break;
             }
+
+            oldDifference = difference;
+            currentBurnedKcal = ExerciseParametersService.calcTotalBurnedKcal(
+                defaultBurnedKcal,
+                new ExerciseParametersRead(newParams)
+            );
+            difference = targetCalories - currentBurnedKcal;
         }
 
-        return newParams;
+        return parametersRepository.findDuplication(newParams)
+            .orElse(newParams);
+    }
+
+    private TrainingExercise prepTrainingForWeightRedu(
+        TrainingExercise trainingExercise,
+        int kcalDifference,
+        int acceptableKcalDifference
+    ) {
+        var foundOrNewParams = calcParamsForWeightRedu(
+            trainingExercise,
+            kcalDifference,
+            acceptableKcalDifference
+        );
+
+        return new TrainingExercise(
+            trainingExercise.getTraining(),
+            trainingExercise.getExercise(),
+            foundOrNewParams
+        );
+    }
+
+    private ArrayList<Callable<TrainingExercise>> getCalcParamsThreadsForWeightRedu(
+        int kcalDifference,
+        List<TrainingExercise> trainingExercises
+    ) {
+        var prepThreads = new ArrayList<Callable<TrainingExercise>>();
+
+        var kcalDifferenceByExerciseAmount = kcalDifference / trainingExercises.size();
+        for (var trainingExercise : trainingExercises) {
+            prepThreads.add(
+                () -> prepTrainingForWeightRedu(
+                    trainingExercise,
+                    kcalDifferenceByExerciseAmount,
+                    (int) (Math.abs(kcalDifferenceByExerciseAmount) * 0.5)
+                )
+            );
+        }
+        return prepThreads;
     }
 
     private Training prepTrainingForUserGoal(
@@ -257,27 +279,19 @@ public class WorkoutAssistantService {
         var dailyKcalReduction = weightReductionWrite.getDailyKcalReduction();
         var totalKcalBurn = TrainingService.getTotalBurnedKcal(new TrainingRead(toPrepare));
         var kcalDifference = dailyKcalReduction - totalKcalBurn;
-        if (kcalDiffAcceptableForWeightRedu(kcalDifference))
+        if (kcalDiffAcceptable(kcalDifference, 50))
             return toPrepare;
 
-        var trainingExercises = toPrepare.getTrainingExercises();
-        ExecutorService executor = Executors.newFixedThreadPool(trainingExercises.size());
-        var prepThreads = new ArrayList<Callable<ExerciseParameters>>();
+        var copiedTraining = new Training();
+        copiedTraining.copy(toPrepare);
 
-        var kcalDifferenceByExerciseAmount = kcalDifference / trainingExercises.size();
-        for (var trainingExercise : trainingExercises) {
-            prepThreads.add(
-                () -> calcParamsToTargetKcalForWeightRedu(
-                    trainingExercise,
-                    kcalDifferenceByExerciseAmount,
-                    (int) (Math.abs(kcalDifferenceByExerciseAmount) * 0.1)
-                )
-            );
-        }
+        var trainingExercises = copiedTraining.getTrainingExercises();
+        ExecutorService executor = Executors.newFixedThreadPool(trainingExercises.size());
+        var prepThreads = getCalcParamsThreadsForWeightRedu(kcalDifference, trainingExercises);
 
         try {
-            List<Future<ExerciseParameters>> futurePrepExercises = executor.invokeAll(prepThreads);
-            List<ExerciseParameters> prepExerciseList = futurePrepExercises.stream()
+            List<Future<TrainingExercise>> futurePrepExercises = executor.invokeAll(prepThreads);
+            List<TrainingExercise> prepTrainingExercises = futurePrepExercises.stream()
                 .map(
                     future -> {
                         try {
@@ -288,13 +302,14 @@ public class WorkoutAssistantService {
                     }
                 )
                 .toList();
+
+            copiedTraining.setTrainingExercises(prepTrainingExercises);
+            return copiedTraining;
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         } finally {
             executor.shutdown();
         }
-
-        return toPrepare;
     }
 
     private Map<BodyPart, List<Training>> prepTrainingForUserGoal(
@@ -332,6 +347,13 @@ public class WorkoutAssistantService {
         return weekdays[nextWeekdaysIndex];
     }
 
+    private static LocalTime getTimeInRange(WorkoutAssistantWrite workoutAssistantWrite) {
+        var earliestTime = workoutAssistantWrite.getEarliestTrainingStart();
+        var latestTime = workoutAssistantWrite.getLatestTrainingStart();
+
+        return earliestTime;
+    }
+
     private List<TrainingSchedule> planSchedules(
         WorkoutAssistantWrite workoutAssistantWrite,
         Map<BodyPart, List<Training>> bodyPartsTrainings
@@ -353,21 +375,20 @@ public class WorkoutAssistantService {
             var nextDay = getNextWeekday(i);
 
             var newSchedule = new TrainingSchedule(
-                nextTraining.getId(),
+                nextTraining,
                 nextDay
             );
 
             schedules.add(
-                trainingPlanService.prepTrainingSchedule(
-                    newSchedule
-                )
+                trainingScheduleRepository.findDuplication(newSchedule)
+                    .orElse(newSchedule)
             );
         }
 
         return schedules;
     }
 
-    public void planTrainingRoutine(
+    public PlannedRoutineRead planTrainingRoutine(
         WorkoutAssistantWrite workoutAssistantWrite,
         User loggedUser
     ) {
@@ -389,10 +410,27 @@ public class WorkoutAssistantService {
             trainings
         );
 
-        /*var schedules = planSchedules(
+        var schedules = planSchedules(
             workoutAssistantWrite,
             trainings
-        );*/
+        );
+
+        var newRoutine = new TrainingRoutine();
+        newRoutine.setOwner(loggedUser);
+
+        var plans = schedules.stream()
+            .map(
+                schedule -> new TrainingPlan(
+                    newRoutine,
+                    schedule,
+                    getTimeInRange(workoutAssistantWrite)
+                )
+            )
+            .toList();
+        newRoutine.setPlans(plans);
+
+        plannedUsersRoutines.put(loggedUser, newRoutine);
+        return new PlannedRoutineRead(plans);
     }
 }
 
