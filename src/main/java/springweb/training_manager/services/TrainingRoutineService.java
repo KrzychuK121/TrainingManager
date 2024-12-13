@@ -63,7 +63,7 @@ public class TrainingRoutineService {
     }
 
     public TrainingRoutine createNewByUser(User user) {
-        var routine = new TrainingRoutine(user);
+        var routine = new TrainingRoutine(user, List.of());
         return createNew(routine);
     }
 
