@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import springweb.training_manager.models.entities.TrainingPlan;
 import springweb.training_manager.models.entities.Weekdays;
+import springweb.training_manager.models.viewmodels.enums.WeekdayRead;
 
 import java.util.List;
 import java.util.Map;
@@ -13,6 +14,7 @@ import java.util.stream.Collectors;
 @Getter
 public class PlannedRoutineRead {
     private Map<Weekdays, PlannedTrainingRead> schedules;
+    private List<WeekdayRead> weekdaysData = WeekdayRead.getWeekdaysRead();
 
     public PlannedRoutineRead(List<TrainingPlan> plans) {
         schedules = plans.stream()
@@ -22,7 +24,8 @@ public class PlannedRoutineRead {
                         .getWeekday(),
                     plan -> new PlannedTrainingRead(
                         plan.getTrainingSchedule()
-                            .getTraining()
+                            .getTraining(),
+                        plan.getTrainingTime()
                     )
                 )
             );
