@@ -32,6 +32,16 @@ public class WorkoutAssistantService {
 
     private static final Map<User, TrainingRoutine> plannedUsersRoutines = Collections.synchronizedMap(new HashMap<>());
 
+    public void savePlannedRoutine(User user) {
+        var retrieved = plannedUsersRoutines.get(user);
+        if (retrieved == null)
+            throw new IllegalStateException(
+                "User " + user.getUsername() + " does not have planned routine yet."
+            );
+
+        // TODO: Implement logic to save whole routine data if missing in database
+    }
+
     public ValidationErrors validateAndPrepare(
         WorkoutAssistantWrite workoutAssistantWrite,
         BindingResult result
