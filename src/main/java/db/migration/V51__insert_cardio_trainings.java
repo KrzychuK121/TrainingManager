@@ -96,7 +96,7 @@ public class V51__insert_cardio_trainings extends BaseJavaMigration {
             int cyclingExerciseId = insertExercise(
                 insertExerciseStmt,
                 new Exercise_V51(
-                    "Jazda na rowerze,zwykłym bądź stacjonarnym",
+                    "Jazda na rowerze, zwykłym bądź stacjonarnym",
                     "Jazda na rowerze",
                     BodyPart.CARDIO,
                     cyclingParamsId,
