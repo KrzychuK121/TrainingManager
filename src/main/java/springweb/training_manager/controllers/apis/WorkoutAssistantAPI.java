@@ -23,7 +23,7 @@ import springweb.training_manager.services.WorkoutAssistantServices.WorkoutAssis
 public class WorkoutAssistantAPI {
     private final WorkoutAssistantService service;
 
-    @PostMapping
+    @PostMapping("/create-plan") // Create and don't save in database
     @ResponseBody
     public ResponseEntity<?> planTraining(
         @RequestBody @Valid WorkoutAssistantWrite data,
@@ -44,5 +44,21 @@ public class WorkoutAssistantAPI {
                 user
             )
         );
+    }
+
+    @PostMapping("/save-plan") // Save created in database
+    @ResponseBody
+    public ResponseEntity<?> getPlannedRoutine(
+        Authentication auth
+    ) {
+        var loggedUser = UserService.getUserByAuth(auth);
+        try {
+            service.savePlannedRoutine(loggedUser);
+            return ResponseEntity.noContent()
+                .build();
+        } catch (IllegalStateException ex) {
+            return ResponseEntity.notFound()
+                .build();
+        }
     }
 }
