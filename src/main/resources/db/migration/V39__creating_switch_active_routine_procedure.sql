@@ -1,4 +1,6 @@
-create procedure switch_active_procedure(IN routine_id_to_switch integer, IN owner_id varchar)
+DROP PROCEDURE IF EXISTS switch_active_procedure;
+create procedure switch_active_procedure(IN routine_id_to_switch integer,
+                                         IN owner_id varchar)
     language plpgsql
 as
 $$
