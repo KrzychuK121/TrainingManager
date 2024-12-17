@@ -20,4 +20,10 @@ public class WorkoutAssistantWrite {
     private LocalTime earliestTrainingStart;
     @NotNull
     private LocalTime latestTrainingStart;
+
+    public WorkoutType getWorkoutType() {
+        return getMuscleGrow() != null
+            ? WorkoutType.MUSCLE_GROW
+            : WorkoutType.WEIGHT_REDUCTION;
+    }
 }
