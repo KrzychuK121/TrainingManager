@@ -402,9 +402,7 @@ public class WorkoutAssistantService {
         WorkoutAssistantWrite workoutAssistantWrite,
         User loggedUser
     ) {
-        var workoutType = workoutAssistantWrite.getMuscleGrow() != null
-            ? WorkoutType.MUSCLE_GROW
-            : WorkoutType.WEIGHT_REDUCTION;
+        var workoutType = workoutAssistantWrite.getWorkoutType();
 
         Map<BodyPart, List<Training>> trainings = workoutType == WorkoutType.MUSCLE_GROW
             ? getTrainingsForMuscleGrow(List.of(), loggedUser)
@@ -442,11 +440,6 @@ public class WorkoutAssistantService {
         plannedUsersRoutines.put(loggedUser, newRoutine);
         return new PlannedRoutineRead(plans);
     }
-}
-
-enum WorkoutType {
-    MUSCLE_GROW,
-    WEIGHT_REDUCTION
 }
 
 // rounds range 1-4
