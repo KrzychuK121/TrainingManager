@@ -5,8 +5,10 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.validator.constraints.Range;
+import springweb.training_manager.models.entities.BodyPart;
 
 import java.time.LocalTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -20,6 +22,7 @@ public class WorkoutAssistantWrite {
     private LocalTime earliestTrainingStart;
     @NotNull
     private LocalTime latestTrainingStart;
+    private List<BodyPart> bodyParts = List.of();
 
     public WorkoutType getWorkoutType() {
         return getMuscleGrow() != null

@@ -11,6 +11,9 @@ import org.springframework.web.bind.annotation.*;
 import springweb.training_manager.models.viewmodels.workout_assistant.WorkoutAssistantWrite;
 import springweb.training_manager.services.UserService;
 import springweb.training_manager.services.WorkoutAssistantServices.WorkoutAssistantService;
+import springweb.training_manager.services.WorkoutAssistantServices.WorkoutAssistantTypedServices.WAMuscleGrowService;
+import springweb.training_manager.services.WorkoutAssistantServices.WorkoutAssistantTypedServices.WATypedBase;
+import springweb.training_manager.services.WorkoutAssistantServices.WorkoutAssistantTypedServices.WAWeightReductionService;
 
 @RestController
 @RequiredArgsConstructor
@@ -22,6 +25,22 @@ import springweb.training_manager.services.WorkoutAssistantServices.WorkoutAssis
 @Slf4j
 public class WorkoutAssistantAPI {
     private final WorkoutAssistantService service;
+
+    private final WAMuscleGrowService muscleGrowService;
+    private final WAWeightReductionService weightReductionService;
+
+    private WATypedBase getWATypedService(WorkoutAssistantWrite data) {
+        switch (data.getWorkoutType()) {
+            case WEIGHT_REDUCTION -> {
+                return weightReductionService;
+            }
+            case MUSCLE_GROW -> {
+                return muscleGrowService;
+            }
+        }
+        log.error("WorkoutAssistantWrite data is incorrect. Can't decide which service to choose.");
+        throw new IllegalStateException("WorkoutAssistantWrite data is incorrect. Can't decide which service to choose.");
+    }
 
     @PostMapping("/create-plan") // Create and don't save in database
     @ResponseBody
@@ -35,12 +54,11 @@ public class WorkoutAssistantAPI {
             return ResponseEntity.badRequest()
                 .body(validationErrors.getErrors());
 
-        log.info("validated data: {}", data);
         var user = UserService.getUserByAuth(auth);
-
         return ResponseEntity.ok(
             service.planTrainingRoutine(
                 data,
+                getWATypedService(data),
                 user
             )
         );
