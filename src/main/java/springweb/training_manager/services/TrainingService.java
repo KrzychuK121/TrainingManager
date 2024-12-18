@@ -10,6 +10,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import springweb.training_manager.exceptions.NotOwnedByUserException;
 import springweb.training_manager.models.entities.Exercise;
 import springweb.training_manager.models.entities.ExerciseParameters;
@@ -176,6 +177,18 @@ public class TrainingService {
     ) {
         var toSave = data.getToSave();
         var selectedExercises = data.getSelectedExercises();
+
+        if (
+            toSave.getTitle()
+                .contains("#")
+        )
+            result.addError(
+                new FieldError(
+                    "toSave",
+                    "title",
+                    "Tytuł nie może posiadać znaku specjalnego #"
+                )
+            );
 
         if (result.hasErrors()) {
             var validation = ValidationErrors.createFrom(result, "toSave.");
