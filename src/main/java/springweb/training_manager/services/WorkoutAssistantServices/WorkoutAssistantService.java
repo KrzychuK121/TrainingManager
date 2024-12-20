@@ -174,7 +174,11 @@ public class WorkoutAssistantService {
         var earliestTime = workoutAssistantWrite.getEarliestTrainingStart();
         var latestTime = workoutAssistantWrite.getLatestTrainingStart();
 
-        return earliestTime;
+        var earliestSec = earliestTime.toSecondOfDay();
+        var latestSec = latestTime.toSecondOfDay();
+        var middleTimeInSeconds = (earliestSec + latestSec) / 2;
+
+        return LocalTime.ofSecondOfDay(middleTimeInSeconds);
     }
 
     private List<TrainingSchedule> planSchedules(
