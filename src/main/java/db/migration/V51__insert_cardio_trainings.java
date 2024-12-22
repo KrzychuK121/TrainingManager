@@ -7,176 +7,203 @@ import org.flywaydb.core.api.migration.Context;
 import springweb.training_manager.models.entities.BodyPart;
 
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Time;
 import java.time.LocalTime;
+import java.util.Arrays;
+import java.util.List;
 
 @Slf4j
 public class V51__insert_cardio_trainings extends BaseJavaMigration {
     @Override
     public void migrate(Context context) throws Exception {
-        try (PreparedStatement insertTrainingStmt = context.getConnection()
-            .prepareStatement(
-                "INSERT INTO training (description, title, owner_id) VALUES (?, ?, ?)",
-                PreparedStatement.RETURN_GENERATED_KEYS
-            );
-             PreparedStatement insertParamsStmt = context.getConnection()
-                 .prepareStatement(
-                     "INSERT INTO exercise_parameters (repetition, rounds, time, weights) VALUES (?, ?, ?, ?)",
-                     PreparedStatement.RETURN_GENERATED_KEYS
-                 );
-             PreparedStatement insertExerciseStmt = context.getConnection()
-                 .prepareStatement(
-                     "INSERT INTO exercise (description, name, body_part, parameters_id, default_burned_kcal, owner_id) VALUES (?, ?, ?, ?, ?, ?)",
-                     PreparedStatement.RETURN_GENERATED_KEYS
-                 );
-             PreparedStatement insertTrainingExerciseStmt = context.getConnection()
-                 .prepareStatement(
-                     "INSERT INTO training_exercise (training_id, exercise_id, parameters_id) VALUES (?, ?, ?)"
-                 )
-        ) {
-
-            int training1Id = insertTraining(
-                insertTrainingStmt,
-                new Training_V51(
-                    "Trening polegający tylko na biegu",
-                    "Bieganie",
+        var runWorkout = new WholeTrainingData_V51(
+            new Training_V51(
+                "Trening polegający tylko na biegu",
+                "Bieganie",
+                null
+            ),
+            new WholeExerciseData_V51(
+                new Exercise_V51(
+                    "Spokojny bieg",
+                    "Bieg",
+                    BodyPart.CARDIO,
+                    10,
                     null
-                )
-            );
-
-            int runParamsId = insertExerciseParameters(
-                insertParamsStmt,
+                ),
                 new ExerciseParameters_V51(
                     0,
                     1,
                     "00:50:00",
                     0
                 )
-            );
-            int runExerciseId = insertExercise(
-                insertExerciseStmt,
+            )
+        );
+        var fewTrainingWorkout = new WholeTrainingData_V51(
+            new Training_V51(
+                "Intensywny trening do wykonania na siłowni",
+                "Trening aerobowy",
+                null
+            ),
+            new WholeExerciseData_V51(
                 new Exercise_V51(
-                    "Spokojny bieg",
-                    "Bieg",
+                    "Jazda na rowerze, zwykłym bądź stacjonarnym",
+                    "Jazda na rowerze",
                     BodyPart.CARDIO,
-                    runParamsId,
-                    10,
+                    8,
                     null
-                )
-            );
-
-            insertTrainingExercise(
-                insertTrainingExerciseStmt,
-                new TrainingExercise_V51(
-                    training1Id,
-                    runExerciseId,
-                    runParamsId
-                )
-            );
-
-            int training2Id = insertTraining(
-                insertTrainingStmt,
-                new Training_V51(
-                    "Intensywny trening do wykonania na siłowni",
-                    "Trening aerobowy",
-                    null
-                )
-            );
-
-            int cyclingParamsId = insertExerciseParameters(
-                insertParamsStmt,
+                ),
                 new ExerciseParameters_V51(
                     0,
                     1,
                     "00:25:00",
                     0
                 )
-            );
-            int cyclingExerciseId = insertExercise(
-                insertExerciseStmt,
+            ),
+            new WholeExerciseData_V51(
                 new Exercise_V51(
-                    "Jazda na rowerze, zwykłym bądź stacjonarnym",
-                    "Jazda na rowerze",
+                    "Klasyczne skakanie na skakance normalnym tempem",
+                    "Skakanka",
                     BodyPart.CARDIO,
-                    cyclingParamsId,
-                    8,
+                    12,
                     null
-                )
-            );
-
-            int jumpRopeParamsId = insertExerciseParameters(
-                insertParamsStmt,
+                ),
                 new ExerciseParameters_V51(
                     0,
                     2,
                     "00:10:00",
                     0
                 )
-            );
-            int jumpRopeExerciseId = insertExercise(
-                insertExerciseStmt,
+            ),
+            new WholeExerciseData_V51(
                 new Exercise_V51(
-                    "Klasyczne skakanie na skakance normalnym tempem",
-                    "Skakanka",
+                    "Wiosłowanie z wykorzystaniem maszyny",
+                    "Wiosłowanie",
                     BodyPart.CARDIO,
-                    jumpRopeParamsId,
-                    12,
+                    10,
                     null
-                )
-            );
-
-            int rowingParamsId = insertExerciseParameters(
-                insertParamsStmt,
+                ),
                 new ExerciseParameters_V51(
                     0,
                     3,
                     "00:02:00",
                     5
                 )
-            );
-            int rowingExerciseId = insertExercise(
-                insertExerciseStmt,
-                new Exercise_V51(
-                    "Wiosłowanie z wykorzystaniem maszyny",
-                    "Wiosłowanie",
-                    BodyPart.CARDIO,
-                    rowingParamsId,
-                    10,
-                    null
-                )
-            );
+            )
+        );
 
-            insertTrainingExercise(
-                insertTrainingExerciseStmt,
-                new TrainingExercise_V51(
-                    training2Id,
-                    cyclingExerciseId,
-                    cyclingParamsId
-                )
-            );
+        insertWholeTrainingData(
+            context,
+            runWorkout,
+            fewTrainingWorkout
+        );
+    }
 
-            insertTrainingExercise(
-                insertTrainingExerciseStmt,
-                new TrainingExercise_V51(
-                    training2Id,
-                    jumpRopeExerciseId,
-                    jumpRopeParamsId
+    static void insertWholeTrainingData(
+        Context context,
+        WholeTrainingData_V51... wholeTrainingsData
+    ) throws SQLException {
+        try (
+            PreparedStatement insertTrainingStmt = context.getConnection()
+                .prepareStatement(
+                    "INSERT INTO training (description, title, owner_id) VALUES (?, ?, ?)",
+                    PreparedStatement.RETURN_GENERATED_KEYS
+                );
+            PreparedStatement selectParamsStmt = context.getConnection()
+                .prepareStatement(
+                    "SELECT ep.id FROM exercise_parameters ep " +
+                        "WHERE ep.rounds = ? " +
+                        "AND ep.repetition =  ? " +
+                        "AND NULLIF(ep.time, ?) IS NULL " +
+                        "AND ep.weights = ?"
+                );
+            PreparedStatement insertParamsStmt = context.getConnection()
+                .prepareStatement(
+                    "INSERT INTO exercise_parameters (repetition, rounds, time, weights) VALUES (?, ?, ?, ?)",
+                    PreparedStatement.RETURN_GENERATED_KEYS
+                );
+            PreparedStatement insertExerciseStmt = context.getConnection()
+                .prepareStatement(
+                    "INSERT INTO exercise (description, name, body_part, parameters_id, default_burned_kcal, owner_id) VALUES (?, ?, ?, ?, ?, ?)",
+                    PreparedStatement.RETURN_GENERATED_KEYS
+                );
+            PreparedStatement insertTrainingExerciseStmt = context.getConnection()
+                .prepareStatement(
+                    "INSERT INTO training_exercise (training_id, exercise_id, parameters_id) VALUES (?, ?, ?)"
                 )
-            );
-
-            insertTrainingExercise(
-                insertTrainingExerciseStmt,
-                new TrainingExercise_V51(
-                    training2Id,
-                    rowingExerciseId,
-                    rowingParamsId
-                )
-            );
+        ) {
+            Arrays.stream(wholeTrainingsData)
+                .forEach(
+                    wholeTrainingData -> {
+                        try {
+                            insertWholeTrainingData(
+                                wholeTrainingData,
+                                insertTrainingStmt,
+                                selectParamsStmt,
+                                insertParamsStmt,
+                                insertExerciseStmt,
+                                insertTrainingExerciseStmt
+                            );
+                        } catch (SQLException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                );
         }
     }
 
-    private int insertTraining(
+    private static void insertWholeTrainingData(
+        WholeTrainingData_V51 wholeTrainingData,
+        PreparedStatement insertTrainingStmt,
+        PreparedStatement selectParamsStmt,
+        PreparedStatement insertParamsStmt,
+        PreparedStatement insertExerciseStmt,
+        PreparedStatement insertTrainingExerciseStmt
+    ) throws SQLException {
+        var wholeExercisesData = wholeTrainingData.exercises;
+        var newTrainingId = insertTraining(
+            insertTrainingStmt,
+            wholeTrainingData.training
+        );
+
+        wholeExercisesData.forEach(
+            exerciseData -> {
+                try {
+                    var parametersId = selectExerciseParameters(
+                        selectParamsStmt,
+                        exerciseData.parameters
+                    );
+
+                    if (parametersId == 0)
+                        parametersId = insertExerciseParameters(
+                            insertParamsStmt,
+                            exerciseData.parameters
+                        );
+
+                    var exerciseToSave = exerciseData.exercise;
+                    exerciseToSave.parametersId = parametersId;
+
+                    var newExerciseId = insertExercise(
+                        insertExerciseStmt,
+                        exerciseToSave
+                    );
+                    insertTrainingExercise(
+                        insertTrainingExerciseStmt,
+                        new TrainingExercise_V51(
+                            newTrainingId,
+                            newExerciseId,
+                            parametersId
+                        )
+                    );
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        );
+    }
+
+    private static int insertTraining(
         PreparedStatement statement,
         Training_V51 training
     ) throws SQLException {
@@ -187,7 +214,32 @@ public class V51__insert_cardio_trainings extends BaseJavaMigration {
         return getGeneratedId(statement);
     }
 
-    private int insertExerciseParameters(
+    private static int selectExerciseParameters(
+        PreparedStatement statement,
+        ExerciseParameters_V51 parameters
+    ) throws SQLException {
+        statement.setInt(1, parameters.rounds);
+        statement.setInt(2, parameters.repetition);
+        if (parameters.time != null) {
+            statement.setTime(
+                3,
+                Time.valueOf(
+                    LocalTime.parse(parameters.time)
+                )
+            );
+        } else {
+            statement.setNull(3, java.sql.Types.TIME);
+        }
+        statement.setInt(4, parameters.weights);
+
+        ResultSet response = statement.executeQuery();
+
+        return response.next()
+            ? response.getInt("id")
+            : 0;
+    }
+
+    private static int insertExerciseParameters(
         PreparedStatement statement,
         ExerciseParameters_V51 parameters
     ) throws SQLException {
@@ -208,7 +260,7 @@ public class V51__insert_cardio_trainings extends BaseJavaMigration {
         return getGeneratedId(statement);
     }
 
-    private void insertTrainingExercise(
+    private static void insertTrainingExercise(
         PreparedStatement statement,
         TrainingExercise_V51 trainingExercise
     ) throws SQLException {
@@ -218,7 +270,7 @@ public class V51__insert_cardio_trainings extends BaseJavaMigration {
         statement.executeUpdate();
     }
 
-    private int insertExercise(
+    private static int insertExercise(
         PreparedStatement statement,
         Exercise_V51 exercise
     ) throws SQLException {
@@ -232,7 +284,7 @@ public class V51__insert_cardio_trainings extends BaseJavaMigration {
         return getGeneratedId(statement);
     }
 
-    private int getGeneratedId(PreparedStatement statement) throws SQLException {
+    private static int getGeneratedId(PreparedStatement statement) throws SQLException {
         try (var generatedKeys = statement.getGeneratedKeys()) {
             if (generatedKeys.next()) {
                 return generatedKeys.getInt(1);
@@ -244,24 +296,6 @@ public class V51__insert_cardio_trainings extends BaseJavaMigration {
 }
 
 @AllArgsConstructor
-class Exercise_V51 {
-    String description;
-    String name;
-    BodyPart bodyPart;
-    int parametersId;
-    int defaultBurnedKcal;
-    String ownerId;
-}
-
-@AllArgsConstructor
-class ExerciseParameters_V51 {
-    int repetition;
-    int rounds;
-    String time; // Stored as `TIME` in DB, use `String` for simplicity
-    int weights;
-}
-
-@AllArgsConstructor
 class Training_V51 {
     String description;
     String title;
@@ -269,8 +303,64 @@ class Training_V51 {
 }
 
 @AllArgsConstructor
+class Exercise_V51 {
+    String description;
+    String name;
+    BodyPart bodyPart;
+    int parametersId;
+    int defaultBurnedKcal;
+    String ownerId;
+
+    public Exercise_V51(
+        String description,
+        String name,
+        BodyPart bodyPart,
+        int defaultBurnedKcal,
+        String ownerId
+    ) {
+        this(
+            description,
+            name,
+            bodyPart,
+            0,
+            defaultBurnedKcal,
+            ownerId
+        );
+    }
+}
+
+@AllArgsConstructor
+class ExerciseParameters_V51 {
+    int repetition;
+    int rounds;
+    String time;
+    int weights;
+}
+
+@AllArgsConstructor
 class TrainingExercise_V51 {
     int trainingId;
     int exerciseId;
     int parametersId;
+}
+
+@AllArgsConstructor
+class WholeExerciseData_V51 {
+    Exercise_V51 exercise;
+    ExerciseParameters_V51 parameters;
+}
+
+@AllArgsConstructor
+class WholeTrainingData_V51 {
+    Training_V51 training;
+    List<WholeExerciseData_V51> exercises;
+
+    public WholeTrainingData_V51(
+        Training_V51 training,
+        WholeExerciseData_V51... exercises
+    ) {
+        this.training = training;
+        this.exercises = Arrays.asList(exercises);
+    }
+
 }
