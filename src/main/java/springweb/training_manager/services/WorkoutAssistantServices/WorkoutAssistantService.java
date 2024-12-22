@@ -139,8 +139,22 @@ public class WorkoutAssistantService {
 
         var earliest = workoutAssistantWrite.getEarliestTrainingStart();
         var latest = workoutAssistantWrite.getLatestTrainingStart();
+        LocalTime defaultTime = null;
 
-        if (earliest.isAfter(latest)) {
+        if (earliest == null && latest == null) {
+            Random random = new Random();
+            var hourIncrementer = random.nextInt(4);
+            defaultTime = LocalTime.of(16 + hourIncrementer, 0);
+        } else if (earliest == null) {
+            defaultTime = latest;
+        } else if (latest == null) {
+            defaultTime = earliest;
+        }
+
+        if (defaultTime != null) {
+            workoutAssistantWrite.setEarliestTrainingStart(defaultTime);
+            workoutAssistantWrite.setLatestTrainingStart(defaultTime);
+        } else if (earliest.isAfter(latest)) {
             workoutAssistantWrite.setEarliestTrainingStart(latest);
             workoutAssistantWrite.setLatestTrainingStart(earliest);
         }
