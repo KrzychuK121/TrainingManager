@@ -2,11 +2,12 @@ package springweb.training_manager.models.viewmodels.workout_assistant;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
+import springweb.training_manager.models.entities.BodyPart;
+
+import java.util.Map;
 
 @Getter
 @Setter
-@ToString
 public class MuscleGrowWrite {
-    private String muscle;
+    private Map<BodyPart, BodyPartWorkoutStatistics> bodyPartWorkoutStatistics;
 }
