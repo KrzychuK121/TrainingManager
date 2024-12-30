@@ -9,7 +9,6 @@ import springweb.training_manager.repositories.for_controllers.ExerciseParameter
 import springweb.training_manager.repositories.for_controllers.TrainingRepository;
 import springweb.training_manager.services.ExerciseParametersService;
 import springweb.training_manager.services.TrainingService;
-import springweb.training_manager.services.WorkoutAssistantServices.AcceptableRanges;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -41,83 +40,85 @@ public class WAWeightReductionService extends WATypedBase {
         );
     }
 
-    private static boolean kcalDiffAcceptable(
-        int kcalDifference,
-        int acceptableDifference
-    ) {
-        return Math.abs(kcalDifference) < acceptableDifference;
+    @Override
+    float getLowerLimit(AcceptableRanges ranges) {
+        return switch (ranges) {
+            case ROUNDS -> 1;
+            case REPETITIONS -> 6;
+            case TIME -> 0.5f;
+            case WEIGHT -> 0.25f;
+        };
     }
 
-    private static boolean changeParametersByTime(
+    @Override
+    float getUpperLimit(AcceptableRanges ranges) {
+        return switch (ranges) {
+            case ROUNDS -> 4;
+            case REPETITIONS -> 30;
+            case TIME -> getLowerLimit(AcceptableRanges.TIME) + 1f;
+            case WEIGHT -> getLowerLimit(AcceptableRanges.WEIGHT) + 1f;
+        };
+    }
+
+    protected boolean changeParametersByTime(
         ExerciseParameters newParams,
         boolean increase,
         ExerciseParameters oldParams
     ) {
-        var oldTime = newParams.getTime();
-
-        LocalTime newTime;
-        if (oldTime.getHour() == 0 && oldTime.getMinute() < 5)
-            newTime = increase
-                ? oldTime.plusSeconds(30)
-                : oldTime.minusSeconds(30);
-        else
-            newTime = increase
-                ? oldTime.plusMinutes(1)
-                : oldTime.minusMinutes(1);
-
-        if (
-            newTime.toSecondOfDay() < (
-                oldTime.toSecondOfDay() * AcceptableRanges.TIME.LOWER_LIMIT
-            )
-        ) {
-            newTime = oldParams.getTime();
-            newParams.setRounds(newParams.getRounds() - 1);
-        } else if (
-            newTime.toSecondOfDay() > (
-                oldTime.toSecondOfDay() * AcceptableRanges.TIME.UPPER_LIMIT
-            )
-        ) {
-            newTime = oldParams.getTime();
-            newParams.setRounds(newParams.getRounds() + 1);
-        }
-
-        newParams.setTime(newTime);
-        if (
-            newParams.getRounds() == AcceptableRanges.ROUNDS.UPPER_LIMIT
-                && newTime.toSecondOfDay() == (
-                oldTime.toSecondOfDay() * AcceptableRanges.TIME.UPPER_LIMIT
-            )
-        )
-            return true;
-        return newParams.getRounds() == AcceptableRanges.ROUNDS.LOWER_LIMIT
-            && newTime.toSecondOfDay() == (
-            oldTime.toSecondOfDay() * AcceptableRanges.TIME.LOWER_LIMIT
+        var oldTime = oldParams.getTime();
+        var timeOutOfBounds = changeTimeParameters(
+            newParams,
+            increase,
+            oldParams,
+            oldTime
         );
+        if (!timeOutOfBounds)
+            return false;
+
+        var roundsOutOfBounds = changeRoundsParameters(
+            newParams,
+            increase
+        );
+
+        if (!roundsOutOfBounds)
+            return false;
+
+        var limit = increase
+            ? getUpperLimit(AcceptableRanges.TIME)
+            : getLowerLimit(AcceptableRanges.TIME);
+
+        var newTimeSeconds = oldTime.toSecondOfDay() * limit;
+        newParams.setTime(LocalTime.ofSecondOfDay((long) newTimeSeconds));
+        return true;
     }
 
-    private static boolean changeParametersByRepetition(
+    protected boolean changeParametersByRepetition(
         ExerciseParameters newParams,
         boolean increase,
         ExerciseParameters oldParams
     ) {
-        var newRepetition = newParams.getRepetition() + (increase ? 1 : -1);
-        if (newRepetition < 6) {
-            newRepetition = oldParams.getRepetition();
-            newParams.setRounds(newParams.getRounds() - 1);
-        } else if (newRepetition > 30) {
-            newRepetition = oldParams.getRepetition();
-            newParams.setRounds(newParams.getRounds() + 1);
-        }
+        var oldRepetitions = oldParams.getRepetition();
+        var repetitionOutOfBounds = changeRepetitionParameters(
+            newParams,
+            increase,
+            oldRepetitions
+        );
+        if (!repetitionOutOfBounds)
+            return false;
 
-        newParams.setRepetition(newRepetition);
+        var roundsOutOfBounds = changeRoundsParameters(
+            newParams,
+            increase
+        );
 
-        if (
-            newParams.getRounds() == AcceptableRanges.ROUNDS.UPPER_LIMIT
-                && newRepetition == AcceptableRanges.REPETITIONS.UPPER_LIMIT
-        )
-            return true;
-        return newParams.getRounds() == AcceptableRanges.ROUNDS.LOWER_LIMIT
-            && newRepetition == AcceptableRanges.REPETITIONS.LOWER_LIMIT;
+        if (!roundsOutOfBounds)
+            return false;
+
+        var boundRepetitions = increase
+            ? getUpperLimit(AcceptableRanges.REPETITIONS)
+            : getLowerLimit(AcceptableRanges.REPETITIONS);
+        newParams.setRepetition((int) boundRepetitions);
+        return true;
     }
 
     private ExerciseParameters calcParamsForWeightRedu(
@@ -223,7 +224,7 @@ public class WAWeightReductionService extends WATypedBase {
         var dailyKcalReduction = weightReductionWrite.getDailyKcalReduction();
         var totalKcalBurn = TrainingService.getTotalBurnedKcal(new TrainingRead(toPrepare));
         var kcalDifference = dailyKcalReduction - totalKcalBurn;
-        if (kcalDiffAcceptable(kcalDifference, 50))
+        if (Math.abs(kcalDifference) < 50)
             return toPrepare;
 
         var copiedTraining = new Training();
