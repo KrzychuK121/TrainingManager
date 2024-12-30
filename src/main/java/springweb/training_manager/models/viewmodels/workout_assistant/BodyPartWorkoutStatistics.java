@@ -7,7 +7,8 @@ import org.hibernate.validator.constraints.Range;
 @Getter
 @Setter
 public class BodyPartWorkoutStatistics {
-    @Range(min = 1, max = 5)
+    public static final int MIN_ADVANCE_LEVEL = 1;
+    @Range(min = MIN_ADVANCE_LEVEL, max = 5)
     private int advanceLevel;
     @Range(min = 0, max = 5)
     private int lastWorkout;
