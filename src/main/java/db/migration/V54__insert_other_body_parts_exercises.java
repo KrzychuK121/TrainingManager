@@ -44,7 +44,7 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
             )
             .flatMap(Stream::of)
             .toArray(WholeTrainingData_V51[]::new);
-        
+
         insertWholeTrainingData(
             context,
             wholeNewTrainingsData
@@ -63,7 +63,7 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Szrugsy z hantlami",
                     "Szrugsy",
                     BodyPart.TRAPS,
-                    10,
+                    2,
                     null
                 ),
                 new ExerciseParameters_V51(
@@ -78,7 +78,7 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Podciąganie sztangi wzdłuż tułowia",
                     "Podciąganie sztangi",
                     BodyPart.TRAPS,
-                    8,
+                    4,
                     null
                 ),
                 new ExerciseParameters_V51(
@@ -93,7 +93,7 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Rozpiętki w opadzie tułowia",
                     "Rozpiętki",
                     BodyPart.TRAPS,
-                    7,
+                    3,
                     null
                 ),
                 new ExerciseParameters_V51(
@@ -116,7 +116,7 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Wiosłowanie hantlami w opadzie tułowia",
                     "Wiosłowanie",
                     BodyPart.TRAPS,
-                    9,
+                    6,
                     null
                 ),
                 new ExerciseParameters_V51(
@@ -131,14 +131,14 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Podciąganie sztangi na wyciągu",
                     "Podciąganie na wyciągu",
                     BodyPart.TRAPS,
-                    7,
+                    4,
                     null
                 ),
                 new ExerciseParameters_V51(
                     10,
                     4,
                     null,
-                    40
+                    20
                 )
             ),
             new WholeExerciseData_V51(
@@ -146,7 +146,7 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Unoszenie barków z talerzem",
                     "Unoszenie barków",
                     BodyPart.TRAPS,
-                    6,
+                    3,
                     null
                 ),
                 new ExerciseParameters_V51(
@@ -169,14 +169,14 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Martwy ciąg klasyczny",
                     "Martwy ciąg",
                     BodyPart.TRAPS,
-                    15,
+                    4,
                     null
                 ),
                 new ExerciseParameters_V51(
                     8,
                     4,
                     null,
-                    50
+                    30
                 )
             ),
             new WholeExerciseData_V51(
@@ -184,7 +184,7 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Unoszenie ramion w bok z gumą oporową",
                     "Unoszenie ramion",
                     BodyPart.TRAPS,
-                    5,
+                    3,
                     null
                 ),
                 new ExerciseParameters_V51(
@@ -199,7 +199,7 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Unoszenie łokci w górę z kettlebell",
                     "Unoszenie łokci",
                     BodyPart.TRAPS,
-                    6,
+                    4,
                     null
                 ),
                 new ExerciseParameters_V51(
@@ -230,14 +230,14 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Wyciskanie sztangi nad głowę",
                     "Military Press",
                     BodyPart.DELTS,
-                    12,
+                    6,
                     null
                 ),
                 new ExerciseParameters_V51(
                     10,
                     3,
                     null,
-                    40
+                    30
                 )
             ),
             new WholeExerciseData_V51(
@@ -245,7 +245,7 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Unoszenie hantli bokiem",
                     "Lateral Raise",
                     BodyPart.DELTS,
-                    10,
+                    5,
                     null
                 ),
                 new ExerciseParameters_V51(
@@ -260,7 +260,7 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Arnold Press",
                     "Arnold Press",
                     BodyPart.DELTS,
-                    12,
+                    4,
                     null
                 ),
                 new ExerciseParameters_V51(
@@ -283,7 +283,7 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Wyciskanie hantli w siadzie",
                     "Seated Dumbbell Press",
                     BodyPart.DELTS,
-                    10,
+                    3,
                     null
                 ),
                 new ExerciseParameters_V51(
@@ -298,7 +298,7 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Unoszenie ramion z kettlebell",
                     "Front Raise",
                     BodyPart.DELTS,
-                    8,
+                    2,
                     null
                 ),
                 new ExerciseParameters_V51(
@@ -313,7 +313,7 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Odwodzenie ramion w opadzie tułowia",
                     "Reverse Fly",
                     BodyPart.DELTS,
-                    10,
+                    2,
                     null
                 ),
                 new ExerciseParameters_V51(
@@ -336,7 +336,7 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Unoszenie ramion w pozycji plank",
                     "Plank Arm Raise",
                     BodyPart.DELTS,
-                    6,
+                    3,
                     null
                 ),
                 new ExerciseParameters_V51(
@@ -351,7 +351,7 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Wyciskanie hantli jednorącz",
                     "Single Arm Dumbbell Press",
                     BodyPart.DELTS,
-                    10,
+                    5,
                     null
                 ),
                 new ExerciseParameters_V51(
@@ -366,7 +366,7 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Ćwiczenie z gumą na rotację zewnętrzną",
                     "External Rotation with Band",
                     BodyPart.DELTS,
-                    8,
+                    4,
                     null
                 ),
                 new ExerciseParameters_V51(
@@ -396,14 +396,14 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Wyciskanie sztangi na ławce płaskiej",
                     "Bench Press",
                     BodyPart.CHEST,
-                    20,
+                    8,
                     null
                 ),
                 new ExerciseParameters_V51(
                     8,
                     4,
                     null,
-                    60
+                    30
                 )
             ),
             new WholeExerciseData_V51(
@@ -411,7 +411,7 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Wyciskanie hantli na ławce skośnej",
                     "Incline Dumbbell Press",
                     BodyPart.CHEST,
-                    18,
+                    7,
                     null
                 ),
                 new ExerciseParameters_V51(
@@ -426,7 +426,7 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Rozpiętki na ławce poziomej z hantlami",
                     "Flat Bench Dumbbell Fly",
                     BodyPart.CHEST,
-                    15,
+                    5,
                     null
                 ),
                 new ExerciseParameters_V51(
@@ -464,7 +464,7 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Pompki na poręczach (dipy)",
                     "Chest Dips",
                     BodyPart.CHEST,
-                    10,
+                    6,
                     null
                 ),
                 new ExerciseParameters_V51(
@@ -479,7 +479,7 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Rozpiętki na bramie",
                     "Cable Fly",
                     BodyPart.CHEST,
-                    15,
+                    8,
                     null
                 ),
                 new ExerciseParameters_V51(
@@ -502,7 +502,7 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Pompki z unoszeniem ramion na piłce",
                     "Push-Ups with Arm Raise on Ball",
                     BodyPart.CHEST,
-                    8,
+                    4,
                     null
                 ),
                 new ExerciseParameters_V51(
@@ -517,7 +517,7 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Rozpiętki na TRX",
                     "TRX Fly",
                     BodyPart.CHEST,
-                    12,
+                    5,
                     null
                 ),
                 new ExerciseParameters_V51(
@@ -532,7 +532,7 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Izometryczne utrzymanie w pompkach",
                     "Isometric Push-Up Hold",
                     BodyPart.CHEST,
-                    8,
+                    3,
                     null
                 ),
                 new ExerciseParameters_V51(
@@ -563,29 +563,29 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Martwy ciąg",
                     "Deadlift",
                     BodyPart.BACK,
-                    40,
+                    10,
                     null
                 ),
                 new ExerciseParameters_V51(
                     6,
                     4,
                     null,
-                    100
+                    40
                 )
             ),
             new WholeExerciseData_V51(
                 new Exercise_V51(
-                    "Wiosłowanie sztangą",
+                    "Przyciąganie sztangi w opadzie",
                     "Barbell Row",
                     BodyPart.BACK,
-                    30,
+                    8,
                     null
                 ),
                 new ExerciseParameters_V51(
                     8,
                     4,
                     null,
-                    60
+                    25
                 )
             ),
             new WholeExerciseData_V51(
@@ -593,7 +593,7 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Podciąganie na drążku",
                     "Pull-Ups",
                     BodyPart.BACK,
-                    20,
+                    8,
                     null
                 ),
                 new ExerciseParameters_V51(
@@ -616,26 +616,11 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Wiosłowanie na maszynie",
                     "Machine Row",
                     BodyPart.BACK,
-                    20,
+                    10,
                     null
                 ),
                 new ExerciseParameters_V51(
                     10,
-                    3,
-                    null,
-                    40
-                )
-            ),
-            new WholeExerciseData_V51(
-                new Exercise_V51(
-                    "Ściąganie linki wyciągu górnego",
-                    "Lat Pulldown",
-                    BodyPart.BACK,
-                    15,
-                    null
-                ),
-                new ExerciseParameters_V51(
-                    12,
                     3,
                     null,
                     30
@@ -643,17 +628,32 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
             ),
             new WholeExerciseData_V51(
                 new Exercise_V51(
-                    "Wiosłowanie w opadzie",
-                    "Bent Over Row",
+                    "Ściąganie linki wyciągu górnego",
+                    "Lat Pulldown",
                     BodyPart.BACK,
-                    25,
+                    7,
                     null
                 ),
                 new ExerciseParameters_V51(
                     12,
                     3,
                     null,
-                    50
+                    20
+                )
+            ),
+            new WholeExerciseData_V51(
+                new Exercise_V51(
+                    "Wiosłowanie w opadzie",
+                    "Bent Over Row",
+                    BodyPart.BACK,
+                    8,
+                    null
+                ),
+                new ExerciseParameters_V51(
+                    12,
+                    3,
+                    null,
+                    20
                 )
             )
         );
@@ -669,7 +669,7 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Plank z rotacją",
                     "Plank with Rotation",
                     BodyPart.BACK,
-                    10,
+                    5,
                     null
                 ),
                 new ExerciseParameters_V51(
@@ -684,7 +684,7 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Superman",
                     "Superman",
                     BodyPart.BACK,
-                    8,
+                    4,
                     null
                 ),
                 new ExerciseParameters_V51(
@@ -699,14 +699,14 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Martwy ciąg na jednej nodze",
                     "Single Leg Deadlift",
                     BodyPart.BACK,
-                    15,
+                    8,
                     null
                 ),
                 new ExerciseParameters_V51(
                     10,
                     3,
                     null,
-                    25
+                    15
                 )
             )
         );
@@ -731,14 +731,14 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Wyciskanie francuskie",
                     "French Press",
                     BodyPart.TRICEPS,
-                    25,
+                    11,
                     null
                 ),
                 new ExerciseParameters_V51(
                     6,
                     4,
                     null,
-                    40
+                    20
                 )
             ),
             new WholeExerciseData_V51(
@@ -746,14 +746,14 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Prostowanie ramion na wyciągu",
                     "Triceps Pushdown",
                     BodyPart.TRICEPS,
-                    20,
+                    10,
                     null
                 ),
                 new ExerciseParameters_V51(
                     8,
                     4,
                     null,
-                    30
+                    15
                 )
             ),
             new WholeExerciseData_V51(
@@ -761,7 +761,7 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Dipy",
                     "Dips",
                     BodyPart.TRICEPS,
-                    15,
+                    7,
                     null
                 ),
                 new ExerciseParameters_V51(
@@ -784,14 +784,14 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Prostowanie ramion na wyciągu z linką",
                     "Rope Pushdown",
                     BodyPart.TRICEPS,
-                    12,
+                    6,
                     null
                 ),
                 new ExerciseParameters_V51(
                     12,
                     3,
                     null,
-                    25
+                    15
                 )
             ),
             new WholeExerciseData_V51(
@@ -799,14 +799,14 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Wyciskanie hantli w leżeniu",
                     "Dumbbell Triceps Press",
                     BodyPart.TRICEPS,
-                    18,
+                    7,
                     null
                 ),
                 new ExerciseParameters_V51(
                     10,
                     3,
                     null,
-                    25
+                    15
                 )
             ),
             new WholeExerciseData_V51(
@@ -814,7 +814,7 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Dipy między ławkami",
                     "Bench Dips",
                     BodyPart.TRICEPS,
-                    10,
+                    5,
                     null
                 ),
                 new ExerciseParameters_V51(
@@ -837,14 +837,14 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Wyciskanie francuskie jednorącz",
                     "Single Arm French Press",
                     BodyPart.TRICEPS,
-                    10,
+                    5,
                     null
                 ),
                 new ExerciseParameters_V51(
                     12,
                     3,
                     null,
-                    20
+                    10
                 )
             ),
             new WholeExerciseData_V51(
@@ -852,7 +852,7 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Wyciskanie hantli w leżeniu",
                     "Dumbbell Triceps Extension",
                     BodyPart.TRICEPS,
-                    15,
+                    7,
                     null
                 ),
                 new ExerciseParameters_V51(
@@ -874,7 +874,7 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     15,
                     3,
                     null,
-                    35
+                    25
                 )
             )
         );
@@ -899,14 +899,14 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Wyciskanie sztangi stojąc",
                     "Barbell Curl",
                     BodyPart.BICEPS,
-                    30,
+                    8,
                     null
                 ),
                 new ExerciseParameters_V51(
                     6,
                     4,
                     null,
-                    40
+                    20
                 )
             ),
             new WholeExerciseData_V51(
@@ -914,14 +914,14 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Uginanie ramion z hantlami",
                     "Dumbbell Curl",
                     BodyPart.BICEPS,
-                    20,
+                    7,
                     null
                 ),
                 new ExerciseParameters_V51(
                     8,
                     4,
                     null,
-                    25
+                    15
                 )
             ),
             new WholeExerciseData_V51(
@@ -929,14 +929,14 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Modlitewnik",
                     "Preacher Curl",
                     BodyPart.BICEPS,
-                    25,
+                    8,
                     null
                 ),
                 new ExerciseParameters_V51(
                     6,
                     4,
                     null,
-                    35
+                    15
                 )
             )
         );
@@ -952,14 +952,14 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Wyciskanie sztangi stojąc",
                     "Barbell Curl",
                     BodyPart.BICEPS,
-                    20,
+                    8,
                     null
                 ),
                 new ExerciseParameters_V51(
                     10,
                     3,
                     null,
-                    35
+                    16
                 )
             ),
             new WholeExerciseData_V51(
@@ -967,14 +967,14 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Uginanie ramion z hantlami",
                     "Dumbbell Curl",
                     BodyPart.BICEPS,
-                    18,
+                    7,
                     null
                 ),
                 new ExerciseParameters_V51(
                     12,
                     3,
                     null,
-                    25
+                    15
                 )
             ),
             new WholeExerciseData_V51(
@@ -982,14 +982,14 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Uginanie ramion na maszynie",
                     "Machine Curl",
                     BodyPart.BICEPS,
-                    22,
+                    9,
                     null
                 ),
                 new ExerciseParameters_V51(
                     12,
                     3,
                     null,
-                    30
+                    20
                 )
             )
         );
@@ -1005,14 +1005,14 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Uginanie ramion z hantlami",
                     "Alternating Dumbbell Curl",
                     BodyPart.BICEPS,
-                    15,
+                    10,
                     null
                 ),
                 new ExerciseParameters_V51(
                     12,
                     3,
                     null,
-                    20
+                    10
                 )
             ),
             new WholeExerciseData_V51(
@@ -1020,7 +1020,7 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Wyciskanie sztangi",
                     "Standing Barbell Curl",
                     BodyPart.BICEPS,
-                    18,
+                    9,
                     null
                 ),
                 new ExerciseParameters_V51(
@@ -1035,14 +1035,14 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Bicep Curl z linką",
                     "Cable Bicep Curl",
                     BodyPart.BICEPS,
-                    10,
+                    5,
                     null
                 ),
                 new ExerciseParameters_V51(
                     15,
                     3,
                     null,
-                    20
+                    10
                 )
             )
         );
@@ -1066,14 +1066,14 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Zginanie nadgarstków ze sztangą",
                     "Barbell Wrist Curl",
                     BodyPart.FOREARMS,
-                    30,
+                    4,
                     null
                 ),
                 new ExerciseParameters_V51(
                     6,
                     4,
                     null,
-                    40
+                    10
                 )
             ),
             new WholeExerciseData_V51(
@@ -1081,14 +1081,14 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Zginanie nadgarstków z hantlami",
                     "Dumbbell Wrist Curl",
                     BodyPart.FOREARMS,
-                    25,
+                    9,
                     null
                 ),
                 new ExerciseParameters_V51(
                     8,
                     4,
                     null,
-                    30
+                    10
                 )
             ),
             new WholeExerciseData_V51(
@@ -1096,14 +1096,14 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Wzmacnianie nadgarstków na maszynie",
                     "Wrist Curl Machine",
                     BodyPart.FOREARMS,
-                    20,
+                    4,
                     null
                 ),
                 new ExerciseParameters_V51(
                     6,
                     4,
                     null,
-                    35
+                    12
                 )
             )
         );
@@ -1119,14 +1119,14 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Zginanie nadgarstków ze sztangą",
                     "Barbell Wrist Curl",
                     BodyPart.FOREARMS,
-                    20,
+                    4,
                     null
                 ),
                 new ExerciseParameters_V51(
                     12,
                     3,
                     null,
-                    30
+                    10
                 )
             ),
             new WholeExerciseData_V51(
@@ -1134,14 +1134,14 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Zginanie nadgarstków z hantlami",
                     "Dumbbell Wrist Curl",
                     BodyPart.FOREARMS,
-                    18,
+                    9,
                     null
                 ),
                 new ExerciseParameters_V51(
                     15,
                     3,
                     null,
-                    25
+                    15
                 )
             ),
             new WholeExerciseData_V51(
@@ -1149,7 +1149,7 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Ściskanie ręki - chwyt",
                     "Hand Gripper",
                     BodyPart.FOREARMS,
-                    15,
+                    5,
                     null
                 ),
                 new ExerciseParameters_V51(
@@ -1172,14 +1172,14 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Zginanie nadgarstków z hantlami",
                     "Dumbbell Wrist Curl",
                     BodyPart.FOREARMS,
-                    18,
+                    9,
                     null
                 ),
                 new ExerciseParameters_V51(
                     12,
                     3,
                     null,
-                    20
+                    10
                 )
             ),
             new WholeExerciseData_V51(
@@ -1187,14 +1187,14 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Zginanie nadgarstków na maszynie",
                     "Machine Wrist Curl",
                     BodyPart.FOREARMS,
-                    25,
+                    9,
                     null
                 ),
                 new ExerciseParameters_V51(
                     10,
                     3,
                     null,
-                    30
+                    15
                 )
             ),
             new WholeExerciseData_V51(
@@ -1233,7 +1233,7 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Wznosy nóg w leżeniu",
                     "Leg Raises",
                     BodyPart.UPPER_ABS,
-                    25,
+                    5,
                     null
                 ),
                 new ExerciseParameters_V51(
@@ -1248,7 +1248,7 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Unoszenie tułowia w leżeniu",
                     "Crunches",
                     BodyPart.UPPER_ABS,
-                    30,
+                    5,
                     null
                 ),
                 new ExerciseParameters_V51(
@@ -1263,7 +1263,7 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Skłony boczne",
                     "Side Crunches",
                     BodyPart.UPPER_ABS,
-                    20,
+                    6,
                     null
                 ),
                 new ExerciseParameters_V51(
@@ -1286,7 +1286,7 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Unoszenie nóg w leżeniu",
                     "Leg Raises",
                     BodyPart.UPPER_ABS,
-                    20,
+                    7,
                     null
                 ),
                 new ExerciseParameters_V51(
@@ -1301,7 +1301,7 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Brzuszki na piłce",
                     "Ball Crunches",
                     BodyPart.UPPER_ABS,
-                    15,
+                    8,
                     null
                 ),
                 new ExerciseParameters_V51(
@@ -1316,7 +1316,7 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Deska - plank",
                     "Plank",
                     BodyPart.UPPER_ABS,
-                    10,
+                    5,
                     null
                 ),
                 new ExerciseParameters_V51(
@@ -1339,7 +1339,7 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Brzuszki z obciążeniem",
                     "Weighted Crunches",
                     BodyPart.UPPER_ABS,
-                    30,
+                    10,
                     null
                 ),
                 new ExerciseParameters_V51(
@@ -1354,7 +1354,7 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Unoszenie nóg na poręczach",
                     "Hanging Leg Raises",
                     BodyPart.UPPER_ABS,
-                    25,
+                    11,
                     null
                 ),
                 new ExerciseParameters_V51(
@@ -1369,7 +1369,7 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Wznosy tułowia w leżeniu",
                     "Sit-ups",
                     BodyPart.UPPER_ABS,
-                    30,
+                    6,
                     null
                 ),
                 new ExerciseParameters_V51(
@@ -1400,14 +1400,14 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Martwy ciąg klasyczny",
                     "Conventional Deadlift",
                     BodyPart.LOWER_BACK,
-                    50,
+                    10,
                     null
                 ),
                 new ExerciseParameters_V51(
                     8,
                     4,
                     null,
-                    100
+                    40
                 )
             ),
             new WholeExerciseData_V51(
@@ -1415,14 +1415,14 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Hip Thrust",
                     "Hip Thrust",
                     BodyPart.LOWER_BACK,
-                    30,
+                    6,
                     null
                 ),
                 new ExerciseParameters_V51(
                     10,
                     4,
                     null,
-                    50
+                    10
                 )
             ),
             new WholeExerciseData_V51(
@@ -1430,14 +1430,14 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Przyciąganie sztangi w opadzie",
                     "Barbell Row",
                     BodyPart.LOWER_BACK,
-                    40,
+                    10,
                     null
                 ),
                 new ExerciseParameters_V51(
                     8,
                     4,
                     null,
-                    60
+                    15
                 )
             )
         );
@@ -1453,7 +1453,7 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Wznosy bioder",
                     "Hip Raises",
                     BodyPart.LOWER_BACK,
-                    25,
+                    7,
                     null
                 ),
                 new ExerciseParameters_V51(
@@ -1465,17 +1465,17 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
             ),
             new WholeExerciseData_V51(
                 new Exercise_V51(
-                    "Rumunskie martwe ciągi",
+                    "Rumuńskie martwe ciągi",
                     "Romanian Deadlift",
                     BodyPart.LOWER_BACK,
-                    35,
+                    8,
                     null
                 ),
                 new ExerciseParameters_V51(
                     12,
                     3,
                     null,
-                    40
+                    20
                 )
             ),
             new WholeExerciseData_V51(
@@ -1483,7 +1483,7 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Superman",
                     "Superman",
                     BodyPart.LOWER_BACK,
-                    20,
+                    5,
                     null
                 ),
                 new ExerciseParameters_V51(
@@ -1506,7 +1506,7 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Deska boczna",
                     "Side Plank",
                     BodyPart.LOWER_BACK,
-                    15,
+                    5,
                     null
                 ),
                 new ExerciseParameters_V51(
@@ -1521,7 +1521,7 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Unoszenie nóg w zwisie",
                     "Hanging Leg Raises",
                     BodyPart.LOWER_BACK,
-                    25,
+                    4,
                     null
                 ),
                 new ExerciseParameters_V51(
@@ -1536,14 +1536,14 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Martwy ciąg na jednej nodze",
                     "Single Leg Deadlift",
                     BodyPart.LOWER_BACK,
-                    30,
+                    7,
                     null
                 ),
                 new ExerciseParameters_V51(
                     8,
                     4,
                     null,
-                    20
+                    10
                 )
             )
         );
@@ -1567,7 +1567,7 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Unoszenie nóg w leżeniu",
                     "Leg Raises",
                     BodyPart.LOWER_ABS,
-                    30,
+                    6,
                     null
                 ),
                 new ExerciseParameters_V51(
@@ -1582,7 +1582,7 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Scyzoryki",
                     "V-Ups",
                     BodyPart.LOWER_ABS,
-                    25,
+                    7,
                     null
                 ),
                 new ExerciseParameters_V51(
@@ -1597,7 +1597,7 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Wznosy nóg w zwisie",
                     "Hanging Leg Raises",
                     BodyPart.LOWER_ABS,
-                    40,
+                    8,
                     null
                 ),
                 new ExerciseParameters_V51(
@@ -1620,7 +1620,7 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Deska z unoszeniem nóg",
                     "Plank with Leg Raises",
                     BodyPart.LOWER_ABS,
-                    20,
+                    6,
                     null
                 ),
                 new ExerciseParameters_V51(
@@ -1635,7 +1635,7 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Unoszenie nóg w podporze",
                     "Knee Raises",
                     BodyPart.LOWER_ABS,
-                    25,
+                    6,
                     null
                 ),
                 new ExerciseParameters_V51(
@@ -1650,7 +1650,7 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Bicycle Crunches",
                     "Bicycle Crunches",
                     BodyPart.LOWER_ABS,
-                    30,
+                    7,
                     null
                 ),
                 new ExerciseParameters_V51(
@@ -1673,7 +1673,7 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Deska",
                     "Plank",
                     BodyPart.LOWER_ABS,
-                    15,
+                    4,
                     null
                 ),
                 new ExerciseParameters_V51(
@@ -1688,7 +1688,7 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Russian Twists",
                     "Russian Twists",
                     BodyPart.LOWER_ABS,
-                    25,
+                    7,
                     null
                 ),
                 new ExerciseParameters_V51(
@@ -1703,7 +1703,7 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Mountain Climbers",
                     "Mountain Climbers",
                     BodyPart.LOWER_ABS,
-                    30,
+                    8,
                     null
                 ),
                 new ExerciseParameters_V51(
@@ -1734,14 +1734,14 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Przysiady ze sztangą",
                     "Barbell Squats",
                     BodyPart.GLUTES,
-                    50,
+                    9,
                     null
                 ),
                 new ExerciseParameters_V51(
                     10,
                     4,
                     null,
-                    0
+                    15
                 )
             ),
             new WholeExerciseData_V51(
@@ -1749,7 +1749,7 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Martwy ciąg",
                     "Deadlift",
                     BodyPart.GLUTES,
-                    60,
+                    10,
                     null
                 ),
                 new ExerciseParameters_V51(
@@ -1764,7 +1764,7 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Wykroki",
                     "Lunges",
                     BodyPart.GLUTES,
-                    40,
+                    6,
                     null
                 ),
                 new ExerciseParameters_V51(
@@ -1787,7 +1787,7 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Hip Thrust",
                     "Hip Thrust",
                     BodyPart.GLUTES,
-                    50,
+                    8,
                     null
                 ),
                 new ExerciseParameters_V51(
@@ -1802,7 +1802,7 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Przysiady bułgarskie",
                     "Bulgarian Split Squats",
                     BodyPart.GLUTES,
-                    40,
+                    9,
                     null
                 ),
                 new ExerciseParameters_V51(
@@ -1817,7 +1817,7 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Unoszenie nóg w leżeniu",
                     "Leg Raises",
                     BodyPart.GLUTES,
-                    30,
+                    5,
                     null
                 ),
                 new ExerciseParameters_V51(
@@ -1840,7 +1840,7 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Deska z unoszeniem nóg",
                     "Plank with Leg Raises",
                     BodyPart.GLUTES,
-                    20,
+                    6,
                     null
                 ),
                 new ExerciseParameters_V51(
@@ -1855,7 +1855,7 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Glute Bridge",
                     "Glute Bridge",
                     BodyPart.GLUTES,
-                    35,
+                    7,
                     null
                 ),
                 new ExerciseParameters_V51(
@@ -1870,7 +1870,7 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Kickback",
                     "Kickback",
                     BodyPart.GLUTES,
-                    25,
+                    8,
                     null
                 ),
                 new ExerciseParameters_V51(
@@ -1901,14 +1901,14 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Przysiady ze sztangą",
                     "Barbell Squats",
                     BodyPart.QUADS,
-                    60,
+                    9,
                     null
                 ),
                 new ExerciseParameters_V51(
                     8,
                     4,
                     null,
-                    0
+                    10
                 )
             ),
             new WholeExerciseData_V51(
@@ -1916,7 +1916,7 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Przysiady hack",
                     "Hack Squats",
                     BodyPart.QUADS,
-                    50,
+                    7,
                     null
                 ),
                 new ExerciseParameters_V51(
@@ -1931,14 +1931,14 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Wykroki ze sztangą",
                     "Barbell Lunges",
                     BodyPart.QUADS,
-                    40,
+                    11,
                     null
                 ),
                 new ExerciseParameters_V51(
                     12,
                     3,
                     null,
-                    0
+                    10
                 )
             )
         );
@@ -1954,22 +1954,22 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Przysiady ze sztangą na plecach",
                     "Back Squats",
                     BodyPart.QUADS,
-                    55,
+                    8,
                     null
                 ),
                 new ExerciseParameters_V51(
                     15,
                     4,
                     null,
-                    0
+                    15
                 )
             ),
             new WholeExerciseData_V51(
                 new Exercise_V51(
-                    "Wykroki chodzone",
+                    "Wykroki w chodzie",
                     "Walking Lunges",
                     BodyPart.QUADS,
-                    45,
+                    10,
                     null
                 ),
                 new ExerciseParameters_V51(
@@ -1984,14 +1984,14 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Maszyna do prostowania nóg",
                     "Leg Extensions",
                     BodyPart.QUADS,
-                    30,
+                    7,
                     null
                 ),
                 new ExerciseParameters_V51(
                     12,
                     3,
                     null,
-                    0
+                    25
                 )
             )
         );
@@ -2007,7 +2007,7 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Przysiady na jednej nodze",
                     "Single-Leg Squats",
                     BodyPart.QUADS,
-                    40,
+                    15,
                     null
                 ),
                 new ExerciseParameters_V51(
@@ -2022,14 +2022,14 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Step-up z obciążeniem",
                     "Weighted Step-Ups",
                     BodyPart.QUADS,
-                    35,
+                    8,
                     null
                 ),
                 new ExerciseParameters_V51(
                     12,
                     4,
                     null,
-                    0
+                    10
                 )
             ),
             new WholeExerciseData_V51(
@@ -2037,7 +2037,7 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Bulgarian Split Squat",
                     "Bulgarian Split Squat",
                     BodyPart.QUADS,
-                    50,
+                    8,
                     null
                 ),
                 new ExerciseParameters_V51(
@@ -2068,7 +2068,7 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Martwy ciąg klasyczny",
                     "Conventional Deadlift",
                     BodyPart.HAMS,
-                    100,
+                    7,
                     null
                 ),
                 new ExerciseParameters_V51(
@@ -2083,7 +2083,7 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Martwy ciąg na prostych nogach",
                     "Stiff-Legged Deadlift",
                     BodyPart.HAMS,
-                    80,
+                    10,
                     null
                 ),
                 new ExerciseParameters_V51(
@@ -2098,14 +2098,14 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Wznosy bioder z sztangą",
                     "Hip Thrusts",
                     BodyPart.HAMS,
-                    70,
+                    8,
                     null
                 ),
                 new ExerciseParameters_V51(
                     10,
                     4,
                     null,
-                    0
+                    15
                 )
             )
         );
@@ -2121,7 +2121,7 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Martwy ciąg sumo",
                     "Sumo Deadlift",
                     BodyPart.HAMS,
-                    90,
+                    15,
                     null
                 ),
                 new ExerciseParameters_V51(
@@ -2136,7 +2136,7 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Przyciąganie nóg w leżeniu",
                     "Leg Curls",
                     BodyPart.HAMS,
-                    50,
+                    6,
                     null
                 ),
                 new ExerciseParameters_V51(
@@ -2151,7 +2151,7 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Prostowanie nóg w maszynie",
                     "Leg Press Machine",
                     BodyPart.HAMS,
-                    60,
+                    15,
                     null
                 ),
                 new ExerciseParameters_V51(
@@ -2174,7 +2174,7 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Przysiady bułgarskie",
                     "Bulgarian Split Squats",
                     BodyPart.HAMS,
-                    60,
+                    8,
                     null
                 ),
                 new ExerciseParameters_V51(
@@ -2189,7 +2189,7 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Wykroki w chodzie",
                     "Walking Lunges",
                     BodyPart.HAMS,
-                    70,
+                    10,
                     null
                 ),
                 new ExerciseParameters_V51(
@@ -2204,14 +2204,14 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Wznosy bioder z hantlami",
                     "Dumbbell Hip Thrusts",
                     BodyPart.HAMS,
-                    55,
+                    8,
                     null
                 ),
                 new ExerciseParameters_V51(
                     12,
                     3,
                     null,
-                    0
+                    10
                 )
             )
         );
@@ -2235,14 +2235,14 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Wspięcia na palce w staniu (sztanga)",
                     "Barbell Standing Calf Raises",
                     BodyPart.CALVES,
-                    120,
+                    15,
                     null
                 ),
                 new ExerciseParameters_V51(
                     6,
                     4,
                     null,
-                    0
+                    15
                 )
             ),
             new WholeExerciseData_V51(
@@ -2250,7 +2250,7 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Wspięcia na palce w siadzie",
                     "Seated Calf Raises",
                     BodyPart.CALVES,
-                    100,
+                    12,
                     null
                 ),
                 new ExerciseParameters_V51(
@@ -2265,14 +2265,14 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Wspięcia na palce na maszynie",
                     "Machine Calf Raises",
                     BodyPart.CALVES,
-                    90,
+                    8,
                     null
                 ),
                 new ExerciseParameters_V51(
                     10,
                     4,
                     null,
-                    0
+                    20
                 )
             )
         );
@@ -2288,14 +2288,14 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Wspięcia na palce w staniu (maszyna)",
                     "Machine Standing Calf Raises",
                     BodyPart.CALVES,
-                    110,
+                    15,
                     null
                 ),
                 new ExerciseParameters_V51(
                     15,
                     3,
                     null,
-                    0
+                    15
                 )
             ),
             new WholeExerciseData_V51(
@@ -2303,7 +2303,7 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Wspięcia na palce na suwnicy",
                     "Smith Machine Calf Raises",
                     BodyPart.CALVES,
-                    95,
+                    10,
                     null
                 ),
                 new ExerciseParameters_V51(
@@ -2318,14 +2318,14 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Wspięcia na palce w siadzie (maszyna)",
                     "Seated Machine Calf Raises",
                     BodyPart.CALVES,
-                    80,
+                    8,
                     null
                 ),
                 new ExerciseParameters_V51(
                     20,
                     3,
                     null,
-                    0
+                    20
                 )
             )
         );
@@ -2341,7 +2341,7 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Wspięcia na palce na jednej nodze",
                     "Single Leg Calf Raises",
                     BodyPart.CALVES,
-                    60,
+                    11,
                     null
                 ),
                 new ExerciseParameters_V51(
@@ -2356,22 +2356,22 @@ public class V54__insert_other_body_parts_exercises extends BaseJavaMigration {
                     "Wspięcia na palce z hantlami",
                     "Dumbbell Calf Raises",
                     BodyPart.CALVES,
-                    70,
+                    15,
                     null
                 ),
                 new ExerciseParameters_V51(
                     10,
                     4,
                     null,
-                    0
+                    10
                 )
             ),
             new WholeExerciseData_V51(
                 new Exercise_V51(
                     "Skakanie na skakance",
-                    "Jump Rope",
+                    "Skakanka",
                     BodyPart.CALVES,
-                    0,
+                    12,
                     null
                 ),
                 new ExerciseParameters_V51(
