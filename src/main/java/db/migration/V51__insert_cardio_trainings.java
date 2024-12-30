@@ -104,34 +104,37 @@ public class V51__insert_cardio_trainings extends BaseJavaMigration {
         Context context,
         WholeTrainingData_V51... wholeTrainingsData
     ) throws SQLException {
+        final var INSERT_TRAINING_SQL = "INSERT INTO training (description, title, owner_id) VALUES (?, ?, ?)";
+        final var SELECT_PARAMS_SQL = (
+            "SELECT ep.id FROM exercise_parameters ep " +
+                "WHERE ep.rounds = ? " +
+                "AND ep.repetition =  ? " +
+                "AND NULLIF(ep.time, ?) IS NULL " +
+                "AND ep.weights = ?"
+        );
+        final var INSERT_PARAMS_SQL = "INSERT INTO exercise_parameters (repetition, rounds, time, weights) VALUES (?, ?, ?, ?)";
+        final var SELECT_EXERCISE_SQL = (
+            "SELECT e.id FROM exercise e " +
+                "WHERE e.name = ? " +
+                "AND e.description =  ? " +
+                "AND e.default_burned_kcal = ?"
+        );
+        final var INSERT_EXERCISE_SQL = "INSERT INTO exercise (description, name, body_part, parameters_id, default_burned_kcal, owner_id) VALUES (?, ?, ?, ?, ?, ?)";
+        final var INSERT_TRAINING_EXERCISE_SQL = "INSERT INTO training_exercise (training_id, exercise_id, parameters_id) VALUES (?, ?, ?)";
+
         try (
             PreparedStatement insertTrainingStmt = context.getConnection()
-                .prepareStatement(
-                    "INSERT INTO training (description, title, owner_id) VALUES (?, ?, ?)",
-                    PreparedStatement.RETURN_GENERATED_KEYS
-                );
+                .prepareStatement(INSERT_TRAINING_SQL, PreparedStatement.RETURN_GENERATED_KEYS);
             PreparedStatement selectParamsStmt = context.getConnection()
-                .prepareStatement(
-                    "SELECT ep.id FROM exercise_parameters ep " +
-                        "WHERE ep.rounds = ? " +
-                        "AND ep.repetition =  ? " +
-                        "AND NULLIF(ep.time, ?) IS NULL " +
-                        "AND ep.weights = ?"
-                );
+                .prepareStatement(SELECT_PARAMS_SQL);
             PreparedStatement insertParamsStmt = context.getConnection()
-                .prepareStatement(
-                    "INSERT INTO exercise_parameters (repetition, rounds, time, weights) VALUES (?, ?, ?, ?)",
-                    PreparedStatement.RETURN_GENERATED_KEYS
-                );
+                .prepareStatement(INSERT_PARAMS_SQL, PreparedStatement.RETURN_GENERATED_KEYS);
+            PreparedStatement selectExerciseStmt = context.getConnection()
+                .prepareStatement(SELECT_EXERCISE_SQL);
             PreparedStatement insertExerciseStmt = context.getConnection()
-                .prepareStatement(
-                    "INSERT INTO exercise (description, name, body_part, parameters_id, default_burned_kcal, owner_id) VALUES (?, ?, ?, ?, ?, ?)",
-                    PreparedStatement.RETURN_GENERATED_KEYS
-                );
+                .prepareStatement(INSERT_EXERCISE_SQL, PreparedStatement.RETURN_GENERATED_KEYS);
             PreparedStatement insertTrainingExerciseStmt = context.getConnection()
-                .prepareStatement(
-                    "INSERT INTO training_exercise (training_id, exercise_id, parameters_id) VALUES (?, ?, ?)"
-                )
+                .prepareStatement(INSERT_TRAINING_EXERCISE_SQL)
         ) {
             Arrays.stream(wholeTrainingsData)
                 .forEach(
@@ -142,6 +145,7 @@ public class V51__insert_cardio_trainings extends BaseJavaMigration {
                                 insertTrainingStmt,
                                 selectParamsStmt,
                                 insertParamsStmt,
+                                selectExerciseStmt,
                                 insertExerciseStmt,
                                 insertTrainingExerciseStmt
                             );
@@ -158,6 +162,7 @@ public class V51__insert_cardio_trainings extends BaseJavaMigration {
         PreparedStatement insertTrainingStmt,
         PreparedStatement selectParamsStmt,
         PreparedStatement insertParamsStmt,
+        PreparedStatement selectExerciseStmt,
         PreparedStatement insertExerciseStmt,
         PreparedStatement insertTrainingExerciseStmt
     ) throws SQLException {
@@ -182,17 +187,24 @@ public class V51__insert_cardio_trainings extends BaseJavaMigration {
                         );
 
                     var exerciseToSave = exerciseData.exercise;
-                    exerciseToSave.parametersId = parametersId;
-
-                    var newExerciseId = insertExercise(
-                        insertExerciseStmt,
+                    var exerciseId = selectExercise(
+                        selectExerciseStmt,
                         exerciseToSave
                     );
+
+                    if (exerciseId == 0) {
+                        exerciseToSave.parametersId = parametersId;
+                        exerciseId = insertExercise(
+                            insertExerciseStmt,
+                            exerciseToSave
+                        );
+                    }
+
                     insertTrainingExercise(
                         insertTrainingExerciseStmt,
                         new TrainingExercise_V51(
                             newTrainingId,
-                            newExerciseId,
+                            exerciseId,
                             parametersId
                         )
                     );
@@ -268,6 +280,21 @@ public class V51__insert_cardio_trainings extends BaseJavaMigration {
         statement.setInt(2, trainingExercise.exerciseId);
         statement.setInt(3, trainingExercise.parametersId);
         statement.executeUpdate();
+    }
+
+    private static int selectExercise(
+        PreparedStatement statement,
+        Exercise_V51 exercise
+    ) throws SQLException {
+        statement.setString(1, exercise.name);
+        statement.setString(2, exercise.description);
+        statement.setInt(3, exercise.defaultBurnedKcal);
+
+        ResultSet response = statement.executeQuery();
+
+        return response.next()
+            ? response.getInt("id")
+            : 0;
     }
 
     private static int insertExercise(
