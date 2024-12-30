@@ -64,3 +64,10 @@ public abstract class WATypedBase {
         Training toPrepare
     );
 }
+
+enum AcceptableRanges {
+    ROUNDS,
+    REPETITIONS,
+    TIME,
+    WEIGHT;
+}
