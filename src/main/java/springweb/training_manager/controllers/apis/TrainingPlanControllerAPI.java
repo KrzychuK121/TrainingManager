@@ -4,6 +4,9 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
@@ -14,13 +17,13 @@ import springweb.training_manager.models.entities.TrainingPlan;
 import springweb.training_manager.models.schemas.RoleSchema;
 import springweb.training_manager.models.viewmodels.training.WorkoutTrainingRead;
 import springweb.training_manager.models.viewmodels.training_plan.TrainingPlansEditRead;
+import springweb.training_manager.models.viewmodels.training_plan.TrainingPlansPagedRead;
 import springweb.training_manager.models.viewmodels.training_plan.TrainingPlansRead;
 import springweb.training_manager.models.viewmodels.training_plan.TrainingPlansWrite;
 import springweb.training_manager.models.viewmodels.training_routine.TrainingRoutineReadIndex;
 import springweb.training_manager.models.viewmodels.training_schedule.TrainingScheduleRead;
 import springweb.training_manager.models.viewmodels.validation.ValidationErrors;
 import springweb.training_manager.repositories.for_controllers.DoneTrainingRepository;
-import springweb.training_manager.services.DoneTrainingService;
 import springweb.training_manager.services.TrainingPlanService;
 import springweb.training_manager.services.UserService;
 
@@ -40,14 +43,16 @@ public class TrainingPlanControllerAPI {
     private final TrainingPlanService service;
     private final DoneTrainingRepository doneTrainingRepository;
     private final Logger logger = LoggerFactory.getLogger(TrainingPlanControllerAPI.class);
-    private final DoneTrainingService doneTrainingService;
 
     @GetMapping
-    public ResponseEntity<TrainingPlansRead> getAll(Authentication auth) {
+    public ResponseEntity<TrainingPlansPagedRead> getAll(
+        @PageableDefault(size = 1) Pageable page,
+        Authentication auth
+    ) {
         var loggedUser = UserService.getUserByAuth(auth);
-        List<TrainingRoutineReadIndex> plans = service.getAllByUser(loggedUser);
+        Page<TrainingRoutineReadIndex> plans = service.getPagedAll(loggedUser, page);
         return ResponseEntity.ok(
-            new TrainingPlansRead(plans)
+            new TrainingPlansPagedRead(plans)
         );
     }
 

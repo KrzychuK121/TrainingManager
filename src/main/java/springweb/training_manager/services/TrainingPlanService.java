@@ -2,6 +2,8 @@ package springweb.training_manager.services;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
 import springweb.training_manager.models.composite_ids.TrainingPlanId;
@@ -17,6 +19,7 @@ import springweb.training_manager.models.viewmodels.training_schedule.TrainingSc
 import springweb.training_manager.models.viewmodels.validation.ValidationErrors;
 import springweb.training_manager.repositories.for_controllers.TrainingPlanRepository;
 import springweb.training_manager.repositories.for_controllers.TrainingRepository;
+import springweb.training_manager.repositories.for_controllers.TrainingRoutineRepository;
 import springweb.training_manager.repositories.for_controllers.TrainingScheduleRepository;
 
 import java.time.LocalDateTime;
@@ -33,6 +36,7 @@ public class TrainingPlanService {
     private final TrainingPlanRepository repository;
     private final TrainingScheduleRepository scheduleRepository;
     private final TrainingRoutineService routineService;
+    private final TrainingRoutineRepository routineRepository;
     private final TrainingRepository trainingRepository;
 
     private Map<Weekdays, TrainingPlan> plansToWeekdayMap(List<TrainingPlan> plans) {
@@ -83,6 +87,36 @@ public class TrainingPlanService {
 
         return new ArrayList<>(
             getMapFromPlans(all).values()
+        );
+    }
+
+    public Page<TrainingRoutineReadIndex> getPagedAll(
+        User owner,
+        Pageable page
+    ) {
+        // TODO: Repair, not working
+        Page<TrainingRoutine> pagedRoutines = routineRepository.findByOwner(owner, page);
+        return pagedRoutines.map(
+            routine -> {
+                var readIndex = new TrainingRoutineReadIndex(
+                    routine.getId(),
+                    routine.isActive()
+                );
+
+                routine.getPlans()
+                    .forEach(
+                        plan -> {
+                            var schedule = plan.getTrainingSchedule();
+                            readIndex.putSchedule(
+                                schedule.getWeekday(),
+                                new TrainingScheduleRead(schedule)
+                            );
+                        }
+                    );
+
+
+                return readIndex;
+            }
         );
     }
 

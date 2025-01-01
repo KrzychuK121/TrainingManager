@@ -1,9 +1,12 @@
 package springweb.training_manager.repositories.beans;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.query.Procedure;
 import org.springframework.stereotype.Repository;
 import springweb.training_manager.models.entities.TrainingRoutine;
+import springweb.training_manager.models.entities.User;
 import springweb.training_manager.repositories.for_controllers.TrainingRoutineRepository;
 
 import java.util.Optional;
@@ -15,6 +18,12 @@ interface SqlTrainingRoutineRepository
 
     @Override
     Optional<TrainingRoutine> findByOwnerIdAndActiveTrue(String ownerId);
+
+    @Override
+    Page<TrainingRoutine> findByOwner(
+        User owner,
+        Pageable page
+    );
 
     @Override
     boolean existsByIdAndOwnerId(int id, String ownerId);

@@ -1,6 +1,9 @@
 package springweb.training_manager.repositories.for_controllers;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import springweb.training_manager.models.entities.TrainingRoutine;
+import springweb.training_manager.models.entities.User;
 
 import java.util.List;
 import java.util.Optional;
@@ -13,6 +16,11 @@ public interface TrainingRoutineRepository {
     Optional<TrainingRoutine> findById(Integer integer);
 
     Optional<TrainingRoutine> findByOwnerIdAndActiveTrue(String ownerId);
+
+    Page<TrainingRoutine> findByOwner(
+        User owner,
+        Pageable page
+    );
 
     boolean existsById(Integer integer);
 
