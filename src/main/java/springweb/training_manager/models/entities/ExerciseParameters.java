@@ -26,4 +26,20 @@ public class ExerciseParameters extends ExerciseParametersSchema {
             time
         );
     }
+
+    public void setRounds(int rounds) {
+        this.rounds = rounds;
+    }
+
+    public void setRepetition(int repetition) {
+        this.repetition = repetition;
+    }
+
+    public void setWeights(short weights) {
+        this.weights = weights;
+    }
+
+    public void setTime(LocalTime time) {
+        this.time = time;
+    }
 }

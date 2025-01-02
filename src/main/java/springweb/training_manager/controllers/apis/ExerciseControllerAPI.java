@@ -39,7 +39,7 @@ public class ExerciseControllerAPI {
     @GetMapping("/paged")
     @ResponseBody
     public ResponseEntity<Page<ExerciseRead>> getPagedForUser(
-        @PageableDefault(size = 2) Pageable page,
+        @PageableDefault(sort = "id") Pageable page,
         Authentication auth
     ) {
         var loggedUser = UserService.getUserByAuth(auth);

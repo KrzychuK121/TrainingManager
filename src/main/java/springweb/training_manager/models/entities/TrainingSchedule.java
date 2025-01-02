@@ -35,6 +35,15 @@ public class TrainingSchedule implements Identificable<Integer> {
         this.weekday = weekday;
     }
 
+    public TrainingSchedule(Training training, Weekdays weekday) {
+        this(
+            training.getId(),
+            weekday
+        );
+
+        this.training = training;
+    }
+
     @Override
     public Integer getId() {
         return id;

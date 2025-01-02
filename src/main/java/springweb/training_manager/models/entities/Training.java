@@ -56,11 +56,14 @@ public class Training extends TrainingSchema {
 
     // Might be used in PUT but NOT PATCH!!
     public void copy(Training toCopy) {
-        this.title = toCopy.title;
-        this.description = toCopy.description;
-        this.trainingExercises = toCopy.trainingExercises == null || toCopy.trainingExercises.isEmpty()
-            ? null
-            : toCopy.trainingExercises;
-        this.owner = toCopy.owner;
+        var that = this;
+        title = toCopy.title;
+        description = toCopy.description;
+        if (toCopy.trainingExercises != null)
+            trainingExercises = toCopy.trainingExercises;
+        trainingExercises.forEach(
+            trainingExercise -> trainingExercise.setTraining(that)
+        );
+        owner = toCopy.owner;
     }
 }

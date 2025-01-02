@@ -25,13 +25,4 @@ public class TrainingPlanControllerWS {
     ) {
         return notificationTimerService.getReminderAndInitRest(auth);
     }
-
-    /*@Scheduled(fixedRate = 20 * 1000)
-    private void sendTestMessage() {
-        registry.getUsers().forEach(
-            simpUser -> log.info("username: {}", simpUser.getName())
-        );
-        log.info("----------------------------");
-    }*/
-
 }

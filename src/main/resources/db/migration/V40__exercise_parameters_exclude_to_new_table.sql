@@ -35,3 +35,13 @@ ALTER TABLE exercise
     DROP COLUMN IF EXISTS time,
     DROP COLUMN IF EXISTS weights,
     DROP COLUMN IF EXISTS difficulty;
+
+DO
+$$
+    BEGIN
+        PERFORM setval(
+            pg_get_serial_sequence('exercise_parameters', 'id'),
+            (SELECT MAX(ep.id) FROM exercise_parameters ep)
+                );
+    END;
+$$;

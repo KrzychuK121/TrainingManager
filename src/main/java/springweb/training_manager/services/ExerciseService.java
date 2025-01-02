@@ -13,10 +13,7 @@ import springweb.training_manager.models.entities.Exercise;
 import springweb.training_manager.models.entities.Training;
 import springweb.training_manager.models.entities.User;
 import springweb.training_manager.models.schemas.RoleSchema;
-import springweb.training_manager.models.viewmodels.exercise.ExerciseCreate;
-import springweb.training_manager.models.viewmodels.exercise.ExerciseRead;
-import springweb.training_manager.models.viewmodels.exercise.ExerciseWrite;
-import springweb.training_manager.models.viewmodels.exercise.ExerciseWriteAPI;
+import springweb.training_manager.models.viewmodels.exercise.*;
 import springweb.training_manager.models.viewmodels.exercise_parameters.ExerciseParametersRead;
 import springweb.training_manager.models.viewmodels.training.TrainingExerciseVM;
 import springweb.training_manager.models.viewmodels.validation.ValidationErrors;
@@ -123,6 +120,37 @@ public class ExerciseService {
         var formattedTime = TimeService.parseTime(time);
         if (formattedTime != null)
             toSave.setTime(formattedTime);
+    }
+
+    public static int getTotalBurnedKcal(ExerciseRead exercise) {
+        if (exercise == null)
+            return 0;
+
+        var parametersRead = new ExerciseParametersRead(
+            exercise.getParametersId(),
+            exercise.getRounds(),
+            exercise.getRepetition(),
+            exercise.getWeights(),
+            exercise.getTime()
+        );
+
+        return ExerciseParametersService.calcTotalBurnedKcal(
+            exercise.getDefaultBurnedKcal(),
+            parametersRead
+        );
+    }
+
+    public static int getTotalBurnedKcal(ExerciseTraining exercise) {
+        if (exercise == null)
+            return 0;
+
+        var parametersRead = new ExerciseParametersRead(
+            exercise.getExerciseParameters()
+        );
+        return ExerciseParametersService.calcTotalBurnedKcal(
+            exercise.getDefaultBurnedKcal(),
+            parametersRead
+        );
     }
 
     public static String[] getToEditTrainingIds(ExerciseRead toEdit) {
