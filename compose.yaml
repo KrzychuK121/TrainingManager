@@ -6,6 +6,6 @@ services:
     environment:
       - 'POSTGRES_PASSWORD=qwerty'
       - 'POSTGRES_USER=postgres'
-      - 'POSTGRES_DB=local-database'
+      - 'POSTGRES_DB=local_database'
     ports:
       - '5432:5432'
