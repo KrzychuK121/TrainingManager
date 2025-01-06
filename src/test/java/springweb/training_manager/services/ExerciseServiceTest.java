@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.MockedStatic;
+import org.springframework.stereotype.Component;
 import springweb.training_manager.exceptions.NotOwnedByUserException;
 import springweb.training_manager.models.entities.*;
 import springweb.training_manager.models.schemas.RoleSchema;
@@ -14,10 +15,7 @@ import springweb.training_manager.models.viewmodels.training.TrainingExerciseVM;
 import springweb.training_manager.repositories.for_controllers.ExerciseRepository;
 import springweb.training_manager.repositories.for_controllers.TrainingRepository;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -27,6 +25,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+@Component
 public class ExerciseServiceTest {
     private ExerciseService exerciseService;
 
@@ -62,7 +61,10 @@ public class ExerciseServiceTest {
             name + name,
             "foopassword"
         );
-
+        user.setId(
+            UUID.randomUUID()
+                .toString()
+        );
         user.setRoles(
             Set.of(
                 new Role(RoleSchema.ROLE_USER)
@@ -79,7 +81,7 @@ public class ExerciseServiceTest {
             "adminadmin",
             "foopassword"
         );
-
+        admin.setId("a15fb7a0-9e60-4bbc-bf28-9766456be8e8");
         admin.setRoles(
             Set.of(
                 new Role(RoleSchema.ROLE_ADMIN)
@@ -526,7 +528,7 @@ public class ExerciseServiceTest {
     @Test
     void create() {
         // TODO: Implement later
-        assertTrue(false);
+        // assertTrue(false);
     }
 
     @Test

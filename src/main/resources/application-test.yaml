@@ -14,3 +14,6 @@ spring:
   flyway:
     enabled: true
 logging.level.org.hibernate.orm.jdbc.bind: TRACE
+security:
+  frontend:
+    url: http://localhost:3000
