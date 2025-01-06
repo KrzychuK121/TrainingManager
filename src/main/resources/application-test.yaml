@@ -1,4 +1,8 @@
 spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/local_database
+    username: postgres
+    password: qwerty
   jpa:
     hibernate:
       ddl-auto: validate
