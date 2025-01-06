@@ -4,15 +4,19 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.test.context.ActiveProfiles;
 import springweb.training_manager.models.entities.TrainingSchedule;
 import springweb.training_manager.models.entities.Weekdays;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@ActiveProfiles("test")
 @DataJpaTest
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class TrainingScheduleRepositoryIntegrationTest {
 
     @Autowired
@@ -45,7 +49,7 @@ class TrainingScheduleRepositoryIntegrationTest {
 
         // then
         assertTrue(
-        found.contains(first) &&
+            found.contains(first) &&
                 found.contains(second) &&
                 found.contains(third)
         );
@@ -78,7 +82,7 @@ class TrainingScheduleRepositoryIntegrationTest {
     }
 
     @Test
-    void saveInsertOperationFailsWhenSavingDuplicatedRow(){
+    void saveInsertOperationFailsWhenSavingDuplicatedRow() {
         /*// given
         TrainingScheduleId duplicatedId = new TrainingScheduleId(4, Weekdays.SATURDAY);
 
@@ -103,7 +107,7 @@ class TrainingScheduleRepositoryIntegrationTest {
     }
 
     @Test
-    void saveUpdateOperationWorks(){
+    void saveUpdateOperationWorks() {
 
     }
 
