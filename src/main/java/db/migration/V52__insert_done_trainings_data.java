@@ -132,7 +132,7 @@ public class V52__insert_done_trainings_data extends BaseJavaMigration {
         doneExercises.add(
             new DoneExercise_V52(
                 2,
-                1,
+                2,
                 3,
                 1
             )

@@ -18,6 +18,3 @@ BEGIN
       AND r.identity_user_id = owner_id;
 END
 $$;
-
-alter procedure switch_active_procedure(integer, varchar) owner to postgres;
-

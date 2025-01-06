@@ -18,6 +18,3 @@ BEGIN
       AND r.owner_id = provided_owner_id;
 END
 $$;
-
-alter procedure switch_active_procedure(integer, varchar) owner to postgres;
-
