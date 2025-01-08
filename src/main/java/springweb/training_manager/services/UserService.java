@@ -85,7 +85,10 @@ public class UserService {
      * </ul> Otherwise, returns <strong>false</strong>
      */
     public static boolean isPermittedToModifyFor(User requesting, User owner) {
-        if (userIsInRole(requesting, Role.ADMIN))
+        if (
+            userIsInRole(requesting, Role.ADMIN)
+                || userIsInRole(requesting, Role.MODERATOR)
+        )
             return true;
         return requesting.equals(owner);
     }
