@@ -10,9 +10,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
 import springweb.training_manager.exceptions.NotOwnedByUserException;
 import springweb.training_manager.models.entities.Exercise;
+import springweb.training_manager.models.entities.Role;
 import springweb.training_manager.models.entities.Training;
 import springweb.training_manager.models.entities.User;
-import springweb.training_manager.models.schemas.RoleSchema;
 import springweb.training_manager.models.viewmodels.exercise.*;
 import springweb.training_manager.models.viewmodels.exercise_parameters.ExerciseParametersRead;
 import springweb.training_manager.models.viewmodels.training.TrainingExerciseVM;
@@ -202,7 +202,7 @@ public class ExerciseService {
         entityToSave.setParameters(preparedParameters);
         if (
             toSave.isExercisePrivate()
-                && !UserService.userIsInRole(loggedUser, RoleSchema.ROLE_ADMIN)
+                && !UserService.userIsInRole(loggedUser, Role.ADMIN)
         )
             entityToSave.setOwner(loggedUser);
 
@@ -252,7 +252,7 @@ public class ExerciseService {
         Pageable page,
         User owner
     ) {
-        return UserService.userIsInRole(owner, RoleSchema.ROLE_ADMIN)
+        return UserService.userIsInRole(owner, Role.ADMIN)
             ? getPagedAll(page)
             : getPagedPublicOrOwnedBy(page, owner);
     }

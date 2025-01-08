@@ -1,31 +1,33 @@
 package springweb.training_manager.services;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import springweb.training_manager.exceptions.user_service.SwitchToAdminException;
+import springweb.training_manager.exceptions.user_service.UserNotFoundException;
 import springweb.training_manager.models.entities.Role;
 import springweb.training_manager.models.entities.User;
-import springweb.training_manager.models.schemas.RoleSchema;
 import springweb.training_manager.models.viewmodels.authentication.AuthResponse;
 import springweb.training_manager.models.viewmodels.user.MyUserDetails;
 import springweb.training_manager.models.viewmodels.user.UserCredentials;
+import springweb.training_manager.models.viewmodels.user.UserRead;
 import springweb.training_manager.models.viewmodels.user.UserWrite;
 import springweb.training_manager.repositories.for_controllers.UserRepository;
 import springweb.training_manager.security.JwtService;
 
-import java.util.HashSet;
-import java.util.Set;
-
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UserService {
     private final MyUserDetailsService userDetailsService;
     private final JwtService jwtService;
     private final UserRepository repository;
-    private final RoleService roleService;
     private final PasswordEncoder encoder;
 
     public static final String PASSWORDS_NOT_EQUAL_MESSAGE = "Hasła się różnią. Sprawdź poprawność haseł";
@@ -42,7 +44,7 @@ public class UserService {
     public static String getUserIdByAuth(Authentication auth) {
         MyUserDetails userDetails = (MyUserDetails) auth.getPrincipal();
         // TODO: Check if the user has role ADMIN. If yes, then return null too (just in case)
-        return userDetails.isInRole(RoleSchema.ROLE_USER) ?
+        return userDetails.isInRole(Role.USER) ?
             userDetails.getUser()
                 .getId() :
             null;
@@ -61,13 +63,12 @@ public class UserService {
         return userDetails.getUser();
     }
 
-    public static boolean userIsInRole(User user, String roleName) {
-        return user.getRoles()
-            .stream()
-            .anyMatch(
-                role -> role.getName()
-                    .equals(roleName)
-            );
+    public static boolean userIsInRole(
+        User user,
+        Role role
+    ) {
+        return user.getRole()
+            .equals(role);
     }
 
     /**
@@ -84,7 +85,7 @@ public class UserService {
      * </ul> Otherwise, returns <strong>false</strong>
      */
     public static boolean isPermittedToModifyFor(User requesting, User owner) {
-        if (userIsInRole(requesting, RoleSchema.ROLE_ADMIN))
+        if (userIsInRole(requesting, Role.ADMIN))
             return true;
         return requesting.equals(owner);
     }
@@ -109,36 +110,34 @@ public class UserService {
         return isPermittedToModifyFor(requesting, owner) || owner == null;
     }
 
+    public Page<UserRead> getAllPagedUsers(Pageable page) {
+        return PageSortService.getPageBy(
+            User.class,
+            page,
+            repository::findAll,
+            UserRead::new,
+            log
+        );
+    }
+
     public boolean ifPasswordsMatches(String password, String passwordRepeat) {
         if (password == null || passwordRepeat == null)
             return false;
         return password.equals(passwordRepeat);
     }
 
-    public void register(UserWrite toSave, Set<Role> roles) {
+    public void register(UserWrite toSave, Role role) {
         if (userDetailsService.userExists(toSave.getUsername()
             .toLowerCase()))
             throw new IllegalArgumentException("Istnieje już użytkownik o takiej nazwie. Może to Ty?");
         if (!ifPasswordsMatches(toSave.getPassword(), toSave.getPasswordRepeat()))
             throw new IllegalArgumentException(PASSWORDS_NOT_EQUAL_MESSAGE);
 
-        Set<Role> rolesToSave = prepRoles(roles);
-
         toSave.setUsername(toSave.getUsername()
             .toLowerCase());
         User userToSave = toSave.toEntity();
         userToSave.setPasswordHashed(encoder.encode(toSave.getPassword()));
-        userToSave.setRoles(rolesToSave);
-
-        rolesToSave.forEach(
-            role -> {
-                Set<User> users = role.getUsers();
-                users.add(userToSave);
-
-                role.setUsers(users);
-                roleService.save(role);
-            }
-        );
+        userToSave.setRole(role);
         userDetailsService.createUser(new MyUserDetails(userToSave));
 
     }
@@ -158,29 +157,22 @@ public class UserService {
         return new AuthResponse(
             token,
             foundUser.getFirstName(),
-            foundUser.getLastName()
+            foundUser.getLastName(),
+            foundUser.getRole()
         );
     }
 
-    private Set<Role> prepRoles(Set<Role> roles) {
-        if (roles == null || roles.isEmpty())
-            return null;
+    public void switchUsersRole(
+        String userId,
+        Role newRole
+    ) {
+        if (newRole == Role.ADMIN)
+            throw new SwitchToAdminException();
+        var user = repository.findById(userId)
+            .orElseThrow(UserNotFoundException::new);
 
-        Set<Role> rolesToSave = new HashSet<>(roles.size());
-        roles.forEach(
-            role -> {
-                Role found = roleService.getOptionalRoleByName(role.getName())
-                    .orElse(role);
-
-                if (found.getId() == 0) {
-                    var savedRole = roleService.save(found);
-                    rolesToSave.add(savedRole);
-                } else
-                    rolesToSave.add(found);
-
-            }
-        );
-        return rolesToSave;
+        user.setRole(newRole);
+        repository.save(user);
     }
 
 }

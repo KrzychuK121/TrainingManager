@@ -7,7 +7,6 @@ import org.mockito.MockedStatic;
 import org.springframework.stereotype.Component;
 import springweb.training_manager.exceptions.NotOwnedByUserException;
 import springweb.training_manager.models.entities.*;
-import springweb.training_manager.models.schemas.RoleSchema;
 import springweb.training_manager.models.viewmodels.exercise.ExerciseWrite;
 import springweb.training_manager.models.viewmodels.exercise_parameters.ExerciseParametersRead;
 import springweb.training_manager.models.viewmodels.exercise_parameters.ExerciseParametersWrite;
@@ -15,7 +14,10 @@ import springweb.training_manager.models.viewmodels.training.TrainingExerciseVM;
 import springweb.training_manager.repositories.for_controllers.ExerciseRepository;
 import springweb.training_manager.repositories.for_controllers.TrainingRepository;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -65,11 +67,7 @@ public class ExerciseServiceTest {
             UUID.randomUUID()
                 .toString()
         );
-        user.setRoles(
-            Set.of(
-                new Role(RoleSchema.ROLE_USER)
-            )
-        );
+        user.setRole(Role.USER);
 
         return user;
     }
@@ -82,11 +80,7 @@ public class ExerciseServiceTest {
             "foopassword"
         );
         admin.setId("a15fb7a0-9e60-4bbc-bf28-9766456be8e8");
-        admin.setRoles(
-            Set.of(
-                new Role(RoleSchema.ROLE_ADMIN)
-            )
-        );
+        admin.setRole(Role.ADMIN);
 
         return admin;
     }

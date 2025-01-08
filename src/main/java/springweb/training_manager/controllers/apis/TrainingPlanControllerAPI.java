@@ -13,8 +13,8 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import springweb.training_manager.models.entities.Role;
 import springweb.training_manager.models.entities.TrainingPlan;
-import springweb.training_manager.models.schemas.RoleSchema;
 import springweb.training_manager.models.viewmodels.training.WorkoutTrainingRead;
 import springweb.training_manager.models.viewmodels.training_plan.TrainingPlansEditRead;
 import springweb.training_manager.models.viewmodels.training_plan.TrainingPlansPagedRead;
@@ -31,14 +31,20 @@ import java.net.URI;
 import java.time.LocalDate;
 import java.util.List;
 
-@RequiredArgsConstructor
 @RestController
+@Secured(
+    {
+        Role.Constants.ADMIN,
+        Role.Constants.MODERATOR,
+        Role.Constants.USER
+    }
+)
 @RequestMapping(
     value = "/api/plans",
     produces = MediaType.APPLICATION_JSON_VALUE,
     consumes = MediaType.APPLICATION_JSON_VALUE
 )
-@Secured({RoleSchema.ROLE_ADMIN, RoleSchema.ROLE_USER})
+@RequiredArgsConstructor
 public class TrainingPlanControllerAPI {
     private final TrainingPlanService service;
     private final DoneTrainingRepository doneTrainingRepository;
@@ -56,6 +62,7 @@ public class TrainingPlanControllerAPI {
         );
     }
 
+    @Secured({Role.Constants.USER})
     @GetMapping("/week")
     public ResponseEntity<TrainingPlansRead> getWeek(Authentication auth) {
         // TODO: Extract it to service
@@ -86,6 +93,7 @@ public class TrainingPlanControllerAPI {
         }
     }
 
+    @Secured({Role.Constants.USER})
     @GetMapping("/today-training")
     @ResponseBody
     public ResponseEntity<WorkoutTrainingRead> getTodayTraining(Authentication auth) {

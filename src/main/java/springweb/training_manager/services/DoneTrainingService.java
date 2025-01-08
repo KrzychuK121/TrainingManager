@@ -4,11 +4,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import springweb.training_manager.models.entities.DoneTraining;
-import springweb.training_manager.models.entities.Training;
-import springweb.training_manager.models.entities.TrainingRoutine;
-import springweb.training_manager.models.entities.User;
-import springweb.training_manager.models.schemas.RoleSchema;
+import springweb.training_manager.models.entities.*;
 import springweb.training_manager.models.viewmodels.done_training.DoneTrainingCalendarRead;
 import springweb.training_manager.models.viewmodels.done_training.DoneTrainingDetailsRead;
 import springweb.training_manager.models.viewmodels.done_training.DoneTrainingWrite;
@@ -131,7 +127,7 @@ public class DoneTrainingService {
             );
         if (
             toEdit.getEndDate() != null
-                && !UserService.userIsInRole(loggedUser, RoleSchema.ROLE_ADMIN)
+                && !UserService.userIsInRole(loggedUser, Role.ADMIN)
         )
             throw new IllegalStateException(
                 "You can't edit existing done training register " +

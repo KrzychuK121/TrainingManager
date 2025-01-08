@@ -1,12 +1,11 @@
 package springweb.training_manager.models.entities;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import springweb.training_manager.models.schemas.UserSchema;
-
-import java.util.Set;
 
 @Setter
 @Getter
@@ -16,13 +15,7 @@ import java.util.Set;
 public class User extends UserSchema {
 
     private String passwordHashed;
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-        name = "users_roles",
-        joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
-        inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id")
-    )
-    private Set<Role> roles;
+
 
     public User(
         String firstName,
@@ -35,7 +28,8 @@ public class User extends UserSchema {
             firstName,
             lastName,
             username,
-            password
+            password,
+            Role.USER
         );
     }
 

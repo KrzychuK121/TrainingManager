@@ -7,10 +7,8 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.test.context.ActiveProfiles;
 import springweb.training_manager.models.entities.*;
-import springweb.training_manager.models.schemas.RoleSchema;
 
 import java.time.LocalTime;
-import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -40,9 +38,6 @@ class TrainingPlanRepositoryTest {
 
         final var TEST_DAY_SCHEDULES_COUNT = 5;
 
-        final var USER_ROLE = new Role(RoleSchema.ROLE_USER);
-        entityManager.persist(USER_ROLE);
-
         var user = new User(
             "usernameTestFoo",
             "fooLastname",
@@ -50,11 +45,8 @@ class TrainingPlanRepositoryTest {
             "passwordFoo12!"
         );
         user.setPasswordHashed("passwordFoo12!");
-
         user = entityManager.persist(user);
-
-        user.setRoles(Set.of(USER_ROLE));
-        USER_ROLE.setUsers(Set.of(user));
+        user.setRole(Role.USER);
 
         var training = new Training(
             "fooTitle",

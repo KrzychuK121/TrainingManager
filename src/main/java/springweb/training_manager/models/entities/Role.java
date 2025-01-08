@@ -1,31 +1,26 @@
 package springweb.training_manager.models.entities;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.Table;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import springweb.training_manager.models.schemas.RoleSchema;
+import org.springframework.security.core.GrantedAuthority;
 
-import java.util.HashSet;
-import java.util.Set;
+public enum Role implements GrantedAuthority {
+    ADMIN(Constants.ADMIN),
+    MODERATOR(Constants.MODERATOR),
+    USER(Constants.USER);
 
-@Setter
-@Getter
-@NoArgsConstructor
-@Entity
-@Table(name = "roles")
-public class Role extends RoleSchema {
-    @ManyToMany(mappedBy = "roles")
-    private Set<User> users = new HashSet<>();
+    private final String authority;
 
-    public Role(
-        String name
-    ) {
-        super(
-            0,
-            name
-        );
+    Role(String authority) {
+        this.authority = authority;
+    }
+
+    @Override
+    public String getAuthority() {
+        return authority;
+    }
+
+    public static class Constants {
+        public static final String ADMIN = "ADMIN";
+        public static final String MODERATOR = "MODERATOR";
+        public static final String USER = "USER";
     }
 }

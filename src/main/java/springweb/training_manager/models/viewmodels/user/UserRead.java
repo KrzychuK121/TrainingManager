@@ -1,17 +1,26 @@
 package springweb.training_manager.models.viewmodels.user;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import springweb.training_manager.models.entities.Role;
 import springweb.training_manager.models.entities.User;
-import springweb.training_manager.models.schemas.UserSchema;
 
-public class UserRead extends UserSchema {
+@AllArgsConstructor
+@Getter
+public class UserRead {
+    private String id;
+    private String firstName;
+    private String lastName;
+    private String username;
+    private Role role;
 
     public UserRead(User user) {
-        super(
+        this(
             user.getId(),
             user.getFirstName(),
             user.getLastName(),
             user.getUsername(),
-            ""
+            user.getRole()
         );
     }
 }
