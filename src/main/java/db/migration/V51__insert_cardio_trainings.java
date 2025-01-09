@@ -109,7 +109,7 @@ public class V51__insert_cardio_trainings extends BaseJavaMigration {
             "SELECT ep.id FROM exercise_parameters ep " +
                 "WHERE ep.rounds = ? " +
                 "AND ep.repetition =  ? " +
-                "AND NULLIF(ep.time, ?) IS NULL " +
+                "AND ep.time IS NOT DISTINCT FROM ? " +
                 "AND ep.weights = ?"
         );
         final var INSERT_PARAMS_SQL = "INSERT INTO exercise_parameters (repetition, rounds, time, weights) VALUES (?, ?, ?, ?)";

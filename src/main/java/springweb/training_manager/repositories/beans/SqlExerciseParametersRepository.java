@@ -18,7 +18,7 @@ interface SqlExerciseParametersRepository
             FROM ExerciseParameters ep
             WHERE ep.rounds = :#{#entity.rounds}
                 AND ep.repetition = :#{#entity.repetition}
-                AND NULLIF(ep.time, :#{#entity.time}) IS NULL
+                AND ep.time IS NOT DISTINCT FROM :#{#entity.time}
                 AND ep.weights = :#{#entity.weights}
         """)
     @Override

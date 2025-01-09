@@ -2,7 +2,7 @@
 This migration is responsible for creating procedure which will make every training
 and exercise of specified user to be public.
 */
-DROP PROCEDURE IF EXISTS make_resources_public_for();
+DROP PROCEDURE IF EXISTS make_resources_public_for;
 CREATE PROCEDURE make_resources_public_for(IN owner_id_to_clear varchar)
     LANGUAGE plpgsql
 AS
