@@ -1,6 +1,7 @@
 package springweb.training_manager.controllers.ws_config;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
@@ -19,6 +20,8 @@ import java.util.ArrayList;
 @EnableWebSocketMessageBroker
 @EnableScheduling
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
+    @Value("${security.frontend.url}")
+    private String frontendUrl;
     public static final String APP_DESTINATION_PREFIX = "/websockets";
     public static final String FRONTEND_PUBLIC_ENDPOINT_PREFIX = "/topic";
     private final JwtService service;
@@ -26,9 +29,9 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/ws")
-            .setAllowedOrigins("http://localhost:3000");
+            .setAllowedOrigins(frontendUrl);
         registry.addEndpoint("/ws")
-            .setAllowedOrigins("http://localhost:3000")
+            .setAllowedOrigins(frontendUrl)
             .withSockJS();
     }
 
