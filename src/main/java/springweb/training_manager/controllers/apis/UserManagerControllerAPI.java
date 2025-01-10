@@ -24,7 +24,10 @@ import springweb.training_manager.models.viewmodels.user.UserCredentials;
 import springweb.training_manager.models.viewmodels.user.UserRead;
 import springweb.training_manager.models.viewmodels.user.UserWrite;
 import springweb.training_manager.models.viewmodels.validation.ValidationErrors;
+import springweb.training_manager.services.CaptchaService;
 import springweb.training_manager.services.UserService;
+
+import java.io.IOException;
 
 @RestController
 @RequestMapping(
@@ -34,6 +37,7 @@ import springweb.training_manager.services.UserService;
 )
 @RequiredArgsConstructor
 public class UserManagerControllerAPI {
+    private final CaptchaService captchaService;
     private final UserService service;
     private static final Logger logger = LoggerFactory.getLogger(UserManagerControllerAPI.class);
 
@@ -41,6 +45,10 @@ public class UserManagerControllerAPI {
     @ResponseBody
     ResponseEntity<?> login(@RequestBody UserCredentials userCredentials) {
         try {
+            var captchaVerified = captchaService.captchaVerified(userCredentials.captchaToken());
+            if (!captchaVerified)
+                return ResponseEntity.badRequest()
+                    .build();
             var authResponse = service.login(userCredentials);
             return authResponse != null
                 ? ResponseEntity.ok(authResponse)
@@ -49,6 +57,9 @@ public class UserManagerControllerAPI {
         } catch (UsernameNotFoundException ex) {
             return ResponseEntity.status(404)
                 .body("User " + userCredentials.username() + " does not exist.");
+        } catch (IOException | InterruptedException e) {
+            return ResponseEntity.status(500)
+                .body("Captcha service failed");
         }
     }
 
