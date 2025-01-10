@@ -68,7 +68,11 @@ public class UserManagerControllerAPI {
     ResponseEntity<?> register(
         @RequestBody @Valid UserWrite current,
         BindingResult result
-    ) {
+    ) throws IOException, InterruptedException {
+        var captchaVerified = captchaService.captchaVerified(current.getCaptchaToken());
+        if (!captchaVerified)
+            return ResponseEntity.badRequest()
+                .body(new NotValidRegister("Captcha verification failed."));
         if (!service.ifPasswordsMatches(current.getPassword(), current.getPasswordRepeat()))
             result.addError(new FieldError("current", "passwordRepeat", UserService.PASSWORDS_NOT_EQUAL_MESSAGE));
 
@@ -83,9 +87,7 @@ public class UserManagerControllerAPI {
         } catch (IllegalArgumentException e) {
             logger.error("Exception occurs: {}", e.getMessage());
             return ResponseEntity.badRequest()
-                .body(
-                    new NotValidRegister("User exists")
-                );
+                .body(new NotValidRegister("User exists"));
         }
 
         return ResponseEntity.noContent()
