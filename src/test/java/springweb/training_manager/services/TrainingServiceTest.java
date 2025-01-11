@@ -3,14 +3,12 @@ package springweb.training_manager.services;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import springweb.training_manager.models.entities.*;
-import springweb.training_manager.models.schemas.RoleSchema;
 import springweb.training_manager.models.viewmodels.exercise.ExerciseTraining;
 import springweb.training_manager.repositories.for_controllers.ExerciseRepository;
 
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -65,11 +63,7 @@ class TrainingServiceTest {
             "qwerty123"
         );
 
-        user.setRoles(
-            Set.of(
-                new Role(RoleSchema.ROLE_ADMIN)
-            )
-        );
+        user.setRole(Role.ADMIN);
 
         var first = new Exercise(
             "pompki",

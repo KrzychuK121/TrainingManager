@@ -15,7 +15,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import springweb.training_manager.models.entities.BodyPart;
 import springweb.training_manager.models.entities.Difficulty;
-import springweb.training_manager.models.schemas.RoleSchema;
+import springweb.training_manager.models.entities.Role;
 import springweb.training_manager.models.viewmodels.exercise.ExerciseRead;
 import springweb.training_manager.models.viewmodels.exercise.ExerciseWrite;
 import springweb.training_manager.models.viewmodels.training.TrainingExerciseVM;
@@ -83,7 +83,7 @@ public class ExerciseController {
 
     }
 
-    @Secured({RoleSchema.ROLE_ADMIN, RoleSchema.ROLE_USER})
+    @Secured({Role.Constants.ADMIN, Role.Constants.USER})
     @GetMapping(
         value = "/create",
         produces = MediaType.TEXT_HTML_VALUE
@@ -97,7 +97,7 @@ public class ExerciseController {
         return "exercise/save";
     }
 
-    @Secured({RoleSchema.ROLE_ADMIN, RoleSchema.ROLE_USER})
+    @Secured({Role.Constants.ADMIN, Role.Constants.USER})
     @PostMapping(
         value = "/create",
         produces = MediaType.TEXT_HTML_VALUE,
@@ -140,7 +140,7 @@ public class ExerciseController {
         return "exercise/save";
     }
 
-    @Secured({RoleSchema.ROLE_ADMIN, RoleSchema.ROLE_USER})
+    @Secured({Role.Constants.ADMIN, Role.Constants.USER})
     @GetMapping(produces = MediaType.TEXT_HTML_VALUE)
     public String getAllView(
         Pageable page,
@@ -165,7 +165,7 @@ public class ExerciseController {
         return ResponseEntity.noContent().build();
     }*/
 
-    @Secured({RoleSchema.ROLE_ADMIN, RoleSchema.ROLE_USER})
+    @Secured({Role.Constants.ADMIN, Role.Constants.USER})
     @GetMapping("/edit/{id}")
     public String editView(
         @PathVariable int id,
@@ -199,7 +199,7 @@ public class ExerciseController {
         return "exercise/save";
     }
 
-    @Secured({RoleSchema.ROLE_ADMIN, RoleSchema.ROLE_USER})
+    @Secured({Role.Constants.ADMIN, Role.Constants.USER})
     @PostMapping("/edit/{id}")
     public String editView(
         @PathVariable int id,
@@ -249,7 +249,7 @@ public class ExerciseController {
         return "exercise/index";
     }
 
-    @Secured(RoleSchema.ROLE_ADMIN)
+    @Secured(Role.Constants.ADMIN)
     @GetMapping(
         value = "/delete/{id}",
         produces = MediaType.TEXT_HTML_VALUE

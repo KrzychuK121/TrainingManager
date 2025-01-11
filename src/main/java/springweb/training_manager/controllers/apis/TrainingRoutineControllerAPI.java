@@ -10,7 +10,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import springweb.training_manager.controllers.web_sockets.TrainingPlanControllerWS;
 import springweb.training_manager.exceptions.NotOwnedByUserException;
-import springweb.training_manager.models.schemas.RoleSchema;
+import springweb.training_manager.models.entities.Role;
 import springweb.training_manager.models.viewmodels.training_routine.TrainingRoutineRead;
 import springweb.training_manager.services.TimerServices.NotificationTimerService;
 import springweb.training_manager.services.TrainingRoutineService;
@@ -18,14 +18,20 @@ import springweb.training_manager.services.UserService;
 
 import java.util.List;
 
-@RequiredArgsConstructor
 @RestController
-@Secured({RoleSchema.ROLE_ADMIN, RoleSchema.ROLE_USER})
+@Secured(
+    {
+        Role.Constants.ADMIN,
+        Role.Constants.MODERATOR,
+        Role.Constants.USER
+    }
+)
 @RequestMapping(
     value = "/api/routines",
     produces = MediaType.APPLICATION_JSON_VALUE,
     consumes = MediaType.APPLICATION_JSON_VALUE
 )
+@RequiredArgsConstructor
 @Slf4j
 public class TrainingRoutineControllerAPI {
     private final TrainingRoutineService service;
@@ -37,6 +43,7 @@ public class TrainingRoutineControllerAPI {
         return ResponseEntity.ok(service.getAll());
     }
 
+    @Secured(Role.Constants.USER)
     @PatchMapping("/{id}")
     public ResponseEntity<?> switchActive(
         @PathVariable int id,

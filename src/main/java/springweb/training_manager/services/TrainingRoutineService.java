@@ -4,9 +4,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import springweb.training_manager.exceptions.NotOwnedByUserException;
+import springweb.training_manager.models.entities.Role;
 import springweb.training_manager.models.entities.TrainingRoutine;
 import springweb.training_manager.models.entities.User;
-import springweb.training_manager.models.schemas.RoleSchema;
 import springweb.training_manager.models.viewmodels.training_routine.TrainingRoutineRead;
 import springweb.training_manager.repositories.for_controllers.TrainingRoutineRepository;
 
@@ -71,7 +71,7 @@ public class TrainingRoutineService {
         int id,
         User loggedUser
     ) {
-        if (UserService.userIsInRole(loggedUser, RoleSchema.ROLE_ADMIN))
+        if (UserService.userIsInRole(loggedUser, Role.ADMIN))
             return;
 
         if (

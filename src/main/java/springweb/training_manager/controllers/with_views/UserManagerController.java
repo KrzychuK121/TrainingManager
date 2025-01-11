@@ -22,7 +22,6 @@ import springweb.training_manager.models.viewmodels.user.UserWrite;
 import springweb.training_manager.services.UserService;
 
 import javax.naming.AuthenticationException;
-import java.util.Set;
 
 @Controller
 public class UserManagerController {
@@ -40,26 +39,26 @@ public class UserManagerController {
     }
 
     @ModelAttribute("title")
-    String getTitle(){
+    String getTitle() {
         return "TrainingM - Użytkownik";
     }
-    
+
     @GetMapping("/login")
-    String login(Authentication auth){
-        if(auth != null && auth.isAuthenticated())
+    String login(Authentication auth) {
+        if (auth != null && auth.isAuthenticated())
             return "../static/index";
         return "user_manager/login";
     }
 
     @GetMapping("/glowna/login")
-    String mainLogin(Authentication auth){
-        if(auth != null && auth.isAuthenticated())
+    String mainLogin(Authentication auth) {
+        if (auth != null && auth.isAuthenticated())
             return "../static/index";
         return "user_manager/login";
     }
 
     @PostMapping("/loginErr")
-    String loginErr(HttpServletRequest request, Model model){
+    String loginErr(HttpServletRequest request, Model model) {
         HttpSession session = request.getSession(false);
         String errorMessage = "Nieprawidłowy login lub hasło.";
         if (session != null) {
@@ -74,9 +73,9 @@ public class UserManagerController {
         return "user_manager/login";
     }
 
-    
+
     @GetMapping("/register")
-    String register(Model model){
+    String register(Model model) {
         model.addAttribute("user", new UserWrite());
         return "user_manager/register";
     }
@@ -86,18 +85,15 @@ public class UserManagerController {
         @ModelAttribute("user") @Valid UserWrite current,
         BindingResult result,
         Model model
-    ){
-        if(!service.ifPasswordsMatches(current.getPassword(), current.getPasswordRepeat()))
+    ) {
+        if (!service.ifPasswordsMatches(current.getPassword(), current.getPasswordRepeat()))
             result.addError(new ObjectError("passwordRepeat", UserService.PASSWORDS_NOT_EQUAL_MESSAGE));
-        if(result.hasErrors())
+        if (result.hasErrors())
             return "user_manager/register";
 
-        Role roleUser = new Role();
-        roleUser.setName("ROLE_USER");
-
         try {
-            service.register(current, Set.of(roleUser));
-        } catch (IllegalArgumentException e){
+            service.register(current, Role.USER);
+        } catch (IllegalArgumentException e) {
             logger.error("Wystąpił wyjątek: " + e.getMessage());
             model.addAttribute("messType", "danger");
             model.addAttribute("mess", e.getMessage());
@@ -110,7 +106,7 @@ public class UserManagerController {
     }
 
     @GetMapping("/access-denied")
-    String accessDenied(){
+    String accessDenied() {
         return "user_manager/access_denied";
     }
 

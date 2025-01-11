@@ -14,8 +14,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import springweb.training_manager.exceptions.NotOwnedByUserException;
+import springweb.training_manager.models.entities.Role;
 import springweb.training_manager.models.entities.Training;
-import springweb.training_manager.models.schemas.RoleSchema;
 import springweb.training_manager.models.viewmodels.training.TrainingCreate;
 import springweb.training_manager.models.viewmodels.training.TrainingRead;
 import springweb.training_manager.models.viewmodels.training.TrainingWriteAPI;
@@ -27,7 +27,13 @@ import java.net.URI;
 import java.util.List;
 
 @RestController
-@Secured({RoleSchema.ROLE_ADMIN, RoleSchema.ROLE_USER})
+@Secured(
+    {
+        Role.Constants.ADMIN,
+        Role.Constants.MODERATOR,
+        Role.Constants.USER
+    }
+)
 @RequestMapping(
     value = "/api/training",
     produces = MediaType.APPLICATION_JSON_VALUE,
@@ -60,7 +66,7 @@ public class TrainingControllerAPI {
         Authentication auth
     ) {
         var user = UserService.getUserByAuth(auth);
-        if (UserService.userIsInRole(user, RoleSchema.ROLE_ADMIN))
+        if (UserService.userIsInRole(user, Role.ADMIN))
             return ResponseEntity.ok(service.getAll());
         return ResponseEntity.ok(service.getPublicOrOwnerBy(user));
     }

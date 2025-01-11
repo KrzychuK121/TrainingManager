@@ -12,11 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import springweb.training_manager.exceptions.NotOwnedByUserException;
-import springweb.training_manager.models.entities.Exercise;
-import springweb.training_manager.models.entities.ExerciseParameters;
-import springweb.training_manager.models.entities.Training;
-import springweb.training_manager.models.entities.User;
-import springweb.training_manager.models.schemas.RoleSchema;
+import springweb.training_manager.models.entities.*;
 import springweb.training_manager.models.viewmodels.exercise.ExerciseTraining;
 import springweb.training_manager.models.viewmodels.exercise_parameters.ExerciseParametersRead;
 import springweb.training_manager.models.viewmodels.exercise_parameters.ExerciseParametersWrite;
@@ -237,7 +233,7 @@ public class TrainingService {
         var entityToSave = toSave.toEntity();
         if (
             toSave.isTrainingPrivate()
-                && !UserService.userIsInRole(loggedUser, RoleSchema.ROLE_ADMIN)
+                && !UserService.userIsInRole(loggedUser, Role.ADMIN)
         )
             entityToSave.setOwner(loggedUser);
 
@@ -282,7 +278,7 @@ public class TrainingService {
     }
 
     public List<TrainingExerciseVM> getAllForUser(User user) {
-        if (UserService.userIsInRole(user, RoleSchema.ROLE_ADMIN))
+        if (UserService.userIsInRole(user, Role.ADMIN))
             return getAll(TrainingExerciseVM::new);
         return repository.findAllPublicOrOwnedBy(user.getId())
             .stream()
@@ -384,7 +380,7 @@ public class TrainingService {
     }
 
     public Page<TrainingRead> getPagedForUser(Pageable page, User user) {
-        if (UserService.userIsInRole(user, RoleSchema.ROLE_ADMIN))
+        if (UserService.userIsInRole(user, Role.ADMIN))
             return getPagedAllAlternative(page);
         return getPagedPublicOrOwnerBy(page, user);
     }
@@ -441,7 +437,7 @@ public class TrainingService {
     }
 
     public TrainingCreate getCreateModel(Integer id, User owner) {
-        var allExerciseTrainings = UserService.userIsInRole(owner, RoleSchema.ROLE_ADMIN)
+        var allExerciseTrainings = UserService.userIsInRole(owner, Role.ADMIN)
             ? exerciseRepository.findAll()
             .stream()
             .map(ExerciseTraining::new)

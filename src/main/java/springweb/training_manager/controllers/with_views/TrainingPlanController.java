@@ -13,9 +13,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
+import springweb.training_manager.models.entities.Role;
 import springweb.training_manager.models.entities.TrainingPlan;
 import springweb.training_manager.models.entities.Weekdays;
-import springweb.training_manager.models.schemas.RoleSchema;
 import springweb.training_manager.models.viewmodels.training_plan.TrainingPlansWrite;
 import springweb.training_manager.models.viewmodels.training_routine.TrainingRoutineReadIndex;
 import springweb.training_manager.services.TrainingPlanService;
@@ -33,7 +33,7 @@ public class TrainingPlanController {
     private final TrainingRoutineService routineService;
     private final Logger logger = LoggerFactory.getLogger(TrainingPlanController.class);
 
-    @Secured({RoleSchema.ROLE_ADMIN, RoleSchema.ROLE_USER})
+    @Secured({Role.Constants.ADMIN, Role.Constants.USER})
     @GetMapping
     public String getAll(Authentication auth, Model model) {
         var loggedUser = UserService.getUserByAuth(auth);
@@ -45,7 +45,7 @@ public class TrainingPlanController {
         return "routine/index";
     }
 
-    @Secured({RoleSchema.ROLE_ADMIN, RoleSchema.ROLE_USER})
+    @Secured({Role.Constants.ADMIN, Role.Constants.USER})
     @GetMapping("/week")
     public String getWeek(
         Authentication auth,

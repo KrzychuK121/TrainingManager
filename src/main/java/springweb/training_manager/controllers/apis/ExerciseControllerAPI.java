@@ -15,7 +15,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import springweb.training_manager.exceptions.NotOwnedByUserException;
 import springweb.training_manager.models.entities.Exercise;
-import springweb.training_manager.models.schemas.RoleSchema;
+import springweb.training_manager.models.entities.Role;
 import springweb.training_manager.models.viewmodels.exercise.ExerciseCreate;
 import springweb.training_manager.models.viewmodels.exercise.ExerciseRead;
 import springweb.training_manager.models.viewmodels.exercise.ExerciseWriteAPI;
@@ -25,7 +25,13 @@ import springweb.training_manager.services.UserService;
 import java.net.URI;
 
 @RestController
-@Secured({RoleSchema.ROLE_ADMIN, RoleSchema.ROLE_USER})
+@Secured(
+    {
+        Role.Constants.ADMIN,
+        Role.Constants.MODERATOR,
+        Role.Constants.USER
+    }
+)
 @RequestMapping(
     value = "/api/exercise",
     produces = MediaType.APPLICATION_JSON_VALUE,

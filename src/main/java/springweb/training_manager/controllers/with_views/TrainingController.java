@@ -16,8 +16,8 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import springweb.training_manager.models.entities.Exercise;
+import springweb.training_manager.models.entities.Role;
 import springweb.training_manager.models.entities.Training;
-import springweb.training_manager.models.schemas.RoleSchema;
 import springweb.training_manager.models.viewmodels.exercise.ExerciseTraining;
 import springweb.training_manager.models.viewmodels.exercise_parameters.ExerciseParametersWrite;
 import springweb.training_manager.models.viewmodels.training.TrainingRead;
@@ -82,7 +82,7 @@ public class TrainingController {
 
     }
 
-    @Secured({RoleSchema.ROLE_ADMIN, RoleSchema.ROLE_USER})
+    @Secured({Role.Constants.ADMIN, Role.Constants.USER})
     @GetMapping(
         value = "/create",
         produces = MediaType.TEXT_HTML_VALUE
@@ -95,7 +95,7 @@ public class TrainingController {
         return "training/save";
     }
 
-    @Secured({RoleSchema.ROLE_ADMIN, RoleSchema.ROLE_USER})
+    @Secured({Role.Constants.ADMIN, Role.Constants.USER})
     @PostMapping(
         value = {"/create", "/edit/*"},
         params = "addExercise",
@@ -121,7 +121,7 @@ public class TrainingController {
         return "training/save";
     }
 
-    @Secured({RoleSchema.ROLE_ADMIN, RoleSchema.ROLE_USER})
+    @Secured({Role.Constants.ADMIN, Role.Constants.USER})
     @PostMapping(
         value = "/create",
         produces = MediaType.TEXT_HTML_VALUE,
@@ -156,7 +156,7 @@ public class TrainingController {
         return "training/save";
     }
 
-    @Secured({RoleSchema.ROLE_ADMIN, RoleSchema.ROLE_USER})
+    @Secured({Role.Constants.ADMIN, Role.Constants.USER})
     @GetMapping(
         produces = MediaType.TEXT_HTML_VALUE
     )
@@ -180,7 +180,7 @@ public class TrainingController {
         return ResponseEntity.ok(usersTrainings);
     }
 
-    @Secured({RoleSchema.ROLE_ADMIN, RoleSchema.ROLE_USER})
+    @Secured({Role.Constants.ADMIN, Role.Constants.USER})
     @GetMapping(
         value = "/train/{id}",
         produces = MediaType.TEXT_HTML_VALUE
@@ -216,7 +216,7 @@ public class TrainingController {
         return "training/train";
     }
 
-    @Secured({RoleSchema.ROLE_ADMIN, RoleSchema.ROLE_USER})
+    @Secured({Role.Constants.ADMIN, Role.Constants.USER})
     @GetMapping("/edit/{id}")
     public String editView(
         @PathVariable int id,
@@ -258,7 +258,7 @@ public class TrainingController {
         return selected;
     }
 
-    @Secured({RoleSchema.ROLE_ADMIN, RoleSchema.ROLE_USER})
+    @Secured({Role.Constants.ADMIN, Role.Constants.USER})
     @PostMapping(
         value = "/edit/{id}",
         params = "!addExercise"
@@ -298,7 +298,7 @@ public class TrainingController {
         return "training/index";
     }
 
-    @Secured(RoleSchema.ROLE_ADMIN)
+    @Secured(Role.Constants.ADMIN)
     @GetMapping(
         value = "/delete/{id}",
         produces = MediaType.TEXT_HTML_VALUE

@@ -5,9 +5,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import springweb.training_manager.models.entities.Role;
 import springweb.training_manager.models.viewmodels.workout_assistant.WorkoutAssistantWrite;
 import springweb.training_manager.services.UserService;
 import springweb.training_manager.services.WorkoutAssistantServices.WorkoutAssistantService;
@@ -16,6 +18,7 @@ import springweb.training_manager.services.WorkoutAssistantServices.WorkoutAssis
 import springweb.training_manager.services.WorkoutAssistantServices.WorkoutAssistantTypedServices.WAWeightReductionService;
 
 @RestController
+@Secured({Role.Constants.USER})
 @RequiredArgsConstructor
 @RequestMapping(
     value = "/api/assistant",
