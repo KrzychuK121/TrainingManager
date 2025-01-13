@@ -24,6 +24,17 @@ public interface ExerciseRepository extends DuplicationRepository<Exercise> {
         Pageable pageable
     );
 
+    Page<Exercise> findPublicOrOwnedByAndName(
+        String ownerId,
+        String name,
+        Pageable pageable
+    );
+
+    Page<Exercise> findAllByNameLikeIgnoreCase(
+        String name,
+        Pageable pageable
+    );
+
     Page<Exercise> findAll(Pageable pageable);
 
     @Override

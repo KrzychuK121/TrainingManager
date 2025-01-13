@@ -13,9 +13,7 @@ import springweb.training_manager.models.schemas.UserSchema;
 @Entity
 @Table(name = "identity_user")
 public class User extends UserSchema {
-
     private String passwordHashed;
-
 
     public User(
         String firstName,

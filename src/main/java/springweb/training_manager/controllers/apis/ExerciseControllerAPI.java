@@ -46,10 +46,13 @@ public class ExerciseControllerAPI {
     @ResponseBody
     public ResponseEntity<Page<ExerciseRead>> getPagedForUser(
         @PageableDefault(sort = "id") Pageable page,
+        @RequestParam(required = false) String filter,
         Authentication auth
     ) {
         var loggedUser = UserService.getUserByAuth(auth);
-        var paged = service.getPagedForUser(page, loggedUser);
+        var paged = filter == null
+            ? service.getPagedForUser(page, loggedUser)
+            : service.getPagedByName(filter, page, loggedUser);
         return ResponseEntity.ok(paged);
     }
 

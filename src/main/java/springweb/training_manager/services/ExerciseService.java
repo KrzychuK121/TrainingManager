@@ -235,6 +235,31 @@ public class ExerciseService {
         return getPageBy(page, repository::findAll);
     }
 
+    public Page<ExerciseRead> getPagedByName(
+        String name,
+        Pageable page,
+        User loggedUser
+    ) {
+        Function<Pageable, Page<Exercise>> find = UserService.isAtLeastModerator(loggedUser)
+            ? (Pageable pageable) -> repository.findAllByNameLikeIgnoreCase(
+            name,
+            pageable
+        )
+            : (Pageable pageable) -> repository.findPublicOrOwnedByAndName(
+            loggedUser.getId(),
+            name,
+            pageable
+        );
+
+        return PageSortService.getPageBy(
+            Exercise.class,
+            page,
+            find,
+            ExerciseRead::new,
+            logger
+        );
+    }
+
     public Page<ExerciseRead> getPagedPublicOrOwnedBy(
         Pageable page,
         User owner

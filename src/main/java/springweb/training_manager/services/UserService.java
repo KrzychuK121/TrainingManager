@@ -71,6 +71,11 @@ public class UserService {
             .equals(role);
     }
 
+    public static boolean isAtLeastModerator(User requesting) {
+        return userIsInRole(requesting, Role.ADMIN)
+            || userIsInRole(requesting, Role.MODERATOR);
+    }
+
     /**
      * This method checks logic if <code>requesting</code> can access resource that
      * contains reference to <code>owner</code> for edit/delete operations.
@@ -85,10 +90,7 @@ public class UserService {
      * </ul> Otherwise, returns <strong>false</strong>
      */
     public static boolean isPermittedToModifyFor(User requesting, User owner) {
-        if (
-            userIsInRole(requesting, Role.ADMIN)
-                || userIsInRole(requesting, Role.MODERATOR)
-        )
+        if (isAtLeastModerator(requesting))
             return true;
         return requesting.equals(owner);
     }

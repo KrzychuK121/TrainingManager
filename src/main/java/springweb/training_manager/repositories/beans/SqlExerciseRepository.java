@@ -39,6 +39,27 @@ interface SqlExerciseRepository extends ExerciseRepository, JpaRepository<Exerci
     );
 
     @Override
+    Page<Exercise> findAllByNameLikeIgnoreCase(
+        String name,
+        Pageable pageable
+    );
+
+    @Override
+    @Query("""
+            SELECT e FROM Exercise e
+            WHERE (
+                    e.owner IS NULL
+                    OR e.owner.id = :ownerId
+            )
+            AND LOWER(e.name) LIKE CONCAT('%', LOWER(:name), '%')
+        """)
+    Page<Exercise> findPublicOrOwnedByAndName(
+        @Param("ownerId") String ownerId,
+        @Param("name") String name,
+        Pageable pageable
+    );
+
+    @Override
     Optional<Exercise> findByIdAndOwnerId(int id, String ownerId);
 
     @Override
