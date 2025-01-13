@@ -15,6 +15,9 @@ import springweb.training_manager.services.WorkoutAssistantServices.WorkoutAssis
 
 import java.time.LocalTime;
 import java.util.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
@@ -27,6 +30,7 @@ public class WorkoutAssistantService {
     private final TrainingPlanRepository trainingPlanRepository;
     private final ExerciseParametersRepository parametersRepository;
 
+    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(10);
     private static final Map<User, TrainingRoutine> plannedUsersRoutines = Collections.synchronizedMap(new HashMap<>());
 
     private Training prepareTrainingToSave(
@@ -264,6 +268,28 @@ public class WorkoutAssistantService {
         newRoutine.setPlans(plans);
 
         plannedUsersRoutines.put(loggedUser, newRoutine);
+
+        scheduler.schedule(
+            new Runnable() {
+                @Override
+                public void run() {
+                    var removed = plannedUsersRoutines.remove(loggedUser);
+                    var message = removed == null
+                        ? String.format(
+                        "Trying to remove new routine for user %s but it does not exist.",
+                        loggedUser.getUsername()
+                    )
+                        : String.format(
+                        "Removing new routine for user %s.",
+                        loggedUser.getUsername()
+                    );
+                    log.info(message);
+                }
+            },
+            25,
+            TimeUnit.MINUTES
+        );
+
         return new PlannedRoutineRead(plans);
     }
 }
