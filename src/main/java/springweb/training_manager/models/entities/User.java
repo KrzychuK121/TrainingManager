@@ -27,6 +27,7 @@ public class User extends UserSchema {
             lastName,
             username,
             password,
+            false,
             Role.USER
         );
     }

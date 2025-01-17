@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -152,10 +153,15 @@ public class UserService {
             credentials.username()
                 .toLowerCase()
         );
-        User foundUser = ((MyUserDetails) details).getUser();
+        MyUserDetails myDetails = (MyUserDetails) details;
+
+        User foundUser = myDetails.getUser();
         var foundPassword = foundUser.getPasswordHashed();
         if (!encoder.matches(credentials.password(), foundPassword))
             return null;
+
+        if (!myDetails.isAccountNonLocked())
+            throw new LockedException("User is locked.");
 
         var token = jwtService.generateToken(details);
 
@@ -167,17 +173,33 @@ public class UserService {
         );
     }
 
+    private User getUser(String userId) {
+        return repository.findById(userId)
+            .orElseThrow(UserNotFoundException::new);
+    }
+
     public void switchUsersRole(
         String userId,
         Role newRole
     ) {
         if (newRole == Role.ADMIN)
             throw new SwitchToAdminException();
-        var user = repository.findById(userId)
-            .orElseThrow(UserNotFoundException::new);
+        var user = getUser(userId);
 
         user.setRole(newRole);
         repository.save(user);
     }
 
+    public void changeUserLockedStatus(
+        String userIdToChange,
+        boolean lock
+    ) {
+        var user = getUser(userIdToChange);
+        if (userIsInRole(user, Role.ADMIN))
+            throw new IllegalArgumentException("Cannot lock admin account.");
+        
+        user.setRole(Role.USER);
+        user.setLocked(lock);
+        repository.save(user);
+    }
 }

@@ -13,6 +13,7 @@ public class UserRead {
     private String lastName;
     private String username;
     private Role role;
+    private boolean locked;
 
     public UserRead(User user) {
         this(
@@ -20,7 +21,8 @@ public class UserRead {
             user.getFirstName(),
             user.getLastName(),
             user.getUsername(),
-            user.getRole()
+            user.getRole(),
+            user.isLocked()
         );
     }
 }

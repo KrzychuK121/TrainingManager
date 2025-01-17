@@ -8,9 +8,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.BindingResult;
@@ -52,12 +54,15 @@ public class UserManagerControllerAPI {
             var authResponse = service.login(userCredentials);
             return authResponse != null
                 ? ResponseEntity.ok(authResponse)
-                : ResponseEntity.status(401)
+                : ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body("Wrong login or password.");
         } catch (UsernameNotFoundException ex) {
-            return ResponseEntity.status(404)
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body("User " + userCredentials.username() + " does not exist.");
-        } catch (IOException | InterruptedException e) {
+        } catch (LockedException ex) {
+            return ResponseEntity.status(HttpStatus.LOCKED)
+                .build();
+        } catch (IOException | InterruptedException ex) {
             return ResponseEntity.status(500)
                 .body("Captcha service failed");
         }
@@ -117,9 +122,22 @@ public class UserManagerControllerAPI {
         return ResponseEntity.ok(allPagedUsers);
     }
 
-    private ResponseEntity<?> switchUserToRole(String userId, Role role) {
+    @Secured(Role.Constants.ADMIN)
+    @PatchMapping("/change-role/{userId}/{role}")
+    @ResponseBody
+    ResponseEntity<?> switchUserToRole(
+        @PathVariable String userId,
+        @PathVariable String role
+    ) {
+        Role mappedRole;
         try {
-            service.switchUsersRole(userId, Role.MODERATOR);
+            mappedRole = Role.valueOf(role.toUpperCase());
+        } catch (IllegalArgumentException ex) {
+            return ResponseEntity.badRequest()
+                .body("There is no such role: " + role);
+        }
+        try {
+            service.switchUsersRole(userId, mappedRole);
             return ResponseEntity.noContent()
                 .build();
         } catch (UserNotFoundException ex) {
@@ -132,17 +150,23 @@ public class UserManagerControllerAPI {
     }
 
     @Secured(Role.Constants.ADMIN)
-    @PatchMapping("/make-moderator/{userId}")
+    @PatchMapping("/change-user-lock/{userId}/{locked}")
     @ResponseBody
-    ResponseEntity<?> switchToModerator(@PathVariable String userId) {
-        return switchUserToRole(userId, Role.MODERATOR);
-    }
-
-    @Secured(Role.Constants.ADMIN)
-    @PatchMapping("/make-user/{userId}")
-    @ResponseBody
-    ResponseEntity<?> switchToUser(@PathVariable String userId) {
-        return switchUserToRole(userId, Role.USER);
+    ResponseEntity<?> changeUserLock(
+        @PathVariable String userId,
+        @PathVariable boolean locked
+    ) {
+        try {
+            service.changeUserLockedStatus(userId, locked);
+            return ResponseEntity.noContent()
+                .build();
+        } catch (UserNotFoundException ex) {
+            return ResponseEntity.notFound()
+                .build();
+        } catch (IllegalArgumentException ex) {
+            return ResponseEntity.badRequest()
+                .build();
+        }
     }
 
     @Secured(Role.Constants.ADMIN)

@@ -29,7 +29,9 @@ public abstract class UserSchema implements Identificable<String> {
     @Transient
     @Length(min = 8, max = 30, message = "Hasło musi mieć od 8 do 30 znaków.")
     protected String password;
-    @NotNull
+    @NotNull(message = "Status zablokowania konta jest wymagany")
+    protected boolean locked = false;
+    @NotNull(message = "Rola jest wymagana")
     @Enumerated(EnumType.STRING)
     protected Role role;
 
@@ -65,6 +67,10 @@ public abstract class UserSchema implements Identificable<String> {
 
     public void setRole(Role role) {
         this.role = role;
+    }
+
+    public void setLocked(boolean locked) {
+        this.locked = locked;
     }
 
     @Override

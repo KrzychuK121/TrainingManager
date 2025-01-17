@@ -6,6 +6,8 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
@@ -25,7 +27,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         HttpServletResponse response,
         FilterChain filterChain
     ) throws ServletException, IOException {
-        if (!request.getServletPath().contains("/api")) {
+        if (!request.getServletPath()
+            .contains("/api")) {
             filterChain.doFilter(request, response);
             return;
         }
@@ -45,9 +48,12 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                     .buildDetails(request)
             );
 
-            SecurityContextHolder.getContext().setAuthentication(authToken);
+            SecurityContextHolder.getContext()
+                .setAuthentication(authToken);
 
             filterChain.doFilter(request, response);
+        } catch (LockedException ex) {
+            response.sendError(HttpStatus.LOCKED.value(), ex.getMessage());
         } catch (ExpiredJwtException ex) {
             filterChain.doFilter(request, response);
         }

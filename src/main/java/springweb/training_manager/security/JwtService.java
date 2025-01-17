@@ -6,6 +6,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -39,10 +40,15 @@ public class JwtService {
         final var jwt = authHeader.substring(authPrefix.length());
         final String username = extractUsername(jwt);
 
-        if (username == null || SecurityContextHolder.getContext().getAuthentication() != null)
+        if (username == null || SecurityContextHolder.getContext()
+            .getAuthentication() != null)
             return null;
 
         MyUserDetails userDetails = (MyUserDetails) userDetailsService.loadUserByUsername(username);
+
+        if (!userDetails.isAccountNonLocked())
+            throw new LockedException("User account is locked.");
+
         if (!isTokenValid(jwt, userDetails))
             return null;
 
