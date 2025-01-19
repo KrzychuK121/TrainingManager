@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import springweb.training_manager.models.entities.Exercise;
+import springweb.training_manager.models.viewmodels.exercise.ExerciseRead;
 import springweb.training_manager.repositories.for_controllers.ExerciseRepository;
 
 import java.util.List;
@@ -29,31 +30,62 @@ interface SqlExerciseRepository extends ExerciseRepository, JpaRepository<Exerci
 
     @Override
     @Query("""
-            SELECT e FROM Exercise e
-            WHERE e.owner IS NULL
-                OR e.owner.id = :ownerId
+            SELECT new springweb.training_manager.models.viewmodels.exercise.ExerciseRead(e)
+                FROM Exercise e
+                    LEFT JOIN FETCH e.parameters p
         """)
-    Page<Exercise> findPublicOrOwnedBy(
+    Page<ExerciseRead> findAllRead(Pageable pageable);
+
+    @Override
+    @Query(
+        value = """
+                SELECT new springweb.training_manager.models.viewmodels.exercise.ExerciseRead(e) 
+                FROM Exercise e
+                    LEFT JOIN FETCH e.parameters p
+                WHERE e.owner IS NULL
+                    OR e.owner.id = :ownerId
+            """,
+        countQuery = """
+                SELECT
+                    count(e.id)
+                FROM
+                    Exercise e
+                LEFT JOIN
+                    TrainingExercise te
+                        on e.id=te.exercise.id
+                WHERE
+                    e.owner is null
+                    or e.owner.id=:ownerId
+            """)
+    Page<ExerciseRead> findPublicOrOwnedBy(
         @Param("ownerId") String ownerId,
         Pageable pageable
     );
 
     @Override
-    Page<Exercise> findAllByNameLikeIgnoreCase(
+    @Query("""
+            SELECT new springweb.training_manager.models.viewmodels.exercise.ExerciseRead(e)
+            FROM Exercise e
+                LEFT JOIN FETCH e.parameters p
+            WHERE LOWER(e.name) LIKE CONCAT('%', LOWER(:name), '%')
+        """)
+    Page<ExerciseRead> findPagedByName(
         String name,
         Pageable pageable
     );
 
     @Override
     @Query("""
-            SELECT e FROM Exercise e
+            SELECT new springweb.training_manager.models.viewmodels.exercise.ExerciseRead(e)
+            FROM Exercise e
+                LEFT JOIN FETCH e.parameters p
             WHERE (
                     e.owner IS NULL
                     OR e.owner.id = :ownerId
             )
             AND LOWER(e.name) LIKE CONCAT('%', LOWER(:name), '%')
         """)
-    Page<Exercise> findPublicOrOwnedByAndName(
+    Page<ExerciseRead> findPublicOrOwnedByAndName(
         @Param("ownerId") String ownerId,
         @Param("name") String name,
         Pageable pageable

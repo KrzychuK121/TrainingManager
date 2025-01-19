@@ -15,6 +15,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import springweb.training_manager.models.entities.BodyPart;
 import springweb.training_manager.models.entities.Difficulty;
+import springweb.training_manager.models.entities.Exercise;
 import springweb.training_manager.models.entities.Role;
 import springweb.training_manager.models.viewmodels.exercise.ExerciseRead;
 import springweb.training_manager.models.viewmodels.exercise.ExerciseWrite;
@@ -172,14 +173,12 @@ public class ExerciseController {
         Model model,
         Authentication auth
     ) {
-        ExerciseRead toEdit = null;
+        Exercise toEdit = null;
         try {
             var loggedUser = UserService.getUserByAuth(auth);
-            toEdit = new ExerciseRead(
-                service.getByIdForModify(
-                    id,
-                    loggedUser
-                )
+            toEdit = service.getByIdForModify(
+                id,
+                loggedUser
             );
         } catch (IllegalArgumentException e) {
             logger.error("Wystąpił wyjątek: " + e.getMessage());
@@ -192,7 +191,7 @@ public class ExerciseController {
 
         prepTrainingSelect(model, selected);
         model.addAttribute("action", "edit/" + id);
-        model.addAttribute("exercise", toEdit);
+        model.addAttribute("exercise", new ExerciseRead(toEdit));
         setDifficulty(model);
         setBodyPartList(model);
         model.addAttribute("id", id);

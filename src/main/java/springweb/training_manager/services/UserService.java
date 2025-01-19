@@ -139,8 +139,10 @@ public class UserService {
         if (!ifPasswordsMatches(toSave.getPassword(), toSave.getPasswordRepeat()))
             throw new IllegalArgumentException(PASSWORDS_NOT_EQUAL_MESSAGE);
 
-        toSave.setUsername(toSave.getUsername()
-            .toLowerCase());
+        toSave.setUsername(
+            toSave.getUsername()
+                .toLowerCase()
+        );
         User userToSave = toSave.toEntity();
         userToSave.setPasswordHashed(encoder.encode(toSave.getPassword()));
         userToSave.setRole(role);
@@ -197,7 +199,7 @@ public class UserService {
         var user = getUser(userIdToChange);
         if (userIsInRole(user, Role.ADMIN))
             throw new IllegalArgumentException("Cannot lock admin account.");
-        
+
         user.setRole(Role.USER);
         user.setLocked(lock);
         repository.save(user);

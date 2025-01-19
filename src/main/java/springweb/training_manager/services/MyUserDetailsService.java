@@ -31,8 +31,14 @@ public class MyUserDetailsService implements UserDetailsManager {
     public void createUser(UserDetails user) {
         User toSave = ((MyUserDetails) user).getUser();
 
-        toSave.setFirstName(toSave.getFirstName().toLowerCase());
-        toSave.setLastName(toSave.getLastName().toLowerCase());
+        toSave.setFirstName(
+            toSave.getFirstName()
+                .toLowerCase()
+        );
+        toSave.setLastName(
+            toSave.getLastName()
+                .toLowerCase()
+        );
 
         repository.save(toSave);
     }
@@ -50,7 +56,8 @@ public class MyUserDetailsService implements UserDetailsManager {
 
     @Override
     public void changePassword(String oldPassword, String newPassword) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        Authentication auth = SecurityContextHolder.getContext()
+            .getAuthentication();
         if (auth == null)
             throw new IllegalStateException("Nie można zmienić hasła ponieważ użytkownik nie jest zalogowany.");
 

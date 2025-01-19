@@ -9,6 +9,8 @@ import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
 import springweb.training_manager.models.entities.Role;
 
+import java.util.Objects;
+
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
@@ -82,15 +84,19 @@ public abstract class UserSchema implements Identificable<String> {
         return id.equals(that.id)
             && firstName.equals(that.firstName)
             && lastName.equals(that.lastName)
-            && username.equals(that.username);
+            && username.equals(that.username)
+            && role.equals(that.role);
     }
 
     @Override
     public int hashCode() {
-        int result = id.hashCode();
-        result = 31 * result + firstName.hashCode();
-        result = 31 * result + lastName.hashCode();
-        result = 31 * result + username.hashCode();
+        int result = getId().hashCode();
+        result = 31 * result + getFirstName().hashCode();
+        result = 31 * result + getLastName().hashCode();
+        result = 31 * result + getUsername().hashCode();
+        result = 31 * result + Objects.hashCode(getPassword());
+        result = 31 * result + Boolean.hashCode(isLocked());
+        result = 31 * result + getRole().hashCode();
         return result;
     }
 }

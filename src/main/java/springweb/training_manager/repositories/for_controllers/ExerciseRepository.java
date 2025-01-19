@@ -4,6 +4,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.query.Param;
 import springweb.training_manager.models.entities.Exercise;
+import springweb.training_manager.models.viewmodels.exercise.ExerciseRead;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,23 +20,23 @@ public interface ExerciseRepository extends DuplicationRepository<Exercise> {
 
     List<Exercise> findPublicOrOwnedBy(@Param("ownerId") String ownerId);
 
-    Page<Exercise> findPublicOrOwnedBy(
+    Page<ExerciseRead> findPublicOrOwnedBy(
         @Param("ownerId") String ownerId,
         Pageable pageable
     );
 
-    Page<Exercise> findPublicOrOwnedByAndName(
+    Page<ExerciseRead> findPublicOrOwnedByAndName(
         String ownerId,
         String name,
         Pageable pageable
     );
 
-    Page<Exercise> findAllByNameLikeIgnoreCase(
+    Page<ExerciseRead> findPagedByName(
         String name,
         Pageable pageable
     );
 
-    Page<Exercise> findAll(Pageable pageable);
+    Page<ExerciseRead> findAllRead(Pageable pageable);
 
     @Override
     Optional<Exercise> findDuplication(Exercise exercise);

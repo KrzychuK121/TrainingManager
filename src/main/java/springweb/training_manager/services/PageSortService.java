@@ -88,6 +88,27 @@ public class PageSortService {
         return toReturn;
     }
 
+    public static <M, E> Page<M> getPageBy(
+        Class<E> entityClass,
+        Pageable page,
+        Function<Pageable, Page<M>> find,
+        Logger logger
+    ) {
+        page = PageSortService.validateSort(entityClass, page, logger);
+
+        Page<M> toReturn = find.apply(page);
+        if (toReturn.getContent()
+            .isEmpty())
+            toReturn = find.apply(
+                PageRequest.of(
+                    PageSortService.getPageNumber(toReturn),
+                    toReturn.getSize(),
+                    page.getSort()
+                )
+            );
+        return toReturn;
+    }
+
     public static Sort.Order getSortModel(final Pageable page) {
         return getSortModel(page, "id");
     }

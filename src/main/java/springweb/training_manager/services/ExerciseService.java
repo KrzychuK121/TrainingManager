@@ -153,14 +153,11 @@ public class ExerciseService {
         );
     }
 
-    public static String[] getToEditTrainingIds(ExerciseRead toEdit) {
-        List<TrainingExerciseVM> toEditList = toEdit.getTrainings();
-        String[] selected = new String[toEditList.size()];
-        for (int i = 0; i < toEditList.size(); i++) {
-            selected[i] = toEditList.get(i)
-                .getId() + "";
-        }
-        return selected;
+    public static String[] getToEditTrainingIds(Exercise toEdit) {
+        return toEdit.getTrainings()
+            .stream()
+            .map(training -> String.valueOf(training.getId()))
+            .toArray(String[]::new);
     }
 
     public Map<String, List<String>> validateAndPrepareExercise(
@@ -220,19 +217,18 @@ public class ExerciseService {
 
     private Page<ExerciseRead> getPageBy(
         Pageable page,
-        Function<Pageable, Page<Exercise>> find
+        Function<Pageable, Page<ExerciseRead>> find
     ) {
         return PageSortService.getPageBy(
             Exercise.class,
             page,
             find,
-            ExerciseRead::new,
             logger
         );
     }
 
     public Page<ExerciseRead> getPagedAll(Pageable page) {
-        return getPageBy(page, repository::findAll);
+        return getPageBy(page, repository::findAllRead);
     }
 
     public Page<ExerciseRead> getPagedByName(
@@ -240,12 +236,12 @@ public class ExerciseService {
         Pageable page,
         User loggedUser
     ) {
-        Function<Pageable, Page<Exercise>> find = UserService.isAtLeastModerator(loggedUser)
-            ? (Pageable pageable) -> repository.findAllByNameLikeIgnoreCase(
+        Function<Pageable, Page<ExerciseRead>> find = UserService.isAtLeastModerator(loggedUser)
+            ? pageable -> repository.findPagedByName(
             name,
             pageable
         )
-            : (Pageable pageable) -> repository.findPublicOrOwnedByAndName(
+            : pageable -> repository.findPublicOrOwnedByAndName(
             loggedUser.getId(),
             name,
             pageable
@@ -255,7 +251,6 @@ public class ExerciseService {
             Exercise.class,
             page,
             find,
-            ExerciseRead::new,
             logger
         );
     }
@@ -264,12 +259,14 @@ public class ExerciseService {
         Pageable page,
         User owner
     ) {
-        return getPageBy(
+        return PageSortService.getPageBy(
+            Exercise.class,
             page,
             pageable -> repository.findPublicOrOwnedBy(
                 owner.getId(),
                 pageable
-            )
+            ),
+            logger
         );
     }
 
