@@ -10,7 +10,7 @@ spring:
     properties:
       hibernate:
         format_sql: true
-      generate_statistics: true
+        generate_statistics: true
   flyway:
     enabled: true
 logging.level.org.hibernate.orm.jdbc.bind: TRACE
