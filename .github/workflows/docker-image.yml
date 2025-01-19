@@ -1,0 +1,42 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+      
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v2
+      with:
+        username: ${{secrets.DOCKER_USERNAME}}
+        password: ${{secrets.DOCKER_PASSWORD}}
+        
+    - name: Build Docker image
+      run: |
+        docker build -t training-manager .
+        
+    - name: Tag Docker image
+      run: |
+        docker tag training-manager krzychuk121/training-manager:latest
+
+    - name: Push Docker image
+      run: |
+        docker push krzychuk121/training-manager:latest
+
+    - name: Trigger Deployment on Server
+      run: |
+        curl -X GET ${{secrets.RENDER_DEPLOY_URL}}
