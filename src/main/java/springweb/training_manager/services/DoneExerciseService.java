@@ -8,7 +8,7 @@ import springweb.training_manager.models.entities.DoneExercise;
 import springweb.training_manager.models.entities.DoneTraining;
 import springweb.training_manager.models.entities.TrainingExercise;
 import springweb.training_manager.models.entities.User;
-import springweb.training_manager.models.viewmodels.done_exercise.DoneExerciseWrite;
+import springweb.training_manager.models.view_models.done_exercise.DoneExerciseWrite;
 import springweb.training_manager.repositories.for_controllers.DoneExerciseRepository;
 
 import java.util.List;

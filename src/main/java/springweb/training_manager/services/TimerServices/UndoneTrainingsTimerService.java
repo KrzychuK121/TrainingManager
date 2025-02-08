@@ -6,7 +6,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import springweb.training_manager.models.entities.TrainingPlan;
 import springweb.training_manager.models.entities.Weekdays;
-import springweb.training_manager.models.viewmodels.done_training.DoneTrainingWrite;
+import springweb.training_manager.models.view_models.done_training.DoneTrainingWrite;
 import springweb.training_manager.repositories.for_controllers.TrainingPlanRepository;
 import springweb.training_manager.services.DoneTrainingService;
 

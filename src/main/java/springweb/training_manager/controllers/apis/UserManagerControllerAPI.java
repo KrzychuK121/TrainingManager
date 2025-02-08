@@ -21,11 +21,11 @@ import org.springframework.web.bind.annotation.*;
 import springweb.training_manager.exceptions.user_service.SwitchToAdminException;
 import springweb.training_manager.exceptions.user_service.UserNotFoundException;
 import springweb.training_manager.models.entities.Role;
-import springweb.training_manager.models.viewmodels.authentication.NotValidRegister;
-import springweb.training_manager.models.viewmodels.user.UserCredentials;
-import springweb.training_manager.models.viewmodels.user.UserRead;
-import springweb.training_manager.models.viewmodels.user.UserWrite;
-import springweb.training_manager.models.viewmodels.validation.ValidationErrors;
+import springweb.training_manager.models.view_models.authentication.NotValidRegister;
+import springweb.training_manager.models.view_models.user.UserCredentials;
+import springweb.training_manager.models.view_models.user.UserRead;
+import springweb.training_manager.models.view_models.user.UserWrite;
+import springweb.training_manager.models.view_models.validation.ValidationErrors;
 import springweb.training_manager.services.CaptchaService;
 import springweb.training_manager.services.UserService;
 

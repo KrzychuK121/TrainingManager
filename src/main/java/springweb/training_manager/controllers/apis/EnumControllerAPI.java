@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import springweb.training_manager.models.entities.BodyPart;
 import springweb.training_manager.models.entities.Weekdays;
-import springweb.training_manager.models.viewmodels.enums.WeekdayRead;
+import springweb.training_manager.models.view_models.enums.WeekdayRead;
 
 import java.util.Arrays;
 import java.util.List;

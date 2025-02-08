@@ -13,10 +13,10 @@ import springweb.training_manager.models.entities.Exercise;
 import springweb.training_manager.models.entities.Role;
 import springweb.training_manager.models.entities.Training;
 import springweb.training_manager.models.entities.User;
-import springweb.training_manager.models.viewmodels.exercise.*;
-import springweb.training_manager.models.viewmodels.exercise_parameters.ExerciseParametersRead;
-import springweb.training_manager.models.viewmodels.training.TrainingExerciseVM;
-import springweb.training_manager.models.viewmodels.validation.ValidationErrors;
+import springweb.training_manager.models.view_models.exercise.*;
+import springweb.training_manager.models.view_models.exercise_parameters.ExerciseParametersRead;
+import springweb.training_manager.models.view_models.training.TrainingExerciseVM;
+import springweb.training_manager.models.view_models.validation.ValidationErrors;
 import springweb.training_manager.repositories.for_controllers.ExerciseRepository;
 import springweb.training_manager.repositories.for_controllers.TrainingRepository;
 

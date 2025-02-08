@@ -6,7 +6,7 @@ import springweb.training_manager.models.entities.BodyPart;
 import springweb.training_manager.models.entities.ExerciseParameters;
 import springweb.training_manager.models.entities.Training;
 import springweb.training_manager.models.entities.User;
-import springweb.training_manager.models.viewmodels.workout_assistant.WorkoutAssistantWrite;
+import springweb.training_manager.models.view_models.workout_assistant.WorkoutAssistantWrite;
 import springweb.training_manager.repositories.for_controllers.TrainingRepository;
 
 import java.time.LocalTime;

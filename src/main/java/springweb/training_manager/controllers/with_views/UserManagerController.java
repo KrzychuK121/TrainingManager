@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import springweb.training_manager.models.entities.Role;
-import springweb.training_manager.models.viewmodels.user.UserWrite;
+import springweb.training_manager.models.view_models.user.UserWrite;
 import springweb.training_manager.services.UserService;
 
 import javax.naming.AuthenticationException;

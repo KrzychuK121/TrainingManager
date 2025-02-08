@@ -5,9 +5,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import springweb.training_manager.models.entities.*;
-import springweb.training_manager.models.viewmodels.done_training.DoneTrainingCalendarRead;
-import springweb.training_manager.models.viewmodels.done_training.DoneTrainingDetailsRead;
-import springweb.training_manager.models.viewmodels.done_training.DoneTrainingWrite;
+import springweb.training_manager.models.view_models.done_training.DoneTrainingCalendarRead;
+import springweb.training_manager.models.view_models.done_training.DoneTrainingDetailsRead;
+import springweb.training_manager.models.view_models.done_training.DoneTrainingWrite;
 import springweb.training_manager.repositories.for_controllers.DoneTrainingRepository;
 import springweb.training_manager.repositories.for_controllers.TrainingRoutineRepository;
 

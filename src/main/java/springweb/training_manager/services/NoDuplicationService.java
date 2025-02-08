@@ -1,7 +1,7 @@
 package springweb.training_manager.services;
 
 import springweb.training_manager.models.schemas.Identificable;
-import springweb.training_manager.models.viewmodels.Castable;
+import springweb.training_manager.models.view_models.Castable;
 import springweb.training_manager.repositories.for_controllers.DuplicationRepository;
 import springweb.training_manager.repositories.for_controllers.Saveable;
 

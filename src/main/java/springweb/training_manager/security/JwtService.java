@@ -11,7 +11,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
-import springweb.training_manager.models.viewmodels.user.MyUserDetails;
+import springweb.training_manager.models.view_models.user.MyUserDetails;
 import springweb.training_manager.services.MyUserDetailsService;
 
 import java.nio.charset.StandardCharsets;

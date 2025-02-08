@@ -9,7 +9,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.stereotype.Service;
 import springweb.training_manager.models.entities.User;
-import springweb.training_manager.models.viewmodels.user.MyUserDetails;
+import springweb.training_manager.models.view_models.user.MyUserDetails;
 import springweb.training_manager.repositories.for_controllers.UserRepository;
 
 @Service

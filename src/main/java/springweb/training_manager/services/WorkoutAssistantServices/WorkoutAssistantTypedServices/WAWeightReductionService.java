@@ -2,9 +2,9 @@ package springweb.training_manager.services.WorkoutAssistantServices.WorkoutAssi
 
 import org.springframework.stereotype.Service;
 import springweb.training_manager.models.entities.*;
-import springweb.training_manager.models.viewmodels.exercise_parameters.ExerciseParametersRead;
-import springweb.training_manager.models.viewmodels.training.TrainingRead;
-import springweb.training_manager.models.viewmodels.workout_assistant.WorkoutAssistantWrite;
+import springweb.training_manager.models.view_models.exercise_parameters.ExerciseParametersRead;
+import springweb.training_manager.models.view_models.training.TrainingRead;
+import springweb.training_manager.models.view_models.workout_assistant.WorkoutAssistantWrite;
 import springweb.training_manager.repositories.for_controllers.ExerciseParametersRepository;
 import springweb.training_manager.repositories.for_controllers.TrainingRepository;
 import springweb.training_manager.services.ExerciseParametersService;

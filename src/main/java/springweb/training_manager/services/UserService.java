@@ -14,11 +14,11 @@ import springweb.training_manager.exceptions.user_service.SwitchToAdminException
 import springweb.training_manager.exceptions.user_service.UserNotFoundException;
 import springweb.training_manager.models.entities.Role;
 import springweb.training_manager.models.entities.User;
-import springweb.training_manager.models.viewmodels.authentication.AuthResponse;
-import springweb.training_manager.models.viewmodels.user.MyUserDetails;
-import springweb.training_manager.models.viewmodels.user.UserCredentials;
-import springweb.training_manager.models.viewmodels.user.UserRead;
-import springweb.training_manager.models.viewmodels.user.UserWrite;
+import springweb.training_manager.models.view_models.authentication.AuthResponse;
+import springweb.training_manager.models.view_models.user.MyUserDetails;
+import springweb.training_manager.models.view_models.user.UserCredentials;
+import springweb.training_manager.models.view_models.user.UserRead;
+import springweb.training_manager.models.view_models.user.UserWrite;
 import springweb.training_manager.repositories.for_controllers.UserRepository;
 import springweb.training_manager.security.JwtService;
 

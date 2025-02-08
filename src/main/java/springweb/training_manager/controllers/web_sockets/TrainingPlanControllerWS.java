@@ -6,7 +6,7 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.RestController;
-import springweb.training_manager.models.viewmodels.training_plan.TrainingReminderRead;
+import springweb.training_manager.models.view_models.training_plan.TrainingReminderRead;
 import springweb.training_manager.services.TimerServices.NotificationTimerService;
 import springweb.training_manager.services.TrainingPlanService;
 

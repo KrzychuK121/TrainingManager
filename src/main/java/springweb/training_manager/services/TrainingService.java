@@ -13,12 +13,12 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import springweb.training_manager.exceptions.NotOwnedByUserException;
 import springweb.training_manager.models.entities.*;
-import springweb.training_manager.models.viewmodels.exercise.ExerciseTraining;
-import springweb.training_manager.models.viewmodels.exercise_parameters.ExerciseParametersRead;
-import springweb.training_manager.models.viewmodels.exercise_parameters.ExerciseParametersWrite;
-import springweb.training_manager.models.viewmodels.training.*;
-import springweb.training_manager.models.viewmodels.training_exercise.CustomTrainingParametersWrite;
-import springweb.training_manager.models.viewmodels.validation.ValidationErrors;
+import springweb.training_manager.models.view_models.exercise.ExerciseTraining;
+import springweb.training_manager.models.view_models.exercise_parameters.ExerciseParametersRead;
+import springweb.training_manager.models.view_models.exercise_parameters.ExerciseParametersWrite;
+import springweb.training_manager.models.view_models.training.*;
+import springweb.training_manager.models.view_models.training_exercise.CustomTrainingParametersWrite;
+import springweb.training_manager.models.view_models.validation.ValidationErrors;
 import springweb.training_manager.repositories.for_controllers.ExerciseRepository;
 import springweb.training_manager.repositories.for_controllers.TrainingRepository;
 

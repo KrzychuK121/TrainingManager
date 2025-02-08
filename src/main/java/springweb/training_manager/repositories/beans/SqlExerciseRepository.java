@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import springweb.training_manager.models.entities.Exercise;
-import springweb.training_manager.models.viewmodels.exercise.ExerciseRead;
+import springweb.training_manager.models.view_models.exercise.ExerciseRead;
 import springweb.training_manager.repositories.for_controllers.ExerciseRepository;
 
 import java.util.List;
@@ -30,7 +30,7 @@ interface SqlExerciseRepository extends ExerciseRepository, JpaRepository<Exerci
 
     @Override
     @Query("""
-            SELECT new springweb.training_manager.models.viewmodels.exercise.ExerciseRead(e)
+            SELECT new springweb.training_manager.models.view_models.exercise.ExerciseRead(e)
                 FROM Exercise e
                     LEFT JOIN FETCH e.parameters p
         """)
@@ -39,7 +39,7 @@ interface SqlExerciseRepository extends ExerciseRepository, JpaRepository<Exerci
     @Override
     @Query(
         value = """
-                SELECT new springweb.training_manager.models.viewmodels.exercise.ExerciseRead(e) 
+                SELECT new springweb.training_manager.models.view_models.exercise.ExerciseRead(e) 
                 FROM Exercise e
                     LEFT JOIN FETCH e.parameters p
                 WHERE e.owner IS NULL
@@ -64,7 +64,7 @@ interface SqlExerciseRepository extends ExerciseRepository, JpaRepository<Exerci
 
     @Override
     @Query("""
-            SELECT new springweb.training_manager.models.viewmodels.exercise.ExerciseRead(e)
+            SELECT new springweb.training_manager.models.view_models.exercise.ExerciseRead(e)
             FROM Exercise e
                 LEFT JOIN FETCH e.parameters p
             WHERE LOWER(e.name) LIKE CONCAT('%', LOWER(:name), '%')
@@ -76,7 +76,7 @@ interface SqlExerciseRepository extends ExerciseRepository, JpaRepository<Exerci
 
     @Override
     @Query("""
-            SELECT new springweb.training_manager.models.viewmodels.exercise.ExerciseRead(e)
+            SELECT new springweb.training_manager.models.view_models.exercise.ExerciseRead(e)
             FROM Exercise e
                 LEFT JOIN FETCH e.parameters p
             WHERE (

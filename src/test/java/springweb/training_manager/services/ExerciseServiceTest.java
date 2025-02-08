@@ -7,10 +7,10 @@ import org.mockito.MockedStatic;
 import org.springframework.stereotype.Component;
 import springweb.training_manager.exceptions.NotOwnedByUserException;
 import springweb.training_manager.models.entities.*;
-import springweb.training_manager.models.viewmodels.exercise.ExerciseWrite;
-import springweb.training_manager.models.viewmodels.exercise_parameters.ExerciseParametersRead;
-import springweb.training_manager.models.viewmodels.exercise_parameters.ExerciseParametersWrite;
-import springweb.training_manager.models.viewmodels.training.TrainingExerciseVM;
+import springweb.training_manager.models.view_models.exercise.ExerciseWrite;
+import springweb.training_manager.models.view_models.exercise_parameters.ExerciseParametersRead;
+import springweb.training_manager.models.view_models.exercise_parameters.ExerciseParametersWrite;
+import springweb.training_manager.models.view_models.training.TrainingExerciseVM;
 import springweb.training_manager.repositories.for_controllers.ExerciseRepository;
 import springweb.training_manager.repositories.for_controllers.TrainingRepository;
 
@@ -110,10 +110,9 @@ public class ExerciseServiceTest {
     }
 
     /**
-     * This method has to contain ONLY 3 elements where:
-     * - one is owned by <code>user1</code>
-     * - one is owned by <code>user2</code>
-     * - one is public (has no user)
+     * This method has to contain ONLY 3 elements where: - one is owned by
+     * <code>user1</code> - one is owned by <code>user2</code> - one is public (has no
+     * user)
      *
      * @param user1 first owner, different from <code>user2</code>
      * @param user2 second owner, different from <code>user1</code>

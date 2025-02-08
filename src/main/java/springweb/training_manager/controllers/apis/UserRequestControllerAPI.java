@@ -11,8 +11,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import springweb.training_manager.models.entities.Role;
-import springweb.training_manager.models.viewmodels.user_request.UserRequestRead;
-import springweb.training_manager.models.viewmodels.user_request.UserRequestWrite;
+import springweb.training_manager.models.view_models.user_request.UserRequestRead;
+import springweb.training_manager.models.view_models.user_request.UserRequestWrite;
 import springweb.training_manager.services.UserRequestService;
 import springweb.training_manager.services.UserService;
 

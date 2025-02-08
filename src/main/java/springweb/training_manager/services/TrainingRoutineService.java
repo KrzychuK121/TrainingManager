@@ -7,7 +7,7 @@ import springweb.training_manager.exceptions.NotOwnedByUserException;
 import springweb.training_manager.models.entities.Role;
 import springweb.training_manager.models.entities.TrainingRoutine;
 import springweb.training_manager.models.entities.User;
-import springweb.training_manager.models.viewmodels.training_routine.TrainingRoutineRead;
+import springweb.training_manager.models.view_models.training_routine.TrainingRoutineRead;
 import springweb.training_manager.repositories.for_controllers.TrainingRoutineRepository;
 
 import java.util.List;

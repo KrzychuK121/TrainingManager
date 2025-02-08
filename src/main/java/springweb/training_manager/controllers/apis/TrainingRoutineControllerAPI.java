@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import springweb.training_manager.controllers.web_sockets.TrainingPlanControllerWS;
 import springweb.training_manager.exceptions.NotOwnedByUserException;
 import springweb.training_manager.models.entities.Role;
-import springweb.training_manager.models.viewmodels.training_routine.TrainingRoutineRead;
+import springweb.training_manager.models.view_models.training_routine.TrainingRoutineRead;
 import springweb.training_manager.services.TimerServices.NotificationTimerService;
 import springweb.training_manager.services.TrainingRoutineService;
 import springweb.training_manager.services.UserService;

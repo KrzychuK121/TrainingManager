@@ -4,8 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import springweb.training_manager.models.entities.ExerciseParameters;
-import springweb.training_manager.models.viewmodels.exercise_parameters.ExerciseParametersRead;
-import springweb.training_manager.models.viewmodels.exercise_parameters.ExerciseParametersWrite;
+import springweb.training_manager.models.view_models.exercise_parameters.ExerciseParametersRead;
+import springweb.training_manager.models.view_models.exercise_parameters.ExerciseParametersWrite;
 import springweb.training_manager.repositories.for_controllers.ExerciseParametersRepository;
 
 import java.util.List;

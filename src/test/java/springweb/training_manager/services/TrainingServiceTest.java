@@ -3,7 +3,7 @@ package springweb.training_manager.services;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import springweb.training_manager.models.entities.*;
-import springweb.training_manager.models.viewmodels.exercise.ExerciseTraining;
+import springweb.training_manager.models.view_models.exercise.ExerciseTraining;
 import springweb.training_manager.repositories.for_controllers.ExerciseRepository;
 
 import java.time.LocalTime;

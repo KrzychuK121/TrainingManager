@@ -4,7 +4,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.query.Param;
 import springweb.training_manager.models.entities.Exercise;
-import springweb.training_manager.models.viewmodels.exercise.ExerciseRead;
+import springweb.training_manager.models.view_models.exercise.ExerciseRead;
 
 import java.util.List;
 import java.util.Optional;

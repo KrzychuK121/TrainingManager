@@ -8,9 +8,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
 import springweb.training_manager.models.entities.User;
 import springweb.training_manager.models.entities.UserRequest;
-import springweb.training_manager.models.viewmodels.user_request.UserRequestRead;
-import springweb.training_manager.models.viewmodels.user_request.UserRequestWrite;
-import springweb.training_manager.models.viewmodels.validation.ValidationErrors;
+import springweb.training_manager.models.view_models.user_request.UserRequestRead;
+import springweb.training_manager.models.view_models.user_request.UserRequestWrite;
+import springweb.training_manager.models.view_models.validation.ValidationErrors;
 import springweb.training_manager.repositories.for_controllers.UserRequestRepository;
 
 import java.util.List;

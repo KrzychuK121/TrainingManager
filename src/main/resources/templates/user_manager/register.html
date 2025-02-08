@@ -2,37 +2,47 @@
 <html lang="en">
 <head th:replace="~{defaulttemplate :: head}"></head>
 <body>
-    <header th:replace="~{defaulttemplate :: header}" id="h_menu" class="container-fluid"></header>
-    <div class="container">
-        <main>
-            <div th:replace="~{defaulttemplate :: alert}"></div>
-            <!--/*@thymesVar id="user" type="springweb.training_manager.models.viewmodels.user.UserWrite"*/-->
-            <form th:action="@{/register}" method="POST" th:object="${user}">
-                <fieldset>
+<header th:replace="~{defaulttemplate :: header}" id="h_menu"
+        class="container-fluid"></header>
+<div class="container">
+    <main>
+        <div th:replace="~{defaulttemplate :: alert}"></div>
+        <!--/*@thymesVar id="user" type="springweb.training_manager.models.view_models.user.UserWrite"*/-->
+        <form th:action="@{/register}" method="POST" th:object="${user}">
+            <fieldset>
                 <legend>Rejestracja</legend>
-                    <label class="form-label" for="username">Login:</label>
-                        <input th:field="*{username}" class="form-control" id="username"/>
-                    <div th:replace="~{defaulttemplate :: validation-error('username')}"></div>
-                    <label class="form-label" for="password">Hasło:</label>
-                        <input type="password" th:field="*{password}" class="form-control" id="password" />
-                    <div th:replace="~{defaulttemplate :: validation-error('password')}"></div>
-                    <label class="form-label" for="passwordRepeat">Powtórz hasło:</label>
-                        <input type="password" th:field="*{passwordRepeat}" class="form-control" id="passwordRepeat" />
-                    <div th:replace="~{defaulttemplate :: validation-error('passwordRepeat')}"></div>
-                    <label class="form-label" for="firstName">Imię:</label>
-                        <input th:field="*{firstName}" class="form-control" id="firstName" />
-                    <div th:replace="~{defaulttemplate :: validation-error('firstName')}"></div>
-                    <label class="form-label" for="lastName">Nazwisko:</label>
-                        <input th:field="*{lastName}" class="form-control" id="lastName" />
-                    <div th:replace="~{defaulttemplate :: validation-error('lastName')}"></div>
+                <label class="form-label" for="username">Login:</label>
+                <input th:field="*{username}" class="form-control"
+                       id="username"/>
+                <div th:replace="~{defaulttemplate :: validation-error('username')}"></div>
+                <label class="form-label" for="password">Hasło:</label>
+                <input type="password" th:field="*{password}"
+                       class="form-control" id="password"/>
+                <div th:replace="~{defaulttemplate :: validation-error('password')}"></div>
+                <label class="form-label" for="passwordRepeat">Powtórz
+                    hasło:</label>
+                <input type="password" th:field="*{passwordRepeat}"
+                       class="form-control" id="passwordRepeat"/>
+                <div th:replace="~{defaulttemplate :: validation-error('passwordRepeat')}"></div>
+                <label class="form-label" for="firstName">Imię:</label>
+                <input th:field="*{firstName}" class="form-control"
+                       id="firstName"/>
+                <div th:replace="~{defaulttemplate :: validation-error('firstName')}"></div>
+                <label class="form-label" for="lastName">Nazwisko:</label>
+                <input th:field="*{lastName}" class="form-control"
+                       id="lastName"/>
+                <div th:replace="~{defaulttemplate :: validation-error('lastName')}"></div>
 
-                        <input class="btn btn-info" name="submit" type="submit" value="Zarejestruj" />
-                </fieldset>
-            </form>
-        </main>
-    </div>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js" integrity="sha384-7+zCNj/IqJ95wo16oMtfsKbZ9ccEh31eOz1HGyDuCQ6wgnyJNSYdrPa03rtR1zdB" crossorigin="anonymous"></script>
-    <script src="/script/js/lib/bootstrap.min.js"></script>
+                <input class="btn btn-info" name="submit" type="submit"
+                       value="Zarejestruj"/>
+            </fieldset>
+        </form>
+    </main>
+</div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"
+        integrity="sha384-7+zCNj/IqJ95wo16oMtfsKbZ9ccEh31eOz1HGyDuCQ6wgnyJNSYdrPa03rtR1zdB"
+        crossorigin="anonymous"></script>
+<script src="/script/js/lib/bootstrap.min.js"></script>
 </body>
 </html>

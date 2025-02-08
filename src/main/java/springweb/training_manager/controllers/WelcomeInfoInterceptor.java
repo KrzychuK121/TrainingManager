@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import springweb.training_manager.models.entities.User;
-import springweb.training_manager.models.viewmodels.user.MyUserDetails;
+import springweb.training_manager.models.view_models.user.MyUserDetails;
 import springweb.training_manager.services.MyUserDetailsService;
 
 import java.util.List;
@@ -28,12 +28,14 @@ public class WelcomeInfoInterceptor implements HandlerInterceptor {
         Logger logger = LoggerFactory.getLogger(WelcomeInfoInterceptor.class);
         if (
             request.getUserPrincipal() == null ||
-                request.getServletPath().contains("/api")
+                request.getServletPath()
+                    .contains("/api")
         )
             return HandlerInterceptor.super.preHandle(request, response, handler);
 
         User loggedUser = ((MyUserDetails) userDetailsService.loadUserByUsername(
-            request.getUserPrincipal().getName()
+            request.getUserPrincipal()
+                .getName()
         )).getUser();
 
         var session = request.getSession();
@@ -48,9 +50,12 @@ public class WelcomeInfoInterceptor implements HandlerInterceptor {
     }
 
     private static Cookie getCookieByName(String name, List<Cookie> cookies) {
-        return cookies.stream().filter(
-                cookie -> cookie.getName().equals(name)
-            ).findAny()
+        return cookies.stream()
+            .filter(
+                cookie -> cookie.getName()
+                    .equals(name)
+            )
+            .findAny()
             .orElseThrow(() -> new IllegalArgumentException("Nie istnieje ciasteczko o nazwie: '" + name + "'."));
     }
 }

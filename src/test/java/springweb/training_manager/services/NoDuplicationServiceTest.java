@@ -7,7 +7,7 @@ import lombok.Setter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import springweb.training_manager.models.schemas.Identificable;
-import springweb.training_manager.models.viewmodels.Castable;
+import springweb.training_manager.models.view_models.Castable;
 import springweb.training_manager.repositories.for_controllers.DuplicationRepository;
 import springweb.training_manager.repositories.for_controllers.Saveable;
 

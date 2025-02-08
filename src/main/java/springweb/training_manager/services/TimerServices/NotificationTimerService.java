@@ -7,7 +7,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import springweb.training_manager.controllers.web_sockets.TrainingPlanControllerWS;
 import springweb.training_manager.models.entities.ReminderType;
-import springweb.training_manager.models.viewmodels.training_plan.TrainingReminderRead;
+import springweb.training_manager.models.view_models.training_plan.TrainingReminderRead;
 import springweb.training_manager.repositories.for_controllers.DoneTrainingRepository;
 import springweb.training_manager.services.TrainingPlanService;
 import springweb.training_manager.services.UserService;

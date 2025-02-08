@@ -2,15 +2,15 @@ package springweb.training_manager.services.WorkoutAssistantServices.WorkoutAssi
 
 import org.springframework.stereotype.Service;
 import springweb.training_manager.models.entities.*;
-import springweb.training_manager.models.viewmodels.workout_assistant.BodyPartWorkoutStatistics;
-import springweb.training_manager.models.viewmodels.workout_assistant.WorkoutAssistantWrite;
+import springweb.training_manager.models.view_models.workout_assistant.BodyPartWorkoutStatistics;
+import springweb.training_manager.models.view_models.workout_assistant.WorkoutAssistantWrite;
 import springweb.training_manager.repositories.for_controllers.TrainingRepository;
 
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
 
-import static springweb.training_manager.models.viewmodels.workout_assistant.BodyPartWorkoutStatistics.MIN_ADVANCE_LEVEL;
+import static springweb.training_manager.models.view_models.workout_assistant.BodyPartWorkoutStatistics.MIN_ADVANCE_LEVEL;
 
 @Service
 public class WAMuscleGrowService extends WATypedBase {

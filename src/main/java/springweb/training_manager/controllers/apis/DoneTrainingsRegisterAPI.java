@@ -9,9 +9,9 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import springweb.training_manager.models.entities.Role;
-import springweb.training_manager.models.viewmodels.done_training.DoneTrainingCalendarRead;
-import springweb.training_manager.models.viewmodels.done_training.DoneTrainingDetailsRead;
-import springweb.training_manager.models.viewmodels.done_training.DoneTrainingWrite;
+import springweb.training_manager.models.view_models.done_training.DoneTrainingCalendarRead;
+import springweb.training_manager.models.view_models.done_training.DoneTrainingDetailsRead;
+import springweb.training_manager.models.view_models.done_training.DoneTrainingWrite;
 import springweb.training_manager.services.DoneTrainingService;
 import springweb.training_manager.services.UserService;
 

@@ -1,89 +1,101 @@
 <!DOCTYPE html>
 <html lang="pl" xmlns:th="http://www.thymeleaf.org">
-    <head th:replace="~{defaulttemplate :: head}"></head>
-    <body onload="">
-        <header th:replace="~{defaulttemplate :: header}" id="h_menu" class="container-fluid"></header>
-        <div class="container">
-            <div class="row justify-content-center">
-                <!--/*@thymesVar id="training" type="springweb.training_manager.models.viewmodels.training.TrainingRead"*/-->
-                <main class="col-md-6 col-lg-8" th:object="${training}">
-                    <h2 th:text="|Tytuł: *{title}|"></h2>
-                    <div class="m-0 p-0">
-                        <h3 class="m-0">Opis</h3>
-                        <p th:text="*{description}" class="py-0"></p>
-                    </div>
-                    <h2>Twój trening zawiera:</h2>
-                    <br>
-                    <div class="accordion accordion-flush" id="listaCwiczen">
-                        <div class="accordion-item cialo-listy">
-                            <h2 class="accordion-header h2" id="ha0"></h2>
-                            <div class="accordion-button collapsed naglowek-listy" data-bs-target="#id0" aria-expanded="false" aria-controls="id0">
-                                <div id="buttons" class="row justify-content-center w-100">
-                                    <button
-                                        class="col-md-6 opt"
-                                        id="opt0"
-                                        th:onclick="|run(*{id})|"
-                                    >
-                                        START
-                                    </button>
-                                </div>
-                            </div>
-                            <div id="id0" class="accordion-collapse collapse" aria-labelledby="ha0" data-bs-parent="#listaCwiczen">
-                                <div class="accordion-body">
-                                </div>
-                            </div>
-                        </div>
-
-                        <!--/*@thymesVar id="trainings" type="springweb.training_manager.models.viewmodels.training.TrainingRead"*/-->
-                        <div th:each="exercise, i : *{exercises}" class="accordion-item cialo-listy">
-                            <h2 class="accordion-header h2" th:id="|ha${i.index + 1}|">
-                                <button
-                                    th:id="|b${i.index + 1}|" class="accordion-button collapsed naglowek-listy"
-                                    type="button" data-bs-toggle="collapse"
-                                    th:data-bs-target="'#id' + ${i.index + 1}"
-                                    aria-expanded="false"
-                                    th:aria-controls="|id${i.index + 1}|"
-                                >
-                                    <span th:text="|*{exercises[__${i.index}__].name}:|" class="me-1"></span>
-                                    <span
-                                        th:if="*{exercises[__${i.index}__].repetition == 0}"
-                                        th:text="|*{exercises[__${i.index}__].rounds} serii *{exercises[__${i.index}__].time.toString()}|"
-                                    ></span>
-                                    <span
-                                        th:if="*{exercises[__${i.index}__].repetition != 0}"
-                                        th:text="|*{exercises[__${i.index}__].rounds} serii *{exercises[__${i.index}__].repetition} powtórzeń|"
-                                    ></span>
-                                </button>
-                            </h2>
-                            <div
-                                th:id="|id${i.index + 1}|"
-                                class="accordion-collapse collapse"
-                                th:aria-labelledby="|ha${i.index + 1}|"
-                                data-bs-parent="#listaCwiczen"
-                            >
-                                <div class="accordion-body">
-                                    <span th:text="*{exercises[__${i.index}__].description}"></span>
-                                </div>
-                            </div>
-                        </div>
-
-                    </div>  
-                    <div id="wynik"></div>
-                </main>
+<head th:replace="~{defaulttemplate :: head}"></head>
+<body onload="">
+<header th:replace="~{defaulttemplate :: header}" id="h_menu"
+        class="container-fluid"></header>
+<div class="container">
+    <div class="row justify-content-center">
+        <!--/*@thymesVar id="training" type="springweb.training_manager.models.view_models.training.TrainingRead"*/-->
+        <main class="col-md-6 col-lg-8" th:object="${training}">
+            <h2 th:text="|Tytuł: *{title}|"></h2>
+            <div class="m-0 p-0">
+                <h3 class="m-0">Opis</h3>
+                <p th:text="*{description}" class="py-0"></p>
             </div>
-            
-            <footer id="f">
-            </footer>
-            
-        </div>
-        <script>
-            function run(trainingId){
-                (async function() { await DoTraining(trainingId); })();
-            }
-        </script>
-        <script src="/script/js/trening.js"></script>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js" integrity="sha384-7+zCNj/IqJ95wo16oMtfsKbZ9ccEh31eOz1HGyDuCQ6wgnyJNSYdrPa03rtR1zdB" crossorigin="anonymous"></script>
-        <script src="/script/js/lib/bootstrap.min.js"></script>
-    </body>
+            <h2>Twój trening zawiera:</h2>
+            <br>
+            <div class="accordion accordion-flush" id="listaCwiczen">
+                <div class="accordion-item cialo-listy">
+                    <h2 class="accordion-header h2" id="ha0"></h2>
+                    <div class="accordion-button collapsed naglowek-listy"
+                         data-bs-target="#id0" aria-expanded="false"
+                         aria-controls="id0">
+                        <div id="buttons"
+                             class="row justify-content-center w-100">
+                            <button
+                                    class="col-md-6 opt"
+                                    id="opt0"
+                                    th:onclick="|run(*{id})|"
+                            >
+                                START
+                            </button>
+                        </div>
+                    </div>
+                    <div id="id0" class="accordion-collapse collapse"
+                         aria-labelledby="ha0" data-bs-parent="#listaCwiczen">
+                        <div class="accordion-body">
+                        </div>
+                    </div>
+                </div>
+
+                <!--/*@thymesVar id="trainings" type="springweb.training_manager.models.view_models.training.TrainingRead"*/-->
+                <div th:each="exercise, i : *{exercises}"
+                     class="accordion-item cialo-listy">
+                    <h2 class="accordion-header h2" th:id="|ha${i.index + 1}|">
+                        <button
+                                th:id="|b${i.index + 1}|"
+                                class="accordion-button collapsed naglowek-listy"
+                                type="button" data-bs-toggle="collapse"
+                                th:data-bs-target="'#id' + ${i.index + 1}"
+                                aria-expanded="false"
+                                th:aria-controls="|id${i.index + 1}|"
+                        >
+                            <span th:text="|*{exercises[__${i.index}__].name}:|"
+                                  class="me-1"></span>
+                            <span
+                                    th:if="*{exercises[__${i.index}__].repetition == 0}"
+                                    th:text="|*{exercises[__${i.index}__].rounds} serii *{exercises[__${i.index}__].time.toString()}|"
+                            ></span>
+                            <span
+                                    th:if="*{exercises[__${i.index}__].repetition != 0}"
+                                    th:text="|*{exercises[__${i.index}__].rounds} serii *{exercises[__${i.index}__].repetition} powtórzeń|"
+                            ></span>
+                        </button>
+                    </h2>
+                    <div
+                            th:id="|id${i.index + 1}|"
+                            class="accordion-collapse collapse"
+                            th:aria-labelledby="|ha${i.index + 1}|"
+                            data-bs-parent="#listaCwiczen"
+                    >
+                        <div class="accordion-body">
+                            <span th:text="*{exercises[__${i.index}__].description}"></span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div id="wynik"></div>
+        </main>
+    </div>
+
+    <footer id="f">
+    </footer>
+
+</div>
+<script>
+    function run(trainingId) {
+        (async function () {
+            await DoTraining(trainingId);
+        })();
+    }
+</script>
+<script src="/script/js/trening.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"
+        integrity="sha384-7+zCNj/IqJ95wo16oMtfsKbZ9ccEh31eOz1HGyDuCQ6wgnyJNSYdrPa03rtR1zdB"
+        crossorigin="anonymous"></script>
+<script src="/script/js/lib/bootstrap.min.js"></script>
+</body>
 </html>
