@@ -67,30 +67,6 @@ public class PageSortService {
     public static <M, E> Page<M> getPageBy(
         Class<E> entityClass,
         Pageable page,
-        Function<Pageable, Page<E>> find,
-        Function<E, M> mapper,
-        Logger logger
-    ) {
-        page = PageSortService.validateSort(entityClass, page, logger);
-
-        Page<M> toReturn = find.apply(page)
-            .map(mapper);
-        if (toReturn.getContent()
-            .isEmpty())
-            toReturn = find.apply(
-                    PageRequest.of(
-                        PageSortService.getPageNumber(toReturn),
-                        toReturn.getSize(),
-                        page.getSort()
-                    )
-                )
-                .map(mapper);
-        return toReturn;
-    }
-
-    public static <M, E> Page<M> getPageBy(
-        Class<E> entityClass,
-        Pageable page,
         Function<Pageable, Page<M>> find,
         Logger logger
     ) {
@@ -107,6 +83,17 @@ public class PageSortService {
                 )
             );
         return toReturn;
+    }
+
+    public static <M, E> Page<M> getPageBy(
+        Class<E> entityClass,
+        Pageable page,
+        Function<Pageable, Page<E>> find,
+        Function<E, M> mapper,
+        Logger logger
+    ) {
+        return getPageBy(entityClass, page, find, logger)
+            .map(mapper);
     }
 
     public static Sort.Order getSortModel(final Pageable page) {
