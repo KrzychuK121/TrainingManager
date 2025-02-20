@@ -17,6 +17,8 @@ public interface TrainingRoutineRepository {
 
     Optional<TrainingRoutine> findByOwnerIdAndActiveTrue(String ownerId);
 
+    Page<TrainingRoutine> findAll(Pageable pageable);
+
     Page<TrainingRoutine> findByOwner(
         User owner,
         Pageable page

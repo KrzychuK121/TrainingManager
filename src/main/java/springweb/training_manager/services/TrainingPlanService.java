@@ -61,7 +61,8 @@ public class TrainingPlanService {
                         routineId,
                         new TrainingRoutineReadIndex(
                             routineId,
-                            routine.isActive()
+                            routine.isActive(),
+                            routine.getOwner()
                         )
                     );
 
@@ -90,17 +91,15 @@ public class TrainingPlanService {
         );
     }
 
-    public Page<TrainingRoutineReadIndex> getPagedAll(
-        User owner,
-        Pageable page
+    private static Page<TrainingRoutineReadIndex> mapRoutinesToReadIndex(
+        Page<TrainingRoutine> pagedRoutines
     ) {
-        // TODO: Repair, not working
-        Page<TrainingRoutine> pagedRoutines = routineRepository.findByOwner(owner, page);
         return pagedRoutines.map(
             routine -> {
                 var readIndex = new TrainingRoutineReadIndex(
                     routine.getId(),
-                    routine.isActive()
+                    routine.isActive(),
+                    routine.getOwner()
                 );
 
                 routine.getPlans()
@@ -118,6 +117,16 @@ public class TrainingPlanService {
                 return readIndex;
             }
         );
+    }
+
+    public Page<TrainingRoutineReadIndex> getPagedForUser(
+        User user,
+        Pageable page
+    ) {
+        Page<TrainingRoutine> pagedRoutines = UserService.isAtLeastModerator(user)
+            ? routineRepository.findAll(page)
+            : routineRepository.findByOwner(user, page);
+        return mapRoutinesToReadIndex(pagedRoutines);
     }
 
     public TrainingPlansEditRead getUserEditPlans(

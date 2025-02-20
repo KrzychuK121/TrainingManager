@@ -20,6 +20,9 @@ interface SqlTrainingRoutineRepository
     Optional<TrainingRoutine> findByOwnerIdAndActiveTrue(String ownerId);
 
     @Override
+    Page<TrainingRoutine> findAll(Pageable pageable);
+
+    @Override
     Page<TrainingRoutine> findByOwner(
         User owner,
         Pageable page

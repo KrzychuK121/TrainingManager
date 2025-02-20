@@ -15,6 +15,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import springweb.training_manager.models.entities.Role;
 import springweb.training_manager.models.entities.TrainingPlan;
+import springweb.training_manager.models.entities.User;
 import springweb.training_manager.models.view_models.training.WorkoutTrainingRead;
 import springweb.training_manager.models.view_models.training_plan.TrainingPlansEditRead;
 import springweb.training_manager.models.view_models.training_plan.TrainingPlansPagedRead;
@@ -52,11 +53,11 @@ public class TrainingPlanControllerAPI {
 
     @GetMapping
     public ResponseEntity<TrainingPlansPagedRead> getAll(
-        @PageableDefault(size = 1) Pageable page,
+        @PageableDefault(size = 5) Pageable page,
         Authentication auth
     ) {
         var loggedUser = UserService.getUserByAuth(auth);
-        Page<TrainingRoutineReadIndex> plans = service.getPagedAll(loggedUser, page);
+        Page<TrainingRoutineReadIndex> plans = service.getPagedForUser(loggedUser, page);
         return ResponseEntity.ok(
             new TrainingPlansPagedRead(plans)
         );
@@ -66,12 +67,16 @@ public class TrainingPlanControllerAPI {
     @GetMapping("/week")
     public ResponseEntity<TrainingPlansRead> getWeek(Authentication auth) {
         // TODO: Extract it to service
-        String userId = UserService.getUserIdByAuth(auth);
+        User user = UserService.getUserByAuth(auth);
         try {
-            List<TrainingPlan> activePlans = service.getUserActivePlans(userId);
+            List<TrainingPlan> activePlans = service.getUserActivePlans(user.getId());
             var routineId = activePlans.get(0)
                 .getTrainingRoutineId();
-            var readModel = new TrainingRoutineReadIndex(routineId, true);
+            var readModel = new TrainingRoutineReadIndex(
+                routineId,
+                true,
+                user
+            );
             activePlans.forEach(
                 trainingPlan -> readModel.putSchedule(
                     trainingPlan.getTrainingSchedule()
@@ -98,20 +103,25 @@ public class TrainingPlanControllerAPI {
     @ResponseBody
     public ResponseEntity<WorkoutTrainingRead> getTodayTraining(Authentication auth) {
         var userId = UserService.getUserIdByAuth(auth);
-        var training = service.getUserActiveTraining(userId);
-        if (training == null)
+        try {
+            var training = service.getUserActiveTraining(userId);
+            if (training == null)
+                return ResponseEntity.notFound()
+                    .build();
+            var todayDate = LocalDate.now();
+            if (
+                doneTrainingRepository.existsForOwnerForDate(
+                    userId,
+                    todayDate
+                )
+            )
+                return ResponseEntity.noContent()
+                    .build();
+            return ResponseEntity.ok(training);
+        } catch (IllegalStateException ex) {
             return ResponseEntity.notFound()
                 .build();
-        var todayDate = LocalDate.now();
-        if (
-            doneTrainingRepository.existsForOwnerForDate(
-                userId,
-                todayDate
-            )
-        )
-            return ResponseEntity.noContent()
-                .build();
-        return ResponseEntity.ok(training);
+        }
     }
 
     @GetMapping("/editModel/{id}")
