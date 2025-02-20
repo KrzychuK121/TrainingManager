@@ -274,7 +274,7 @@ public class ExerciseService {
         Pageable page,
         User owner
     ) {
-        return UserService.userIsInRole(owner, Role.ADMIN)
+        return UserService.isAtLeastModerator(owner)
             ? getPagedAll(page)
             : getPagedPublicOrOwnedBy(page, owner);
     }

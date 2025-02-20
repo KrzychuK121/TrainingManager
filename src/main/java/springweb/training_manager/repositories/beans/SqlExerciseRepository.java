@@ -44,19 +44,8 @@ interface SqlExerciseRepository extends ExerciseRepository, JpaRepository<Exerci
                     LEFT JOIN FETCH e.parameters p
                 WHERE e.owner IS NULL
                     OR e.owner.id = :ownerId
-            """,
-        countQuery = """
-                SELECT
-                    count(e.id)
-                FROM
-                    Exercise e
-                LEFT JOIN
-                    TrainingExercise te
-                        on e.id=te.exercise.id
-                WHERE
-                    e.owner is null
-                    or e.owner.id=:ownerId
-            """)
+            """
+    )
     Page<ExerciseRead> findPublicOrOwnedBy(
         @Param("ownerId") String ownerId,
         Pageable pageable
