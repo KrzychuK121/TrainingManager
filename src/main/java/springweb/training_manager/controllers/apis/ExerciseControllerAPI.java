@@ -50,7 +50,7 @@ public class ExerciseControllerAPI {
         Authentication auth
     ) {
         var loggedUser = UserService.getUserByAuth(auth);
-        var paged = filter == null
+        var paged = filter == null || filter.isEmpty()
             ? service.getPagedForUser(page, loggedUser)
             : service.getPagedByName(filter, page, loggedUser);
         return ResponseEntity.ok(paged);
@@ -68,7 +68,7 @@ public class ExerciseControllerAPI {
             var foundRead = new ExerciseRead(found);
             return ResponseEntity.ok(foundRead);
         } catch (IllegalArgumentException e) {
-            logger.error("Wystąpił wyjątek: " + e.getMessage());
+            logger.error("Exception occurred: " + e.getMessage());
             return ResponseEntity.notFound()
                 .build();
         }
@@ -142,7 +142,7 @@ public class ExerciseControllerAPI {
                 loggedUser
             );
         } catch (IllegalArgumentException e) {
-            logger.error("Wystąpił wyjątek: " + e.getMessage());
+            logger.error("Exception occurred: " + e.getMessage());
             return ResponseEntity.notFound()
                 .build();
         }
@@ -161,11 +161,11 @@ public class ExerciseControllerAPI {
             var loggedUser = UserService.getUserByAuth(auth);
             service.delete(id, loggedUser);
         } catch (NotOwnedByUserException e) {
-            logger.error("Wystąpił wyjątek: " + e.getMessage());
+            logger.error("Exception occurred: " + e.getMessage());
             return ResponseEntity.badRequest()
                 .build();
         } catch (IllegalArgumentException e) {
-            logger.error("Wystąpił wyjątek: " + e.getMessage());
+            logger.error("Exception occurred: " + e.getMessage());
             return ResponseEntity.notFound()
                 .build();
         }
