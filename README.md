@@ -42,38 +42,15 @@ There are few default accounts. These accounts allows you to test full potential
 **login:** Administrator<br>
 **password:** Adm1nP@ss<br>
 
+### Moderator 1 account
+**login:** moderator2<br>
+**password:** M0d3rator<br>
+
+### Moderator 2 account
+**login:** moderator2<br>
+**password:** M0d3rator<br>
+
 ### User accounts
 **User**
 **login:** Uzytkownik<br>
 **password:** UserP@ssw0rd<br>
-
-## Plan for application:
-* ~~Adding API + GUI for CRUD operations of:~~
-    - ~~exercises~~
-    - ~~trainings~~
-    - ~~training schedule~~
-    - ~~training routine~~
-    - ~~training plan~~
-    - ~~new user account (register action)~~
-* Displaying training plans:
-  - active (with done/upcomming info)
-  - ~~all~~
-  - history:
-    - weekly
-    - monthly
-* Implementing filtering for:
-  - trainings by:
-    - owner (user's owned)
-  - exercises by:
-    - owner (user's owned)
-  - training plans by:
-    - owner (user's owned)
-    - difficulty
-    - practising body part
-* ~~Moving from H2 Database to PostgreSQL database~~:
-  - ~~changing migrations dialect for PostgreSQL~~
-  - ~~setting up database environment (docker)~~
-* BMI and BMR calculators
-* Mobile version of the app with functionality:
-  - current week infomration with "do todays training" option
-  - notification about upcoming workout while app is working in the background
