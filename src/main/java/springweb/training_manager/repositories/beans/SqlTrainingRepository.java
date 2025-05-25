@@ -16,25 +16,22 @@ import java.util.Optional;
 interface SqlTrainingRepository extends TrainingRepository,
     JpaRepository<Training, Integer> {
 
+    String PUBLIC_OR_OWNED_SQL = """
+            SELECT t
+            FROM Training t
+            WHERE t.owner.id IS NULL 
+                OR t.owner.id = :ownerId
+        """;
+
     @Override
     Optional<List<Training>> findAllByOwnerId(String id);
 
     @Override
-    @Query("""
-            SELECT t
-            FROM Training t
-            WHERE t.owner.id IS NULL 
-                OR t.owner.id = :ownerId
-        """)
+    @Query(PUBLIC_OR_OWNED_SQL)
     List<Training> findAllPublicOrOwnedBy(@Param("ownerId") String ownerId);
 
     @Override
-    @Query("""
-            SELECT t
-            FROM Training t
-            WHERE t.owner.id IS NULL 
-                OR t.owner.id = :ownerId
-        """)
+    @Query(PUBLIC_OR_OWNED_SQL)
     Page<Training> findPagedPublicOrOwnedBy(
         Pageable page,
         @Param("ownerId") String ownerId
@@ -112,4 +109,15 @@ interface SqlTrainingRepository extends TrainingRepository,
 
     @Override
     Optional<Training> findByIdAndOwnerId(Integer id, String ownerId);
+
+    @Override
+    int countByOwnerIdAndArchivedFalse(String ownerId);
+
+    @Override
+    @Query("""
+            SELECT t.archived 
+            FROM Training t
+            WHERE t.id = :id
+        """)
+    boolean isArchived(@Param("id") int id);
 }

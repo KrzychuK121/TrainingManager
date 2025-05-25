@@ -26,14 +26,6 @@ public class TrainingExerciseVM extends TrainingSchema implements Castable<Train
             .collect(Collectors.toList());
     }
 
-    public static List<Training> toTrainingList(final List<TrainingExerciseVM> list) {
-        return list.stream()
-            .map(
-                TrainingExerciseVM::toEntity
-            )
-            .collect(Collectors.toList());
-    }
-
     public void setTitle(String title) {
         this.title = title;
     }

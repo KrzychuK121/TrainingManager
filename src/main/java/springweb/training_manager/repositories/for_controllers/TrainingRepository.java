@@ -41,7 +41,11 @@ public interface TrainingRepository extends DuplicationRepository<Training> {
 
     Training save(Training entity);
 
+    int countByOwnerIdAndArchivedFalse(String ownerId);
+
     boolean existsById(Integer integer);
+
+    boolean isArchived(int id);
 
     void deleteById(Integer integer);
 

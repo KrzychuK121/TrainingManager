@@ -12,6 +12,7 @@ import java.util.List;
 public class TrainingRead extends TrainingSchema {
     protected List<ExerciseTraining> exercises;
     private final boolean trainingPrivate;
+    protected boolean archived = false;
 
     public TrainingRead(Training training) {
         super(
@@ -19,6 +20,7 @@ public class TrainingRead extends TrainingSchema {
             training.getTitle(),
             training.getDescription()
         );
+        this.archived = training.isArchived();
         this.exercises = toExerciseTrainingList(
             training.getTrainingExercises()
         );

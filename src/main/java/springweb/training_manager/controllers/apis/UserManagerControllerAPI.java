@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import springweb.training_manager.exceptions.user_service.SwitchToAdminException;
 import springweb.training_manager.exceptions.user_service.UserNotFoundException;
 import springweb.training_manager.models.entities.Role;
-import springweb.training_manager.models.view_models.authentication.NotValidRegister;
+import springweb.training_manager.models.view_models.ErrorResponse;
 import springweb.training_manager.models.view_models.user.UserCredentials;
 import springweb.training_manager.models.view_models.user.UserRead;
 import springweb.training_manager.models.view_models.user.UserWrite;
@@ -77,7 +77,7 @@ public class UserManagerControllerAPI {
         var captchaVerified = captchaService.captchaVerified(current.getCaptchaToken());
         if (!captchaVerified)
             return ResponseEntity.badRequest()
-                .body(new NotValidRegister("Captcha verification failed."));
+                .body(new ErrorResponse("Captcha verification failed."));
         if (!service.ifPasswordsMatches(current.getPassword(), current.getPasswordRepeat()))
             result.addError(new FieldError("current", "passwordRepeat", UserService.PASSWORDS_NOT_EQUAL_MESSAGE));
 
@@ -92,7 +92,7 @@ public class UserManagerControllerAPI {
         } catch (IllegalArgumentException e) {
             logger.error("Exception occurs: {}", e.getMessage());
             return ResponseEntity.badRequest()
-                .body(new NotValidRegister("User exists"));
+                .body(new ErrorResponse("User exists"));
         }
 
         return ResponseEntity.noContent()

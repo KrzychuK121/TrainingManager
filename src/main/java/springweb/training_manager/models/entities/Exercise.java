@@ -18,6 +18,8 @@ import java.util.List;
 @Entity
 @Table(name = "exercise")
 public class Exercise extends ExerciseSchema {
+    protected boolean archived = false;
+    
     @ManyToOne
     @JoinColumn(
         name = "parameters_id",

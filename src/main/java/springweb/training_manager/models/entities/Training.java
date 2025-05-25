@@ -17,6 +17,7 @@ import java.util.List;
 public class Training extends TrainingSchema {
     @OneToMany(mappedBy = "training")
     private List<TrainingExercise> trainingExercises = new ArrayList<>();
+    protected boolean archived = false;
 
     @ManyToOne
     @JoinColumn(
@@ -27,12 +28,25 @@ public class Training extends TrainingSchema {
 
     public Training(
         String title,
-        String description
+        String description,
+        boolean archived
     ) {
         super(
             0,
             title,
             description
+        );
+        this.archived = archived;
+    }
+
+    public Training(
+        String title,
+        String description
+    ) {
+        this(
+            title,
+            description,
+            false
         );
     }
 

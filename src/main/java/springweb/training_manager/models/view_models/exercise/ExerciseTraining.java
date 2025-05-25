@@ -26,25 +26,10 @@ public class ExerciseTraining extends ExerciseSchema implements Castable<Exercis
     private final boolean exercisePrivate;
 
     public ExerciseTraining(Exercise exercise) {
-        super(
-            exercise.getId(),
-            exercise.getName(),
-            exercise.getDescription(),
-            exercise.getBodyPart(),
-            exercise.getDefaultBurnedKcal()
+        this(
+            exercise,
+            exercise.getParameters()
         );
-        this.parametersId = exercise.getParameters()
-            .getId();
-        this.rounds = exercise.getParameters()
-            .getRounds();
-        this.repetition = exercise.getParameters()
-            .getRepetition();
-        this.weights = exercise.getParameters()
-            .getWeights();
-        this.time = exercise.getParameters()
-            .getTime();
-        this.exercisePrivate = exercise.getOwner() != null;
-        this.bodyPartDesc = BodyPart.getBodyDesc(bodyPart);
     }
 
     public ExerciseTraining(

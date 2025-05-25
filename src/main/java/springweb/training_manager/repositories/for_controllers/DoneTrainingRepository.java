@@ -27,4 +27,6 @@ public interface DoneTrainingRepository {
     );
 
     DoneTraining save(DoneTraining entity);
+
+    boolean existsByTrainingId(@Param("trainingId") int trainingId);
 }

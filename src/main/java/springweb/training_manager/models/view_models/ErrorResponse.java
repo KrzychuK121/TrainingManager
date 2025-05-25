@@ -1,4 +1,4 @@
-package springweb.training_manager.models.view_models.authentication;
+package springweb.training_manager.models.view_models;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,6 +9,6 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class NotValidRegister {
+public class ErrorResponse {
     private String error;
 }

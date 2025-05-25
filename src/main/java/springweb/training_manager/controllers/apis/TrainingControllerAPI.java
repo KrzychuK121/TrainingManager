@@ -14,8 +14,12 @@ import org.springframework.security.core.Authentication;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import springweb.training_manager.exceptions.NotOwnedByUserException;
+import springweb.training_manager.exceptions.PrivateEntitiesAmountOverLimitException;
+import springweb.training_manager.exceptions.SourceArchivedException;
+import springweb.training_manager.exceptions.SourceNotArchivedException;
 import springweb.training_manager.models.entities.Role;
 import springweb.training_manager.models.entities.Training;
+import springweb.training_manager.models.view_models.ErrorResponse;
 import springweb.training_manager.models.view_models.training.TrainingCreate;
 import springweb.training_manager.models.view_models.training.TrainingRead;
 import springweb.training_manager.models.view_models.training.TrainingWriteAPI;
@@ -102,12 +106,18 @@ public class TrainingControllerAPI {
     }
 
     @GetMapping(value = {"/createModel", "/createModel/{id}"})
-    public ResponseEntity<TrainingCreate> getCreateModel(
+    public ResponseEntity<?> getCreateModel(
         @PathVariable(required = false) Integer id,
         Authentication auth
     ) {
         var loggedUser = UserService.getUserByAuth(auth);
-        return ResponseEntity.ok(service.getCreateModel(id, loggedUser));
+        try {
+            TrainingCreate createModel = service.getCreateModel(id, loggedUser);
+            return ResponseEntity.ok(createModel);
+        } catch (SourceArchivedException e) {
+            return ResponseEntity.badRequest()
+                .body(e.getMessage());
+        }
     }
 
     @PostMapping()
@@ -126,13 +136,17 @@ public class TrainingControllerAPI {
         if (validationErrors != null)
             return ResponseEntity.badRequest()
                 .body(validationErrors);
-
-        Training created = service.create(toCreate.getToSave(), loggedUser);
-        var trainingRead = new TrainingRead(created);
-        return ResponseEntity.created(
-                URI.create("/api/training/" + created.getId())
-            )
-            .body(trainingRead);
+        try {
+            Training created = service.create(toCreate.getToSave(), loggedUser);
+            var trainingRead = new TrainingRead(created);
+            return ResponseEntity.created(
+                    URI.create("/api/training/" + created.getId())
+                )
+                .body(trainingRead);
+        } catch (PrivateEntitiesAmountOverLimitException e) {
+            return ResponseEntity.badRequest()
+                .body(new ErrorResponse(e.getMessage()));
+        }
     }
 
     @PutMapping("/{id}")
@@ -144,6 +158,16 @@ public class TrainingControllerAPI {
         Authentication auth
     ) {
         var loggedUser = UserService.getUserByAuth(auth);
+        try {
+            boolean archived = service.isArchived(id);
+            if (archived)
+                return ResponseEntity.badRequest()
+                    .body(SourceArchivedException.MESSAGE);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest()
+                .body(e.getMessage());
+        }
+
         var validationErrors = service.validateAndPrepareTraining(
             data,
             result,
@@ -155,14 +179,16 @@ public class TrainingControllerAPI {
         try {
             var toEdit = data.getToSave();
             service.edit(toEdit, id, loggedUser);
+            return ResponseEntity.noContent()
+                .build();
+        } catch (SourceArchivedException e) {
+            return ResponseEntity.badRequest()
+                .body(e.getMessage());
         } catch (IllegalArgumentException e) {
             log.error("Wystąpił wyjątek: " + e.getMessage());
             return ResponseEntity.notFound()
                 .build();
         }
-
-        return ResponseEntity.noContent()
-            .build();
     }
 
     @DeleteMapping("/{id}")
@@ -174,7 +200,7 @@ public class TrainingControllerAPI {
         var loggedUser = UserService.getUserByAuth(auth);
         try {
             service.delete(id, loggedUser);
-        } catch (NotOwnedByUserException e) {
+        } catch (NotOwnedByUserException | SourceArchivedException e) {
             return ResponseEntity.badRequest()
                 .build();
         } catch (IllegalArgumentException e) {
@@ -186,5 +212,23 @@ public class TrainingControllerAPI {
 
         return ResponseEntity.noContent()
             .build();
+    }
+
+    @PatchMapping("/restore/{id}")
+    @ResponseBody
+    public ResponseEntity<?> restore(
+        @PathVariable int id,
+        Authentication auth
+    ) {
+        var loggedUser = UserService.getUserByAuth(auth);
+
+        try {
+            service.restore(id, loggedUser);
+            return ResponseEntity.noContent()
+                .build();
+        } catch (SourceNotArchivedException | PrivateEntitiesAmountOverLimitException e) {
+            return ResponseEntity.badRequest()
+                .body(e.getMessage());
+        }
     }
 }

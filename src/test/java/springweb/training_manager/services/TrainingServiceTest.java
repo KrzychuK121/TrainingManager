@@ -106,6 +106,7 @@ class TrainingServiceTest {
             ),
             null,
             null,
+            null,
             null
         );
         var result = service.prepExercises(

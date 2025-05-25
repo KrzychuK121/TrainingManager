@@ -12,6 +12,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import springweb.training_manager.exceptions.NotOwnedByUserException;
+import springweb.training_manager.exceptions.PrivateEntitiesAmountOverLimitException;
+import springweb.training_manager.exceptions.SourceArchivedException;
+import springweb.training_manager.exceptions.SourceNotArchivedException;
 import springweb.training_manager.models.entities.*;
 import springweb.training_manager.models.view_models.exercise.ExerciseTraining;
 import springweb.training_manager.models.view_models.exercise_parameters.ExerciseParametersRead;
@@ -19,6 +22,7 @@ import springweb.training_manager.models.view_models.exercise_parameters.Exercis
 import springweb.training_manager.models.view_models.training.*;
 import springweb.training_manager.models.view_models.training_exercise.CustomTrainingParametersWrite;
 import springweb.training_manager.models.view_models.validation.ValidationErrors;
+import springweb.training_manager.repositories.for_controllers.DoneTrainingRepository;
 import springweb.training_manager.repositories.for_controllers.ExerciseRepository;
 import springweb.training_manager.repositories.for_controllers.TrainingRepository;
 
@@ -34,6 +38,19 @@ public class TrainingService {
     private final ExerciseParametersService parametersService;
     private final TrainingRepository repository;
     private final TrainingExerciseService trainingExerciseService;
+    private final DoneTrainingRepository doneTrainingRepository;
+
+    private final int PRIVATE_TRAINING_LIMIT = 10;
+
+    public boolean isArchived(int id) {
+        if (!repository.existsById(id))
+            throw new IllegalArgumentException("Exercise with id " + id + " does not exists");
+        return repository.isArchived(id);
+    }
+
+    public boolean isTrainingAmountAtLimit(User loggedUser) {
+        return repository.countByOwnerIdAndArchivedFalse(loggedUser.getId()) == PRIVATE_TRAINING_LIMIT;
+    }
 
     /**
      * This method is used to find existing exercises in database or creating new one
@@ -228,6 +245,9 @@ public class TrainingService {
 
     @Transactional
     public Training create(TrainingWrite toSave, User loggedUser) {
+        if (toSave.isTrainingPrivate() && isTrainingAmountAtLimit(loggedUser))
+            throw new PrivateEntitiesAmountOverLimitException(PRIVATE_TRAINING_LIMIT);
+
         var preparedExerciseList = prepExercisesAndParametersMap(toSave.getExercises());
 
         var entityToSave = toSave.toEntity();
@@ -369,7 +389,7 @@ public class TrainingService {
         return toReturn;
     }
 
-    public Page<TrainingRead> getPagedPublicOrOwnerBy(
+    public Page<TrainingRead> getPagedPublicOrOwnedBy(
         Pageable page,
         User user
     ) {
@@ -382,7 +402,7 @@ public class TrainingService {
     public Page<TrainingRead> getPagedForUser(Pageable page, User user) {
         if (UserService.userIsInRole(user, Role.ADMIN))
             return getPagedAllAlternative(page);
-        return getPagedPublicOrOwnerBy(page, user);
+        return getPagedPublicOrOwnedBy(page, user);
     }
 
     public List<TrainingRead> getPublicOrOwnerBy(User user) {
@@ -450,9 +470,12 @@ public class TrainingService {
         if (id == null)
             return new TrainingCreate(allExerciseTrainings);
         try {
+            Training toEdit = getByIdForModify(id, owner);
+            if (toEdit.isArchived())
+                throw new SourceArchivedException();
             return new TrainingCreate(
                 new TrainingRead(
-                    getByIdForModify(id, owner)
+                    toEdit
                 ),
                 allExerciseTrainings
             );
@@ -483,6 +506,10 @@ public class TrainingService {
         );
 
         Training toSave = getByIdForModify(id, loggedUser);
+
+        if (toSave.isArchived())
+            throw new SourceArchivedException();
+
         var oldOwner = toSave.getOwner();
         var oldParametersList = getOldParametersList(toSave);
 
@@ -514,11 +541,30 @@ public class TrainingService {
     @Transactional
     public void delete(int id, User loggedUser) {
         var toDelete = getByIdForModify(id, loggedUser);
+
+        if (doneTrainingRepository.existsByTrainingId(toDelete.getId())) {
+            if (toDelete.isArchived())
+                throw new SourceArchivedException();
+            toDelete.setArchived(true);
+            repository.save(toDelete);
+            return;
+        }
+
         var oldParametersList = getOldParametersList(toDelete);
 
         trainingExerciseService.deleteByTrainingId(toDelete);
         repository.deleteById(id);
         parametersService.deleteIfOrphaned(oldParametersList);
+    }
+
+    public void restore(int id, User loggedUser) {
+        if (isTrainingAmountAtLimit(loggedUser))
+            throw new PrivateEntitiesAmountOverLimitException(PRIVATE_TRAINING_LIMIT);
+        var trainingToRestore = getByIdForModify(id, loggedUser);
+        if (!trainingToRestore.isArchived())
+            throw new SourceNotArchivedException();
+        trainingToRestore.setArchived(false);
+        repository.save(trainingToRestore);
     }
 
 }

@@ -52,4 +52,7 @@ interface SqlDoneTrainingRepository extends
         @Param("ownerId") String ownerId,
         @Param("startDate") LocalDate startDate
     );
+
+    @Override
+    boolean existsByTrainingId(@Param("trainingId") int trainingId);
 }
